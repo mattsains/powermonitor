@@ -1,0 +1,55 @@
+This defines how to talk to the microcontroller from the Raspberry Pi over SPI.
+
+It is the responsibility of the Pi to provide a clock signal to the Pi whenever any data needs to be transferred, because it is the "master" of the communication over SPI.
+
+When the Pi is about to communicate with the microcontroller, it must pull the "slave select" line LOW. When it's done communicating with the microcontroller, this must be pulled HIGH again.
+
+Communication is based on #{LSB|MSB} bit order.
+
+All communication starts with the Raspberry Pi sending the microcontroller a "command" byte.
+This tells the microcontroller what the Pi wants it to do.
+The Pi must wait #{time} after sending this byte before pulling data back from the micro.
+
+The syntax of this is:
+101xxx1Y
+xxx is a number which corresponds to the command.
+Y is a checksum.
+
+The checksum is calculated by adding all the x bits together mod 2.
+Here are the possible commands:
+
+000: Handshake
+When receiving this, the microcontroller will send back a byte with status information.
+The meaning of each bit is:
+   0: Always 0
+   1: 1 if the device is operating in high current mode
+   2: 1 if the device detects current overload. This means it will return wrong measurements
+   3: 1 if the device doesn't detect a voltage signal. That means it's not plugged into mains power.
+   4: 
+   5: 
+   6: 
+   7: Always 1
+
+001: Read raw
+The microcontroller will send four bytes. 
+The first two bytes will be the latest current measurement, the last two bytes will be the latest voltage measurement. (10 bits each, right aligned)
+
+010: Read watts
+The microcontroller will send a sixteen bit number representing the number of watts being used.
+
+011: Read power factor
+The microcontroller will send an eight bit value between 0 and 255 representing the current power factor of the device being measured.
+
+100: Read calibration numbers
+The microcontroller will send three bytes.
+The first byte is the DC offset to the voltage and current readings.
+The second byte is the scaling factor for the current reading.
+The third byte is the scaling factor for the voltage reading.
+
+101: Write calibration numbers
+After sending the command byte, you need to send another four bytes.
+   The first byte is the DC offset to apply to the voltage and current reading. This number is subtracted from the ADC value.
+   The second byte is the scaling factor for the current reading. This number is multiplied by the ADC value to get milliamps.
+   The third byte is the scaling factor for the voltage reading. This number is divided by the ADC value to get volts.
+   The fourth byte is the the first three bytes added together. This is used as a checksum.
+The microcontroller will respond with 10101010 if the numbers were saved, or 00000000 if it failed.
