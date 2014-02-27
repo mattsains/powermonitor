@@ -15,7 +15,7 @@ int main()
    //First we have to set that pin so that it is used as output and not as input.
    //When the microcontroller starts, all pins are inputs. This is good because an input pin does not interfere with what's going on electrically. You don't want a pin to force electricity on a component that can't handle it.
    
-   //We first set the "Data Direction" register for pin 2 of port b to output.
+   //We first set the "Data DiRection" register for pin 2 of port b to output.
    //Here, a binary 1 means output and 0 means input
    DDRB=0b00000010; //this is how you write binary in C/C#.
    
@@ -24,7 +24,7 @@ int main()
    //Let's assume the LED is wired up so that this setup causes the LED to be OFF.
    
    //Switch on the LED by setting the second bit on the port's register to 1:
-   PORTB=0b00000010;
+   PORTB=0b10; //0b10 is the same as 0b00000010
    
    //Now the pin is actively pushing electricity out. It is in a HIGH state.
    //It is pushing electricity through the LED and so the LED is ON.
@@ -33,12 +33,12 @@ int main()
    
    while (true)
    {
-      PORTB=0b00000000; //off, LOW, neutralizing
+      PORTB=0b0; //off, LOW, neutralizing
       
       some_delay_function(1000);
       //There is a delay function, but it depends on the clock speed because the microcontroller has no real time clock! (you have to make it yourself)
       
-      PORTB=0b00000010; //on, HIGH, pushing
+      PORTB=0b10; //on, HIGH, pushing
       
       some_delay_function(1000);
    }
@@ -46,12 +46,12 @@ int main()
    //You should rather use fancy binary maths, like this:
    
    //To turn on:
-   PORTB=PORTB | 0b00000010; //PORTB or 0b10
+   PORTB=PORTB | 0b10; //PORTB or 0b10
    
    //To turn off:
    PORTB=PORTB & 0b1111101; //PORTB and not(0b10)
    //alternatively:
-   PORTB=PORTB & ~(0b00000010); //PORTB and not(0b10)
+   PORTB=PORTB & ~(0b10); //PORTB and not(0b10)
    //the shortest way:
    PORTB&=~(2);
    
