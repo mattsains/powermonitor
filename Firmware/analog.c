@@ -46,7 +46,7 @@ ISR(ADC_vect)
    byte this_channel=current_channel;
    
    //Change to the next channel
-   current_channel=currentchannel==0?1:0;
+   current_channel=current_channel==0?1:0;
    ADMUX=(ADMUX&~(0b1000))|current_channel;
    
    //Get the conversion result

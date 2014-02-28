@@ -4,15 +4,15 @@
 // a statement like add(x,x) becomes add(6,6)
 #define F_CPU 8000000L //The delay library needs to know the clock speed - it's 8MHz
 
-//Some conveniences
-#define byte uint8_t
-#define int uint16_t
-
 //Libraries
 #include <avr/io.h>   //defines the registers we can access
 #include <stdint.h>   //defines some data types like int and long
 #include <avr/interrupt.h> //lets us use interrupts
 #include <util/delay.h> //lets us make delays
+
+//Some conveniences
+#define byte uint8_t
+#define int uint16_t
 
 //Other code I wrote
 #include "io.c"
