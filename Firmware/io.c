@@ -22,6 +22,15 @@ void setup_io()
    //zero everything
    statusPORT&=~(1<<statusPIN);
    multiPORT&=~(1<<multiPIN);
+   
+   //set up SPI
+   //Enable the SPI
+   //Enable the SPI interrupt
+   //MSB first
+   //Clock polarity: leading edge rising
+   //Clock phase: Sample on leading edge
+   //Clock polarity and phase might need to change, not sure what raspberry pi does
+   SPCR=0b11000000;
 }
 
 //Lets you switch on/off the status LED
@@ -41,4 +50,12 @@ void multiplex(byte channel)
       multiPORT|=(1<<multiPIN);
    else
       multiPORT&=~(1<<statusPIN);
+}
+
+
+//SPI interrupt handler
+ISR(SPI_STC_vect)
+{
+   //TODO: write the handler for receiving SPI data.
+   //This data can be read from or written to the SPDR register
 }
