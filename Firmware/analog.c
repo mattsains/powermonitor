@@ -35,7 +35,6 @@ void setup_adc()
 }
 
 
-
 //This is an Interrupt Service Routine (ISR)
 // When an interrupt is triggered, the code is paused, and then this code is run.
 //This code needs to be pretty fast - This entire method must be under 800 clock cycles because that's the delay between ADC results.
@@ -61,4 +60,14 @@ ISR(ADC_vect)
    //The reading is stored in result
    //The corresponding channel is stored in this_channel
    
+   while (writing==1){}
+   writing=1;
+   if (this_channel==0)
+      last=result;
+   else
+   {
+      values[pos]=last*result;
+      pos=(pos+1)%256;
+   }
+   writing=0;
 }

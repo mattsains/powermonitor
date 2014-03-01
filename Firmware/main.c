@@ -11,9 +11,13 @@
 #include <util/delay.h> //lets us make delays
 
 //Some conveniences
-#define byte uint8_t
-#define int uint16_t
+#define byte unsigned char
 
+//global variables
+int values[256];
+byte pos=0;
+int last;
+byte writing=0;
 //Other code I wrote
 #include "io.c"
 #include "analog.c"
@@ -24,7 +28,15 @@
 int main()
 {
    setup_io(); //set up all the digital input/output pins
+   setup_adc();
    
    //turn on the status LED to show "ready" or something
    statusLED(1);
+   for(;;)
+   {
+      _delay_ms(1000);
+      statusLED(0);
+      _delay_ms(1000);
+      statusLED(1);
+   }
 }
