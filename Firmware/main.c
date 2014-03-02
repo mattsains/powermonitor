@@ -31,12 +31,19 @@ int main()
    setup_adc();
    
    //turn on the status LED to show "ready" or something
-   statusLED(1);
+   statusLED1(1);
+   statusLED2(0);
    for(;;)
    {
-      _delay_ms(1000);
-      statusLED(0);
-      _delay_ms(1000);
-      statusLED(1);
+      _delay_ms(500);
+      statusLED1(0);
+      _delay_ms(500);
+      statusLED1(1);
+      statusLED2(0);
+      _delay_ms(500);
+      statusLED1(0);
+      _delay_ms(500);
+      statusLED1(1);
+      statusLED2(1);
    }
 }
