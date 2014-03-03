@@ -78,8 +78,6 @@ void multiplex(byte channel)
 //SPI interrupt handler
 ISR(SPI_STC_vect)
 {
-   //toggle the second LED to show that this interrupt has triggered
-   status2PORT^=1<<status2PIN;
    //TODO: write the handler for receiving SPI data.
    //This data can be read from or written to the SPDR register
 

@@ -31,14 +31,15 @@ void setup_adc()
    //Set up a /64 clock divider on the CPU clock speed of 8MHz for an ADC clock speed of 125kHz (max is 200kHz)
    ADCSRA=0b11101110;
 
-   //enable interrupts
-   sei();
    
-   //at this point all the ADC hardware is configured and we will start seeing interrupts
+   //at this point all the ADC hardware is configured and is ready to start sending interrupts
 
    //time to set the scene for the next conversion, but first a wait is required to give the ADC unit time to sample the current signal
    _delay_loop_2(216); //delay for 864 clock cycles (13.5 ADC cycles)
    ADMUX=(ADMUX&~(0b111))|0b1; //fancy way to select the second ADC channel
+
+   //enable interrupts
+   sei();
 }
 
 
