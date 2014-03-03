@@ -30,7 +30,10 @@ void setup_adc()
    //Enable the ADC interrupt (see ISR(ADC_vect))
    //Set up a /64 clock divider on the CPU clock speed of 8MHz for an ADC clock speed of 125kHz (max is 200kHz)
    ADCSRA=0b11101110;
-   
+
+   //enable interrupts
+   sei();
+
    //at this point all the ADC hardware is configured and we will start seeing interrupts
 }
 

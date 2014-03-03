@@ -29,16 +29,8 @@ byte writing=0; //are we currently reading/writing to these variables? (prevents
 int main()
 {
    setup_io(); //set up all the digital input/output pins
-   setup_adc();
+   setup_adc(); //set up the analog to digital conversion
    
-   //blink the LED to show aliveness
-
-   statusLED1(1);
-   for(;;)
-   {
-      _delay_ms(500);
-      statusLED1(0);
-      _delay_ms(500);
-      statusLED1(1);
-   }
+   //spin wait - otherwise the processor dies
+   for(;;);
 }
