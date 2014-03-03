@@ -29,7 +29,10 @@ void setup_io()
    status2PORT&=~(1<<status2PIN);
    multiPORT&=~(1<<multiPIN);
    
+
    //set up SPI
+   //first set up some port direction stuff:
+   DDRB|=1<<4; //MISO as output
    //Enable the SPI
    //Enable the SPI interrupt
    //MSB first
@@ -37,6 +40,9 @@ void setup_io()
    //Clock phase: Sample on leading edge
    //Clock polarity and phase might need to change, not sure what raspberry pi does
    SPCR=0b11000000;
+
+   //enable interrupts
+   sei();
 }
 
 //Lets you switch on/off the first status LED
@@ -72,15 +78,30 @@ void multiplex(byte channel)
 //SPI interrupt handler
 ISR(SPI_STC_vect)
 {
+   //toggle the second LED to show that this interrupt has triggered
+   status2PORT^=1<<status2PIN;
    //TODO: write the handler for receiving SPI data.
    //This data can be read from or written to the SPDR register
-   while(writing==1){}
+
+   while(writing==1){} //wait until nobody else is writing
    writing=1;
    
-   int average=0;
-   byte i;
-   for(i=0; i<pos;i++)
-      average+=(values[i]/pos);
-   SPDR=average>>8;
-   writing=0;
+   if (SPDR==0b10100111)
+   {
+      if (pos==0)
+         SPDR=values[255]>>2;
+      else
+         SPDR=values[pos-1]>>2;
+   } else if (SPDR==0b10101011)
+   {
+     int average=0;
+     byte i;
+     for(i=0; i<pos;i++)
+       average+=(values[i]/pos);
+     SPDR=average>>8;
+   } else if (SPDR=0b10101010)
+   {
+     SPDR=0b11110000;
+   }
+   writing=0; //release the lock
 }

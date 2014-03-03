@@ -14,10 +14,11 @@
 #define byte unsigned char
 
 //global variables
-int values[256];
-byte pos=0;
-int last;
-byte writing=0;
+int values[256]; //a buffer used for averaging the readings
+byte pos=0; //where we are in the readings
+int last; //what was the reading before this one?
+byte writing=0; //are we currently reading/writing to these variables? (prevents clashes)
+
 //Other code I wrote
 #include "io.c"
 #include "analog.c"
@@ -30,20 +31,14 @@ int main()
    setup_io(); //set up all the digital input/output pins
    setup_adc();
    
-   //turn on the status LED to show "ready" or something
+   //blink the LED to show aliveness
+
    statusLED1(1);
-   statusLED2(0);
    for(;;)
    {
       _delay_ms(500);
       statusLED1(0);
       _delay_ms(500);
       statusLED1(1);
-      statusLED2(0);
-      _delay_ms(500);
-      statusLED1(0);
-      _delay_ms(500);
-      statusLED1(1);
-      statusLED2(1);
    }
 }
