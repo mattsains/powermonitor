@@ -33,8 +33,12 @@ void setup_adc()
 
    //enable interrupts
    sei();
-
+   
    //at this point all the ADC hardware is configured and we will start seeing interrupts
+
+   //time to set the scene for the next conversion, but first a wait is required to give the ADC unit time to sample the current signal
+   _delay_loop_2(216); //delay for 864 clock cycles (13.5 ADC cycles)
+   ADMUX=(ADMUX&~(0b111))|0b1; //fancy way to select the second ADC channel
 }
 
 
@@ -49,7 +53,7 @@ ISR(ADC_vect)
    
    //Change to the next channel
    current_channel=current_channel==0?1:0;
-   ADMUX=(ADMUX&~(0b1000))|current_channel;
+   ADMUX=(ADMUX&~(0b111))|current_channel;
    
    //Get the conversion result
    //You must read ADCL first and then ADCH, 
