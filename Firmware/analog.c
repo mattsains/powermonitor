@@ -50,6 +50,7 @@ void setup_adc()
 // finished measuring an analog input
 ISR(ADC_vect)
 {
+   statusLED2(1);
    byte this_channel=current_channel;
    
    //Change to the next channel
@@ -68,8 +69,6 @@ ISR(ADC_vect)
    //The reading is stored in result
    //The corresponding channel is stored in this_channel
    
-   while (writing==1){}
-   writing=1;
    if (this_channel==0)
       last=result;
    else
@@ -77,5 +76,5 @@ ISR(ADC_vect)
       values[pos]=last*result;
       pos=(pos+1)%256;
    }
-   writing=0;
+   statusLED2(0);
 }

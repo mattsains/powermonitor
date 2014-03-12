@@ -34,12 +34,11 @@ void setup_io()
    //first set up some port direction stuff:
    DDRB|=1<<4; //MISO as output
    //Enable the SPI
-   //Enable the SPI interrupt
    //MSB first
    //Clock polarity: leading edge rising
    //Clock phase: Sample on leading edge
    //Clock polarity and phase might need to change, not sure what raspberry pi does
-   SPCR=0b11000000;
+   SPCR=0b01000000;
 
    //enable interrupts
    sei();
@@ -74,32 +73,9 @@ void multiplex(byte channel)
       multiPORT&=~(1<<multiPIN);
 }
 
-
-//SPI interrupt handler
-ISR(SPI_STC_vect)
+//waits for the SPI interrupt flag in the SPI status register, then returns the data received
+byte spi_receive_wait()
 {
-   //TODO: write the handler for receiving SPI data.
-   //This data can be read from or written to the SPDR register
-
-   while(writing==1){} //wait until nobody else is writing
-   writing=1;
-   
-   if (SPDR==0b10100111)
-   {
-      if (pos==0)
-         SPDR=values[255]>>2;
-      else
-         SPDR=values[pos-1]>>2;
-   } else if (SPDR==0b10101011)
-   {
-     int average=0;
-     byte i;
-     for(i=0; i<pos;i++)
-       average+=(values[i]/pos);
-     SPDR=average>>8;
-   } else if (SPDR=0b10101010)
-   {
-     SPDR=0b11110000;
-   }
-   writing=0; //release the lock
+   while (SPSR&(1<<7)!=(1<<7)) { }
+   return SPDR;
 }

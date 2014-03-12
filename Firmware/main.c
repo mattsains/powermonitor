@@ -17,7 +17,6 @@
 int values[256]; //a buffer used for averaging the readings
 byte pos=0; //where we are in the readings
 int last; //what was the reading before this one?
-byte writing=0; //are we currently reading/writing to these variables? (prevents clashes)
 
 //Other code I wrote
 #include "io.c"
@@ -32,5 +31,9 @@ int main()
    setup_adc(); //set up the analog to digital conversion
    
    //spin wait - otherwise the processor dies
-   for(;;);
+   for(;;)
+   {
+     SPDR=1+spi_receive_wait();
+     status1PORT^=1<<status1PIN;
+   }
 }
