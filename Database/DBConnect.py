@@ -27,9 +27,9 @@ class DbConnection():
             logging.warning('Warning: There was a problem disconnecting from the database.')
 
     def execute_query(self, statement, data):
-        """Execute a query that returns a result"""
+        """Execute a query that returns a result
+        Usage: execute_query(SELECT * FROM TEST WHERE ID=%s AND NAME=%S, (124213, 'Text'))"""
         """Prevention of SQL injection should be done before passing the statement"""
-        """Example for statement: execute_non_query(INSERT INTO TEST VALUES(%s, %s), (124213, 'Text'))"""
         try:
             query = self.__conn.cursor()
             query.execute(statement, data)
@@ -40,9 +40,9 @@ class DbConnection():
             return None
 
     def execute_non_query(self, statement, data):
-        """Execute a SQL statement that does not return a result"""
+        """Execute a SQL statement that does not return a result
+        Usage: execute_non_query(INSERT INTO TEST VALUES(%s, %s), (12345, 'Text'))"""
         """Prevention of SQL injection should be done before passing the statement"""
-        """Example for statement: execute_non_query(INSERT INTO TEST VALUES(%s, %s), (124213, 'Text'))"""
         try:
             query = self.__conn.cursor()
             query.execute(statement, data)
