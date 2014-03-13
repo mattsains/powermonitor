@@ -26,22 +26,34 @@ class DbConnection():
         except (pymysql.DatabaseError, pymysql.MySQLError):
             logging.warning('Warning: There was a problem disconnecting from the database.')
 
-    def execute_query(self, statement):
+    def execute_query(self, statement, data):
         """Execute a query that returns a result"""
+        """Prevention of SQL injection should be done before passing the statement"""
+        """Example for statement: execute_non_query(INSERT INTO TEST VALUES(%s, %s), (124213, 'Text'))"""
         try:
             query = self.__conn.cursor()
-            query.execute(statement)
+            query.execute(statement, data)
             query.close()
             return query
         except (pymysql.DatabaseError, pymysql.MySQLError):
             logging.warning('Warning: There was a problem with the SQL query. Check your syntax')
             return None
 
-    def execute_non_query(self, statement):
+    def execute_non_query(self, statement, data):
         """Execute a SQL statement that does not return a result"""
+        """Prevention of SQL injection should be done before passing the statement"""
+        """Example for statement: execute_non_query(INSERT INTO TEST VALUES(%s, %s), (124213, 'Text'))"""
         try:
             query = self.__conn.cursor()
-            query.execute(statement)
+            query.execute(statement, data)
             query.close()
         except (pymysql.DatabaseError, pymysql.MySQLError):
             logging.warning('Warning: There was a problem with the SQL query. Check your syntax')
+
+    def commit_query(self):
+        """Commit all SQL statements"""
+        """All SQL statments that modify data/tables must be committed before they take effect."""
+        try:
+            self.__conn.commit()
+        except pymysql.MySQLError:
+            logging.warning('Warning: There was a problem committing all SQL statements.')
