@@ -8,3 +8,6 @@
 
 #Python junk
 *.pyc
+
+#Emacs backup files
+*~
