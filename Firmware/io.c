@@ -87,7 +87,7 @@ ISR(SPI_STC_vect)
    if (SPDR==0b10100111)
    {
       if (pos==0)
-         SPDR=values[255]>>2;
+         SPDR=values[127]>>2;
       else
          SPDR=values[pos-1]>>2;
    } else if (SPDR==0b10101011)
