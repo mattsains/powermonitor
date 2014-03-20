@@ -74,7 +74,7 @@ ISR(ADC_vect)
    else
    {
       values[pos]=last*result;
-      pos=(pos+1)%256;
+      pos=(pos+1)%128;
    }
    statusLED2(0);
 }

@@ -73,9 +73,27 @@ void multiplex(byte channel)
       multiPORT&=~(1<<multiPIN);
 }
 
-//waits for the SPI interrupt flag in the SPI status register, then returns the data received
-byte spi_receive_wait()
+//Handles the SPI data received interrupt
+ISR(SPI_STC_vect)
 {
-   while (SPSR&(1<<7)!=(1<<7)) { }
-   return SPDR;
+   //TODO: write the handler for receiving SPI data.
+   //This data can be read from or written to the SPDR register
+
+   if (SPDR==0b10100111)
+   {
+      if (pos==0)
+         SPDR=values[127]>>2;
+      else
+         SPDR=values[pos-1]>>2;
+   } else if (SPDR==0b10101011)
+   {
+     int average=0;
+     byte i;
+     for(i=0; i<pos;i++)
+       average+=(values[i]/pos);
+     SPDR=average>>8;
+   } else if (SPDR=0b10101010)
+   {
+     SPDR=0b11110000;
+   }
 }

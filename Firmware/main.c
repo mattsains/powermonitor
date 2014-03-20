@@ -14,7 +14,7 @@
 #define byte unsigned char
 
 //global variables
-int values[256]; //a buffer used for averaging the readings
+int values[128]; //a buffer used for averaging the readings
 byte pos=0; //where we are in the readings
 int last; //what was the reading before this one?
 
@@ -32,8 +32,6 @@ int main()
    
    //spin wait - otherwise the processor dies
    for(;;)
-   {
-     SPDR=1+spi_receive_wait();
-     status1PORT^=1<<status1PIN;
+   {     
    }
 }
