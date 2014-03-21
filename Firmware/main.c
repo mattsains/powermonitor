@@ -14,9 +14,18 @@
 #define byte unsigned char
 
 //global variables
-int values[128]; //a buffer used for averaging the readings
-byte pos=0; //where we are in the readings
-int last; //what was the reading before this one?
+//Analog calculation variables
+int last_current;
+int last_voltage;
+unsigned long int filter_watts;
+//Intellent sensing variables
+byte current_mode; //0: high current; 1: low current
+int max_sense; //highest reading returned. This gets reset when modes are switched
+
+byte voltage_range_reset;
+int max_voltage;
+int min_voltage;
+byte voltage_scale;
 
 //Other code I wrote
 #include "io.c"
