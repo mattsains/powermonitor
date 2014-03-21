@@ -1,4 +1,5 @@
 import spidev
+import time
 
 class PowerMonitor:
     def __init__(self):
@@ -12,9 +13,11 @@ class PowerMonitor:
                   ((command>>1)&1)^
                   ((command>>0)&1))
         commandbyte+=checksum
-        self.spidev.writebytes([command]+list(data))
+        response=[]
+        for packet in [commandbyte]+list(data)+receive_bytes*[0]:
+            response+=self.spidev.xfer([packet])
 
-        response=self.spidev.readbytes(receive_bytes)
+        response=response[len(data)+1:]
         if (receive_bytes==1):
             return response[0]
         else:
@@ -56,7 +59,7 @@ class PowerMonitor:
         response=self._send_data(0b100, 7)
 
         sum=0
-        for (byte in response[:-1]):
+        for byte in response[:-1]:
             sum+=byte
             
         if (sum!=response[-1]):
