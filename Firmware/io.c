@@ -111,10 +111,12 @@ ISR(SPI_STC_vect)
    //This data can be read from or written to the SPDR register
 
    byte data_in=SPDR;
-   
+   statusLED2(transaction!=0);
+
    if (transaction==0)
    {
       //A new transaction is beginning
+      statusLED2(data_in!=0);
       if (data_in==0b10100010)
       {
 	 //Handshake

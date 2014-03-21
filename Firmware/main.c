@@ -38,9 +38,10 @@ int main()
 {
    setup_io(); //set up all the digital input/output pins
    setup_adc(); //set up the analog to digital conversion
-   
+   statusLED1(1);
    //spin wait - otherwise the processor dies
    for(;;)
-   {     
+   {
+      statusLED1(current_mode);
    }
 }
