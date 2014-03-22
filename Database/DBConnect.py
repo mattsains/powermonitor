@@ -1,4 +1,5 @@
-"""DBConnect requires pymysql to be installed"""
+"""DBConnect: connect to database and perform queries
+Requires pymysql to be installed"""
 import pymysql
 import base64
 import logging
@@ -28,7 +29,7 @@ class DbConnection():
 
     def execute_query(self, statement, data):
         """Execute a query that returns a result
-        Usage: execute_query(SELECT * FROM TEST WHERE ID=%s AND NAME=%S, (124213, 'Text'))"""
+        Usage: execute_query("SELECT * FROM TEST WHERE ID=%s AND NAME=%S, (124213, 'Text')")"""
         """Prevention of SQL injection should be done before passing the statement"""
         try:
             query = self.__conn.cursor()
@@ -41,7 +42,7 @@ class DbConnection():
 
     def execute_non_query(self, statement, data):
         """Execute a SQL statement that does not return a result
-        Usage: execute_non_query(INSERT INTO TEST VALUES(%s, %s), (12345, 'Text'))"""
+        Usage: execute_non_query("INSERT INTO TEST VALUES(%s, %s)", (12345, 'Text'))"""
         """Prevention of SQL injection should be done before passing the statement"""
         try:
             query = self.__conn.cursor()
