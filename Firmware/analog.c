@@ -5,7 +5,7 @@
 byte current_channel; 
 
 //Calibration numbers
-int offset_squared;
+long int offset_squared;
 // byte voltage_scale defined in main.c
 float watt_scale;
 byte voltage_delay; //size of the voltage ring buffer
@@ -18,7 +18,7 @@ void read_eeprom_calibration()
       filter_weight_inv=1.0/read_eeprom(1);
 
       int offset=(read_eeprom(2)<<8)|read_eeprom(3);;
-      offset_squared=offset*offset;
+      offset_squared=((long int)offset)*offset;
    
       byte current_scale=read_eeprom(4);
       voltage_scale=read_eeprom(5);
@@ -136,7 +136,7 @@ ISR(ADC_vect)
 	 max_sense=last_current;
 
       //Advance or reset the low current mode fuse
-      if (max_sense<700)
+      if (max_sense<700 && current_mode==0)
 	 recal_countdown++;
       else
 	 recal_countdown=0;
