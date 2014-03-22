@@ -1,3 +1,13 @@
+#Build scripts
 *.bat
+*.sh
+
+#C compiled binaries
 *.elf
 *.bin
+
+#Python junk
+*.pyc
+
+#Emacs backup files
+*~
