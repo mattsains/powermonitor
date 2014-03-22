@@ -1,5 +1,6 @@
 import spidev
 import time
+import ctypes
 
 class PowerMonitor:
     def __init__(self):
@@ -47,7 +48,7 @@ class PowerMonitor:
     """Returns the watts being used right now"""
     def read_watts(self):
         response=self._send_data(0b010, 2)
-        return response[0]<<8|response[1]
+        return ctypes.c_int16(response[0]<<8|response[1]).value
 
     """Returns the measured power factor of the device (between -1 and 1)"""
     def read_power_factor(self):
