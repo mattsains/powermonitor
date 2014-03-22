@@ -17,7 +17,7 @@
 //Analog calculation variables
 int last_current;
 int last_voltage;
-unsigned long int filter_watts;
+long int filter_watts;
 //Intellent sensing variables
 byte current_mode; //0: high current; 1: low current
 int max_sense; //highest reading returned. This gets reset when modes are switched

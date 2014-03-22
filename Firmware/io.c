@@ -132,7 +132,7 @@ ISR(SPI_STC_vect)
 	 //Remember next few bytes
 	 data_buffer[0]=last_current&0xFF;
 	 data_buffer[1]=last_voltage>>8;
-	 data_buffer[2]=last_voltage&&0xFF;
+	 data_buffer[2]=last_voltage&0xFF;
 	 transaction=1;
 	 data_buffer_pos=0;
       }
