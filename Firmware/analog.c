@@ -127,6 +127,7 @@ ISR(ADC_vect)
    
    if (this_channel==1)
    {
+      last_current_mode=current_mode;
       if (current_mode==0)
 	 last_current=result<<2;
       else
@@ -155,6 +156,9 @@ ISR(ADC_vect)
 	 min_voltage=result;
 
       last_voltage=result;
-      filter_watts=(long)(filter_watts + filter_weight_inv*((last_voltage-offset)*(last_current-offset)*watt_scale - filter_watts));
+      if (last_current_mode==0)
+	 filter_watts=(long)(filter_watts + filter_weight_inv*((last_voltage-offset)*(last_current-(offset<<2))*watt_scale - filter_watts));
+      else
+	 filter_watts=(long)(filter_watts + filter_weight_inv*((last_voltage-offset)*(last_current-offset)*watt_scale - filter_watts));
    }
 }

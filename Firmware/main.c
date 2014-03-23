@@ -16,6 +16,7 @@
 //global variables
 //Analog calculation variables
 int last_current;
+byte last_current_mode;
 int last_voltage;
 long int filter_watts;
 //Intellent sensing variables
@@ -24,7 +25,7 @@ int max_sense; //highest reading returned. This gets reset when modes are switch
 
 byte voltage_range_reset;
 int max_voltage;
-int min_voltage;
+int min_voltage=1024;
 byte voltage_scale;
 
 //Other code I wrote
