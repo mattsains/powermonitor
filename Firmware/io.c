@@ -197,8 +197,9 @@ ISR(SPI_STC_vect)
       if (data_buffer_pos==7)
       {
 	 transaction=0;
-	 byte sum;
-	 for(byte i=0; i<6; sum=data_buffer[i++]);
+	 byte sum=0;
+	 for(byte i=0; i<6; i++)
+	    sum+=data_buffer[i];
 	 if (sum!=data_buffer[6])
 	    SPDR=0; //checksum error
 	 else

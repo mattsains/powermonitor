@@ -26,7 +26,7 @@ int max_sense; //highest reading returned. This gets reset when modes are switch
 byte voltage_range_reset;
 int max_voltage;
 int min_voltage=1024;
-byte voltage_scale;
+int voltage_scale;
 
 //Other code I wrote
 #include "io.c"
