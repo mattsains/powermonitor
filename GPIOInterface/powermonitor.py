@@ -63,7 +63,7 @@ class PowerMonitor:
         for byte in response[:-1]:
             sum+=byte
             
-        if (sum!=response[-1]):
+        if ((sum&0xFF)!=response[-1]):
             raise Exception("IO Error", "The calibration parameter checksum was incorrect")
 
         return {
