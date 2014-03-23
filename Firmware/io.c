@@ -194,7 +194,7 @@ ISR(SPI_STC_vect)
    {
       //continuing Write calibration numbers
       data_buffer[data_buffer_pos++]=SPDR;
-      if (data_buffer_pos==8)
+      if (data_buffer_pos==7)
       {
 	 transaction=0;
 	 byte sum;
