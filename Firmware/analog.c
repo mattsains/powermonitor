@@ -21,7 +21,7 @@ void read_eeprom_calibration()
    
       byte current_scale=read_eeprom(4);
       voltage_scale=read_eeprom(5);
-      watt_scale=(10000.0*(256+current_scale))/voltage_scale;
+      watt_scale=10000.0/((256+current_scale)*voltage_scale);
 
       voltage_delay=read_eeprom(6);
    }
