@@ -11,6 +11,9 @@ float watt_scale;
 byte voltage_delay; //size of the voltage ring buffer
 float filter_weight_inv;
 
+int buffer[50];
+byte buffer_pos;
+
 void read_eeprom_calibration()
 {
    if (read_eeprom(0)==0xCA)
@@ -38,7 +41,7 @@ void setup_adc()
       write_eeprom(2,0b10); //DC offset high
       write_eeprom(3,0); //DC offset low
       write_eeprom(4,85); //current scaling factor
-      write_eeprom(5,157); //voltage scaling factor
+      write_eeprom(5,204); //voltage scaling factor
       write_eeprom(6,0); //phase delay
       //set the magic flag
       write_eeprom(0,0xCA);
@@ -128,10 +131,12 @@ ISR(ADC_vect)
    if (this_channel==1)
    {
       last_current_mode=current_mode;
+      //correct for current mode
       if (current_mode==0)
 	 last_current=result<<2;
       else
 	 last_current=result;
+      //test for over/undercurrent
       if (last_current>max_sense)
 	 max_sense=result;
 
@@ -143,6 +148,7 @@ ISR(ADC_vect)
    }
    else
    {
+      //Time to reset the voltage range
       if (voltage_range_reset==255)
       {
 	 max_voltage=0;
@@ -150,12 +156,21 @@ ISR(ADC_vect)
 	 voltage_range_reset=0;
       }
 
+      //Keep track of the range of voltage readings for no-volt detection
       if (result>max_voltage)
 	 max_voltage=result;
       if (result<min_voltage)
 	 min_voltage=result;
 
-      last_voltage=result;
+      //Keep a ring buffer of voltages if voltage delay is on
+      if (voltage_delay!=0)
+      {
+	 buffer[(buffer_pos++)%voltage_delay]=result;
+	 last_voltage=buffer[buffer_pos%voltage_delay];
+      } else
+	 last_voltage=result;
+
+      //Calculate watts  - formula depends on current mode because of unfortunate design
       if (last_current_mode==0)
 	 filter_watts=(long)(filter_watts + filter_weight_inv*((last_voltage-offset)*(last_current-(offset<<2))*watt_scale - filter_watts));
       else
