@@ -21,7 +21,7 @@ void read_eeprom_calibration()
    
       byte current_scale=read_eeprom(4);
       voltage_scale=read_eeprom(5);
-      watt_scale=(1.0*current_scale)/voltage_scale;
+      watt_scale=(10000.0*(256+current_scale))/voltage_scale;
 
       voltage_delay=read_eeprom(6);
    }
@@ -34,11 +34,11 @@ void setup_adc()
    if (read_eeprom(0)!=0xCA)//magic flag
    {
       //uncalibrated; set up sane defaults
-      write_eeprom(1,2); //filter strength
+      write_eeprom(1,200); //filter strength
       write_eeprom(2,0b10); //DC offset high
       write_eeprom(3,0); //DC offset low
-      write_eeprom(4,1); //current scaling factor
-      write_eeprom(5,1); //voltage scaling factor
+      write_eeprom(4,85); //current scaling factor
+      write_eeprom(5,157); //voltage scaling factor
       write_eeprom(6,0); //phase delay
       //set the magic flag
       write_eeprom(0,0xCA);
@@ -75,7 +75,8 @@ void setup_adc()
    //time to set the scene for the next conversion, but first a wait is required to give the ADC unit time to sample the current signal
    _delay_loop_2(216); //delay for 864 clock cycles (13.5 ADC cycles)
    ADMUX=(ADMUX&~(0b111))|0b1; //fancy way to select the second ADC channel
-
+   current_channel=1;
+   
    //enable interrupts
    sei();
 }
@@ -90,7 +91,6 @@ byte recal_countdown;
 // finished measuring an analog input
 ISR(ADC_vect)
 {
-   statusLED2(1);
    byte this_channel=current_channel;
    
    //Change to the next channel
@@ -125,7 +125,7 @@ ISR(ADC_vect)
    //The reading is stored in result
    //The corresponding channel is stored in this_channel
    
-   if (this_channel==0)
+   if (this_channel==1)
    {
       if (current_mode==0)
 	 last_current=result<<2;
