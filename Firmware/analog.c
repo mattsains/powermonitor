@@ -133,47 +133,47 @@ ISR(ADC_vect)
       last_current_mode=current_mode;
       //correct for current mode
       if (current_mode==0)
-	 last_current=result<<2;
+         last_current=result<<2;
       else
-	 last_current=result;
+         last_current=result;
       //test for over/undercurrent
       if (last_current>max_sense)
-	 max_sense=result;
+         max_sense=result;
 
       //Advance or reset the low current mode fuse
       if (max_sense<700 && current_mode==0)
-	 recal_countdown++;
+         recal_countdown++;
       else
-	 recal_countdown=0;
+         recal_countdown=0;
    }
    else
    {
       //Time to reset the voltage range
       if (voltage_range_reset==255)
       {
-	 max_voltage=0;
-	 min_voltage=1023;
-	 voltage_range_reset=0;
+         max_voltage=0;
+         min_voltage=1023;
+         voltage_range_reset=0;
       }
 
       //Keep track of the range of voltage readings for no-volt detection
       if (result>max_voltage)
-	 max_voltage=result;
+         max_voltage=result;
       if (result<min_voltage)
-	 min_voltage=result;
+         min_voltage=result;
 
       //Keep a ring buffer of voltages if voltage delay is on
       if (voltage_delay!=0)
       {
-	 buffer[(buffer_pos++)%voltage_delay]=result;
-	 last_voltage=buffer[buffer_pos%voltage_delay];
+         buffer[(buffer_pos++)%voltage_delay]=result;
+         last_voltage=buffer[buffer_pos%voltage_delay];
       } else
-	 last_voltage=result;
+         last_voltage=result;
 
       //Calculate watts  - formula depends on current mode because of unfortunate design
       if (last_current_mode==0)
-	 filter_watts=(long)(filter_watts + filter_weight_inv*((last_voltage-offset)*(last_current-(offset<<2))*watt_scale - filter_watts));
+         filter_watts=(long)(filter_watts + filter_weight_inv*((last_voltage-offset)*(last_current-(offset<<2))*watt_scale - filter_watts));
       else
-	 filter_watts=(long)(filter_watts + filter_weight_inv*((last_voltage-offset)*(last_current-offset)*watt_scale - filter_watts));
+         filter_watts=(long)(filter_watts + filter_weight_inv*((last_voltage-offset)*(last_current-offset)*watt_scale - filter_watts));
    }
 }
