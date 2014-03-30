@@ -26,7 +26,6 @@ class Scraper():
         pattern = re.compile(regex)
         url_string = self.__url.read().decode(encoding='UTF-8')
         match = re.search(pattern, url_string)
-        print(match)
         if len(match) == 0:
             return None
         else:
