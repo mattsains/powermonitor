@@ -16,16 +16,17 @@
 //global variables
 //Analog calculation variables
 int last_current;
+byte last_current_mode;
 int last_voltage;
-unsigned long int filter_watts;
+long int filter_watts;
 //Intellent sensing variables
 byte current_mode; //0: high current; 1: low current
 int max_sense; //highest reading returned. This gets reset when modes are switched
 
 byte voltage_range_reset;
 int max_voltage;
-int min_voltage;
-byte voltage_scale;
+int min_voltage=1024;
+int voltage_scale;
 
 //Other code I wrote
 #include "io.c"

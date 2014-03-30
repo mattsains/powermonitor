@@ -5,11 +5,14 @@
 byte current_channel; 
 
 //Calibration numbers
-int offset_squared;
-// byte voltage_scale defined in main.c
+long int offset;
+// int voltage_scale defined in main.c
 float watt_scale;
 byte voltage_delay; //size of the voltage ring buffer
 float filter_weight_inv;
+
+int buffer[50];
+byte buffer_pos;
 
 void read_eeprom_calibration()
 {
@@ -17,12 +20,11 @@ void read_eeprom_calibration()
    {
       filter_weight_inv=1.0/read_eeprom(1);
 
-      int offset=(read_eeprom(2)<<8)|read_eeprom(3);;
-      offset_squared=offset*offset;
+      offset=(read_eeprom(2)<<8)|read_eeprom(3);;
    
       byte current_scale=read_eeprom(4);
-      voltage_scale=read_eeprom(5);
-      watt_scale=(1.0*current_scale)/voltage_scale;
+      voltage_scale=256L +read_eeprom(5);
+      watt_scale=10000.0/((256L + current_scale)*voltage_scale);
 
       voltage_delay=read_eeprom(6);
    }
@@ -35,11 +37,11 @@ void setup_adc()
    if (read_eeprom(0)!=0xCA)//magic flag
    {
       //uncalibrated; set up sane defaults
-      write_eeprom(1,2); //filter strength
+      write_eeprom(1,200); //filter strength
       write_eeprom(2,0b10); //DC offset high
       write_eeprom(3,0); //DC offset low
-      write_eeprom(4,1); //current scaling factor
-      write_eeprom(5,1); //voltage scaling factor
+      write_eeprom(4,85); //current scaling factor
+      write_eeprom(5,47); //voltage scaling factor
       write_eeprom(6,0); //phase delay
       //set the magic flag
       write_eeprom(0,0xCA);
@@ -76,7 +78,8 @@ void setup_adc()
    //time to set the scene for the next conversion, but first a wait is required to give the ADC unit time to sample the current signal
    _delay_loop_2(216); //delay for 864 clock cycles (13.5 ADC cycles)
    ADMUX=(ADMUX&~(0b111))|0b1; //fancy way to select the second ADC channel
-
+   current_channel=1;
+   
    //enable interrupts
    sei();
 }
@@ -91,7 +94,6 @@ byte recal_countdown;
 // finished measuring an analog input
 ISR(ADC_vect)
 {
-   statusLED2(1);
    byte this_channel=current_channel;
    
    //Change to the next channel
@@ -126,36 +128,52 @@ ISR(ADC_vect)
    //The reading is stored in result
    //The corresponding channel is stored in this_channel
    
-   if (this_channel==0)
+   if (this_channel==1)
    {
+      last_current_mode=current_mode;
+      //correct for current mode
       if (current_mode==0)
-	 last_current=result<<2;
+         last_current=result<<2;
       else
-	 last_current=result;
+         last_current=result;
+      //test for over/undercurrent
       if (last_current>max_sense)
-	 max_sense=last_current;
+         max_sense=result;
 
       //Advance or reset the low current mode fuse
-      if (max_sense<700)
-	 recal_countdown++;
+      if (max_sense<700 && current_mode==0)
+         recal_countdown++;
       else
-	 recal_countdown=0;
+         recal_countdown=0;
    }
    else
    {
+      //Time to reset the voltage range
       if (voltage_range_reset==255)
       {
-	 max_voltage=0;
-	 min_voltage=1023;
-	 voltage_range_reset=0;
+         max_voltage=0;
+         min_voltage=1023;
+         voltage_range_reset=0;
       }
 
+      //Keep track of the range of voltage readings for no-volt detection
       if (result>max_voltage)
-	 max_voltage=result;
+         max_voltage=result;
       if (result<min_voltage)
-	 min_voltage=result;
+         min_voltage=result;
 
-      last_voltage=result;
-      filter_watts=filter_watts + filter_weight_inv*(last_voltage*last_current*watt_scale - offset_squared - filter_watts);
+      //Keep a ring buffer of voltages if voltage delay is on
+      if (voltage_delay!=0)
+      {
+         buffer[(buffer_pos++)%voltage_delay]=result;
+         last_voltage=buffer[buffer_pos%voltage_delay];
+      } else
+         last_voltage=result;
+
+      //Calculate watts  - formula depends on current mode because of unfortunate design
+      if (last_current_mode==0)
+         filter_watts=(long)(filter_watts + filter_weight_inv*((last_voltage-offset)*(last_current-(offset<<2))*watt_scale - filter_watts));
+      else
+         filter_watts=(long)(filter_watts + filter_weight_inv*((last_voltage-offset)*(last_current-offset)*watt_scale - filter_watts));
    }
 }
