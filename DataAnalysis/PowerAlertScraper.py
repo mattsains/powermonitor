@@ -1,6 +1,7 @@
 import DataAnalysis.WebScaper
 import re
 
+
 class PowerAlertScraper():
     """Class to scrape power alerts from Eskom's power alert website.
     http://www.poweralert.co.za/poweralert5/index.php"""
@@ -43,8 +44,7 @@ class PowerAlertScraper():
 
     def get_usage_status(self):
         """Get the current Eskom usage trend. The trends are 'up', 'down', or 'stable'"""
-        # This regex looks a bit long, but it works
         pattern = re.compile(
-            '((?<=red_)[a-z]{2,6})|((?<=green_)[a-z]{2,6})|((?<=orange_)[a-z]{2,6})|((?<=black_)[a-z]{2,6})')
+            '((?<=red_)|(?<=green_)|(?<=orange_)|(?<=black_))[a-z]{2,6}')   # This looks better than the old regex
         match = re.search(pattern, self.__usage_string)
         return match.group()    # And hopefully only one returned here too!
