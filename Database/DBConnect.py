@@ -1,4 +1,5 @@
-"""DBConnect requires pymysql to be installed"""
+"""DBConnect: connect to database and perform queries
+Requires pymysql to be installed"""
 import pymysql
 import base64
 import logging
@@ -26,22 +27,34 @@ class DbConnection():
         except (pymysql.DatabaseError, pymysql.MySQLError):
             logging.warning('Warning: There was a problem disconnecting from the database.')
 
-    def execute_query(self, statement):
-        """Execute a query that returns a result"""
+    def execute_query(self, statement, data):
+        """Execute a query that returns a result
+        Usage: execute_query("SELECT * FROM TEST WHERE ID=%s AND NAME=%S, (124213, 'Text')")"""
+        """Prevention of SQL injection should be done before passing the statement"""
         try:
             query = self.__conn.cursor()
-            query.execute(statement)
+            query.execute(statement, data)
             query.close()
             return query
         except (pymysql.DatabaseError, pymysql.MySQLError):
             logging.warning('Warning: There was a problem with the SQL query. Check your syntax')
             return None
 
-    def execute_non_query(self, statement):
-        """Execute a SQL statement that does not return a result"""
+    def execute_non_query(self, statement, data):
+        """Execute a SQL statement that does not return a result
+        Usage: execute_non_query("INSERT INTO TEST VALUES(%s, %s)", (12345, 'Text'))"""
+        """Prevention of SQL injection should be done before passing the statement"""
         try:
             query = self.__conn.cursor()
-            query.execute(statement)
+            query.execute(statement, data)
             query.close()
         except (pymysql.DatabaseError, pymysql.MySQLError):
             logging.warning('Warning: There was a problem with the SQL query. Check your syntax')
+
+    def commit_query(self):
+        """Commit all SQL statements"""
+        """All SQL statments that modify data/tables must be committed before they take effect."""
+        try:
+            self.__conn.commit()
+        except pymysql.MySQLError:
+            logging.warning('Warning: There was a problem committing all SQL statements.')
