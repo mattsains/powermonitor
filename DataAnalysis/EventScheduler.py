@@ -14,14 +14,27 @@ from DataAnalysis.Exceptions.EventError import \
 
 class EventScheduler():
     """Class to scheduler regular events in a similar manner to cron."""
-    __GRACE_PERIOD = 5  # seconds after the designated run time that the job is still allowed to be run
     __mysql_url = 'mysql+pymysql://powermonitor:%s@localhost/powermonitor' \
                   % str(base64.b64decode(bytes('cDB3M3JtMG4xdDBy', 'utf-8')))[2:-1]
+    '''This determines the number of seconds after the designated run time that the job is still allowed to be run.
+    If jobs are not being run, try increasing this in increments of 1.'''
+    __GRACE_PERIOD = 5  # Amazing grace
+    '''If there is a problem with thread concurrency, play around with these values. You'd think with all these threads
+    in the pool that the filter would get clogged up!'''
+    __threadpool_corethreads = 0    # Maximum number of persistent threads in the pool
+    __threadpool_maxthreads = 20    # Maximum number of total threads in the pool
+    __threadpool_keepalive = 1      # Seconds to keep non-core worker threads in the pool
+
 
     def __init__(self):
         try:
-            config = {'apscheduler.daemon': True, 'apscheduler.standalone': False}
+            config = {'apscheduler.daemon': True, 'apscheduler.standalone': False,
+                      'apscheduler.threadpool.core_threads': self.__threadpool_corethreads,
+                      'apscheduler.threadpool.max_threads': self.__threadpool_maxthreads,
+                      'apscheduler.threadpool.keepalive': self.__threadpool_keepalive}
             self.__sched = Scheduler(config)
+            '''Add the SQLAlchemy job store as the default. This was surprisingly far less tedious than getting the
+            shelve job store working.'''
             self.__sched.add_jobstore(SQLAlchemyJobStore(url=self.__mysql_url, tablename='SCHEDULE'), 'default')
             atexit.register(lambda: self.__sched.shutdown(wait=False))  # Stop the scheduler when the program exits
             self.__sched.start()
@@ -55,6 +68,8 @@ class EventScheduler():
                                           misfire_grace_time=self.__GRACE_PERIOD)
                 logging.info('New cron event added')
             else:
+                '''Every event needs a unique name so we can keep track of the little bastards. And please use
+                descriptive names so that they can be properly identified in the job schedule.'''
                 raise EventExistsError('A job with name %s already exists' % a_name)
                 logging.warning('add_cron_event: Event already exists')
         else:
@@ -77,12 +92,15 @@ class EventScheduler():
         Date/time format: YYYY-MM-DD HH:MM:SS"""
         if self.__sched is not None:
             try:
-                if a_args is None:
-                    self.__sched.add_date_job(func=a_func, name=a_name, date=a_date, misfire_grace_time=self.__GRACE_PERIOD)
-                else:
+                if a_args is None:  # If there are no arguments to be passed to the function
+                    self.__sched.add_date_job(func=a_func, name=a_name, date=a_date,
+                                              misfire_grace_time=self.__GRACE_PERIOD)
+                else:   # If there are arguments to be passed to the function
                     self.__sched.add_date_job(func=a_func, name=a_name, date=a_date, arge=a_args,
                                               misfire_grace_time=self.__GRACE_PERIOD)
             except ValueError:
+                '''If the event is in the past, it will not run. This program is not capable of manipulating
+                space and time. Try import __time_travel__'''
                 raise EventWontRunError('The event will not run: Event time has expired.')
             logging.info('New once off event added')
         else:
@@ -94,10 +112,11 @@ class EventScheduler():
         if self.__sched is not None:
             removed = False
             event = self.__find_event(event_name)
-            if event is not None:
+            if event is not None:   # If the event exists, remove it
                 self.__sched.unschedule_job(event)
                 removed = True
             if not removed:
+                '''Raise an error so that it can be handled correctly'''
                 raise EventNotFoundError('Event not found for removal: %s' % event_name)
                 logging.warning('remove_event: Event not found for removal.')
         else:
