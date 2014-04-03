@@ -1,3 +1,6 @@
+"""
+PowerAlertScraper: Connect to www.poweralert.co.za, and collect data to use for alerts and analysis.
+"""
 import DataAnalysis.WebScaper
 import re
 
