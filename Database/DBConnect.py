@@ -13,7 +13,6 @@ class DbConnection():
     def __init__(self, auto_commit=1):
         self.__conn = None
         self.connect(auto_commit)
-        print('connected')
 
     def connect(self, auto_commit):
         """Open the connection to the database"""
