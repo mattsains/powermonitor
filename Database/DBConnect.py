@@ -19,7 +19,7 @@ class DbConnection():
         """Connects to a mysql database called powermonitor with username 'powermonitor'"""
         try:
             self.__conn = pymysql.connect(host='localhost', port=3306, user='powermonitor',
-                                          passwd=str(base64.b64decode(bytes('cDB3M3JtMG4xdDBy', 'utf-8')))[2:-1],
+                                          passwd=str(base64.b64decode(bytes('cDB3M3JtMG4xdDBy'))),
                                           db='powermonitor')
             self.__conn.autocommit(auto_commit)   # Automatically commit queries
         except (pymysql.DatabaseError, pymysql.MySQLError):

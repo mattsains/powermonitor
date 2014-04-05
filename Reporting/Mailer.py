@@ -4,6 +4,8 @@ Mailer: Send a multipart email to multiple users. Emails are generate from HTML 
 Requires:
 - Django (https://www.djangoproject.com/)
 - inlinestyler (https://pypi.python.org/pypi/inlinestyler/0.1.7)
+or
+- premailer (https://pypi.python.org/pypi/premailer)    Preferred
 """
 '''Django packages for HTML templating, and email compilation'''
 from django.conf import settings
@@ -16,7 +18,12 @@ import email.charset
 '''Package for encoding'''
 import base64
 '''Package for moving CSS into each HTML tag so that the email displays correctly.'''
-from inlinestyler.utils import inline_css
+'''If using inlinestyler, change transform(transform('%s.html' % template_name))
+to inline_css('%s.html' % template_name))'''
+#from inlinestyler.utils import inline_css
+'''If using premailer, change inline_css(transform('%s.html' % template_name))
+to transform('%s.html' % template_name))'''
+from premailer import transform
 
 
 class Mailer():
@@ -25,7 +32,7 @@ class Mailer():
     __smtp_server = 'smtp.gmail.com'
     __smtp_port = 587
     __smtp_user = 'powermonitor.ecoberry'
-    __smtp_pass = str(base64.b64decode(bytes('cDB3M3JtMG4xdDByQDNjMGIzcnJ5', 'utf-8')))[2:-1]
+    __smtp_pass = str(base64.b64decode(bytes('cDB3M3JtMG4xdDByQDNjMGIzcnJ5')))
     __email = 'powermonitor.ecoberry@gmail.com'
     __email_name = 'PowerMonitor'
 
@@ -51,7 +58,8 @@ class Mailer():
         '''Insert the data from 'context' into each of the templates'''
         text_part = loader.get_template('%s.txt' % template_name).render(context)
         '''Inline the css from the HTML template.'''
-        html_part = loader.get_template(inline_css('%s.html' % template_name)).render(context)
+        get_html_part = loader.get_template('%s.html' % template_name).render(context)
+        html_part = transform(get_html_part)
         subject_part = loader.get_template_from_string(subject).render(context)
 
         if type(recipients) is not list:
@@ -62,6 +70,7 @@ class Mailer():
         msg.attach_alternative(html_part, "text/html")
 
         '''Insert any images into the html section of the email, and attach them to the email.'''
+        '''At the moment, images should be placed in the Reporting folder in order to be attached.'''
         if images is not None:
             for img in images:
                 fp = open(settings.MEDIA_ROOT+img[0], 'rb')  # Open the file in binary mode

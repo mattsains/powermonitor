@@ -1,7 +1,9 @@
 """
 Scheduler: Schedule regular events such as alerts and reports
 
-Requires: apscheduler (http://pythonhosted.org/APScheduler/)
+Requires:
+- apscheduler (http://pythonhosted.org/APScheduler/)
+- sqlachemy (https://pypi.python.org/pypi/SQLAlchemy)
 """
 from apscheduler.scheduler import Scheduler
 from apscheduler.jobstores.sqlalchemy_store import SQLAlchemyJobStore
@@ -15,7 +17,7 @@ from DataAnalysis.Exceptions.EventError import \
 class EventScheduler():
     """Class to scheduler regular events in a similar manner to cron."""
     __mysql_url = 'mysql+pymysql://powermonitor:%s@localhost/powermonitor' \
-                  % str(base64.b64decode(bytes('cDB3M3JtMG4xdDBy', 'utf-8')))[2:-1]
+                  % str(base64.b64decode(bytes('cDB3M3JtMG4xdDBy')))
     '''This determines the number of seconds after the designated run time that the job is still allowed to be run.
     If jobs are not being run, try increasing this in increments of 1.'''
     __GRACE_PERIOD = 604800  # Amazing grace! Time in seconds before the job is considered misfired. Currently a week
