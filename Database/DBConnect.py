@@ -65,7 +65,7 @@ class DbConnection():
                 query.execute(statement, data)
             query.close()
         except (pymysql.DatabaseError, pymysql.MySQLError):
-            logging.warning('There was a problem with the SQL query. Check your syntax')
+            logging.warning('There was a problem with the SQL query. Check your syntax: %s' % statement)
 
     def commit_query(self):
         """Commit all SQL statements.

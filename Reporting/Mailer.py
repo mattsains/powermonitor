@@ -1,7 +1,9 @@
 """
 Mailer: Send a multipart email to multiple users. Emails are generate from HTML templates using Django.
 
-Requires: Django (https://www.djangoproject.com/)
+Requires:
+- Django (https://www.djangoproject.com/)
+- inlinestyler (https://pypi.python.org/pypi/inlinestyler/0.1.7)
 """
 '''Django packages for HTML templating, and email compilation'''
 from django.conf import settings
@@ -14,7 +16,7 @@ import email.charset
 '''Package for encoding'''
 import base64
 '''Package for moving CSS into each HTML tag so that the email displays correctly.'''
-from premailer import transform
+from inlinestyler.utils import inline_css
 
 
 class Mailer():
@@ -48,7 +50,8 @@ class Mailer():
 
         '''Insert the data from 'context' into each of the templates'''
         text_part = loader.get_template('%s.txt' % template_name).render(context)
-        html_part = loader.get_template(transform('%s.html' % template_name)).render(context)
+        '''Inline the css from the HTML template.'''
+        html_part = loader.get_template(inline_css('%s.html' % template_name)).render(context)
         subject_part = loader.get_template_from_string(subject).render(context)
 
         if type(recipients) is not list:

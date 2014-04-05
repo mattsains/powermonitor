@@ -18,7 +18,8 @@ class EventScheduler():
                   % str(base64.b64decode(bytes('cDB3M3JtMG4xdDBy', 'utf-8')))[2:-1]
     '''This determines the number of seconds after the designated run time that the job is still allowed to be run.
     If jobs are not being run, try increasing this in increments of 1.'''
-    __GRACE_PERIOD = 5  # Amazing grace
+    __GRACE_PERIOD = 604800  # Amazing grace! Time in seconds before the job is considered misfired. Currently a week
+    __COALESCE = True   # Force the job to only run once instead of retrying multiple times
     '''If there is a problem with thread concurrency, play around with these values. You'd think with all these threads
     in the pool that the filter would get clogged up!'''
     __threadpool_corethreads = 0    # Maximum number of persistent threads in the pool
@@ -26,20 +27,25 @@ class EventScheduler():
     __threadpool_keepalive = 1      # Seconds to keep non-core worker threads in the pool
 
 
-    def __init__(self):
+    def __init__(self, start=True):
         try:
             config = {'apscheduler.daemon': True, 'apscheduler.standalone': False,
                       'apscheduler.threadpool.core_threads': self.__threadpool_corethreads,
                       'apscheduler.threadpool.max_threads': self.__threadpool_maxthreads,
-                      'apscheduler.threadpool.keepalive': self.__threadpool_keepalive}
+                      'apscheduler.threadpool.keepalive': self.__threadpool_keepalive,
+                      'apscheduler.coalesce': self.__COALESCE}
             self.__sched = Scheduler(config)
             '''Add the SQLAlchemy job store as the default. This was surprisingly far less tedious than getting the
             shelve job store working.'''
             self.__sched.add_jobstore(SQLAlchemyJobStore(url=self.__mysql_url, tablename='SCHEDULE'), 'default')
             atexit.register(lambda: self.__sched.shutdown(wait=False))  # Stop the scheduler when the program exits
-            self.__sched.start()
+            if start:
+                self.__sched.start()
         except KeyError:
             logging.warning('An error occurred starting the scheduler.')
+
+    def start_scheduler(self):
+        self.__sched.start()
 
     def add_cron_event(self, a_func, a_name, a_year=None, a_month=None, a_week=None, a_day=None,
                        a_day_of_week=None, a_hour=None, a_minute=None, a_second=None, a_start_date=None, a_args=None,

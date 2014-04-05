@@ -10,7 +10,7 @@ from dateutil.relativedelta import relativedelta
 import logging
 
 
-class DataCollector():
+class DataFrameCollector():
     """DataCollector."""
 
     def __init__(self):
@@ -59,24 +59,29 @@ class DataCollector():
         sql = "select timestamp, reading from readings where timestamp >= '%s' and timestamp <= '%s';" % \
               (self.__start.strftime(self.__format), self.__end.strftime(self.__format))
         result = db().execute_query(sql)
+        db().disconnect()   # close the database connection.
         if result.rowcount != 0:
             return pd.DataFrame(list(result), columns=('timestamp', 'reading'))
         else:
             return None
 
+    '''
+    It's probably better to try and refactor these methods. They were written like they currently are just to get this
+    module working.
+    '''
     def __do_hour(self, period_start, period_length, period_end):
-        if period_start is None:
+        if period_start is None:    # If there is no start period, default to 1 hour back
             period_start = datetime.now() - relativedelta(hours=1)
-        self.__start = period_start
+        self.__start = period_start  # Set the start time for collect_period to get data from
 
         if period_end is None:
-            if period_length is None:
+            if period_length is None:   # If no end and period length was set, collect data up to the current time
                 period_end = datetime.now()
-            elif period_length is not None:
+            elif period_length is not None:  # If a period length was specified, set the end time accordingly
                 period_end = self.__start + relativedelta(hours=period_length)
-        self.__end = period_end
+        self.__end = period_end  # Set the end time for collect_period to get data from
 
-    def __do_hour(self, period_start, period_length, period_end):
+    def __do_day(self, period_start, period_length, period_end):
         if period_start is None:
             period_start = datetime.now() - relativedelta(days=1)
         self.__start = period_start
@@ -88,7 +93,7 @@ class DataCollector():
                 period_end = self.__start + relativedelta(days=period_length)
         self.__end = period_end
 
-    def __do_hour(self, period_start, period_length, period_end):
+    def __do_week(self, period_start, period_length, period_end):
         if period_start is None:
             period_start = datetime.now() - relativedelta(weeks=1)
         self.__start = period_start
@@ -100,7 +105,7 @@ class DataCollector():
                 period_end = self.__start + relativedelta(weeks=period_length)
         self.__end = period_end
 
-    def __do_hour(self, period_start, period_length, period_end):
+    def __do_month(self, period_start, period_length, period_end):
         if period_start is None:
             period_start = datetime.now() - relativedelta(months=1)
         self.__start = period_start
@@ -112,7 +117,7 @@ class DataCollector():
                 period_end = self.__start + relativedelta(months=period_length)
         self.__end = period_end
 
-    def __do_hour(self, period_start, period_length, period_end):
+    def __do_year(self, period_start, period_length, period_end):
         if period_start is None:
             period_start = datetime.now() - relativedelta(years=1)
         self.__start = period_start

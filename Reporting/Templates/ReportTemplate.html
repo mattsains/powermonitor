@@ -2,10 +2,9 @@
 <meta charset="utf-8">
 <head>
     <title>{{ title }}</title>
-    <!-- This shit won't work until premailer is installed
     <style type="text/css">
-        header { background-color: Black; }
-        header h1 { font: Arial; font-weight: bold; fon-size: 15pt; color: #FFFFFF; }
+        #header { background-color: Black; }
+        #header h1 { font: Arial; font-weight: bold; fon-size: 15pt; color: #FFFFFF; }
         p { font: Arial,Helvetica; size: 10pt; }
         body { background-color: #FFFFFF; }
         #pageContainer {
@@ -15,34 +14,33 @@
             margin-right:auto;
             width:800px;
         }
-        footer {
+        #footer {
             background-color: Black;
             color: White;
             text-align: center;
         }
-        section a:link { text-decoration:none; }
-        section a:visited { text-decoration:none; }
-        section a:hover { color: #FF0000; }
-        section a:active { text-decoration:none; }
+        #section a:link { text-decoration:none; }
+        #section a:visited { text-decoration:none; }
+        #section a:hover { color: #FF0000; }
+        #section a:active { text-decoration:none; }
     </style>
-    -->
 </head>
 <body style="background-color: #FFFFFF;">
-    <div id="pageContainer" style="background-color: #EEEEEE; padding:10px; margin-left:auto; margin-right:auto; width:800px;">
-        <div style="background-color: #000000; text-align: center; ">
-            <h1 style="font: Arial; font-weight: bold; fon-size: 15pt; color: #FFFFFF;">{{ title}}</h1>
+    <div id="pageContainer">
+        <div id="header">
+            <h1>{{ title}}</h1>
         </div>
-        <div>
-            <p style="font: Arial,Helvetica; size: 10pt;">Hello {{ username }},</p>
-            <p style="font: Arial,Helvetica; size: 10pt;">Check out this cool link: <a href="{{ url }}">{{ url_name }}</a></p>
-            <p style="font: Arial,Helvetica; size: 10pt;">I made this amaze-balls email with this shit...</p>
+        <div id="section">
+            <p>Hello {{ username }},</p>
+            <p>Check out this cool link: <a href="{{ url }}">{{ url_name }}</a></p>
+            <p>I made this amaze-balls email with this shit...</p>
             <img src="cid:python" width="50px" height="50px" />
             <img src="cid:django" width="100px" height="50px"/>
-            <p style="font: Arial,Helvetica; size: 10pt;">All this html was a template that I used to make this email. Epic stuff!</p>
-            <p style="font: Arial,Helvetica; size: 10pt;">Regards,</p>
-            <p style="font: Arial,Helvetica; size: 10pt;"><em>{{ from }}</em></p>
+            <p>All this html was a template that I used to make this email. Epic stuff!</p>
+            <p>Regards,</p>
+            <p><em>{{ from }}</em></p>
         </div>
-        <div style="background-color: #000000; color: #FFFFFF; text-align: center;">
+        <div id="footer">
             Copyright {{ owner }} 2014 &copy;
         </div>
     </div>
