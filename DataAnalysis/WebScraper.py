@@ -1,7 +1,7 @@
 """
 WebScaper: searches websites for items matching regular expressions
 
-Requires: bs4 (http://www.crummy.com/software/BeautifulSoup/bs4/doc/)
+Requires: beautifulsoup4 (http://www.crummy.com/software/BeautifulSoup/bs4/doc/)
 """
 from bs4 import BeautifulSoup
 import urllib

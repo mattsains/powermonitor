@@ -28,7 +28,6 @@ class EventScheduler():
     __threadpool_maxthreads = 20    # Maximum number of total threads in the pool
     __threadpool_keepalive = 1      # Seconds to keep non-core worker threads in the pool
 
-
     def __init__(self, start=True):
         try:
             config = {'apscheduler.daemon': True, 'apscheduler.standalone': False,

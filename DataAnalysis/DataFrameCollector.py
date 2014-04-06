@@ -61,7 +61,11 @@ class DataFrameCollector():
         result = db().execute_query(sql)
         db().disconnect()   # close the database connection.
         if result.rowcount != 0:
-            return pd.DataFrame(list(result), columns=('timestamp', 'reading'))
+            '''Create the DataFrame object from the data collected from the database'''
+            data_frame = pd.DataFrame(list(result), columns=('timestamp', 'reading'))
+            '''Set the index type to DatetimeIndex to allow us to resample the data'''
+            data_frame.set_index(pd.DatetimeIndex(data_frame['timestamp']), inplace=True)
+            return data_frame
         else:
             return None
 
