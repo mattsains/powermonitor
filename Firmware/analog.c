@@ -20,13 +20,14 @@ void read_eeprom_calibration()
    {
       filter_weight_inv=1.0/read_eeprom(1);
 
-      offset=(read_eeprom(2)<<8)|read_eeprom(3);;
+      offset=(read_eeprom(2)<<8)|read_eeprom(3);
    
-      byte current_scale=read_eeprom(4);
-      voltage_scale=256L +read_eeprom(5);
-      watt_scale=10000.0/((256L + current_scale)*voltage_scale);
-
-      voltage_delay=read_eeprom(6);
+      byte current_scale=(read_eeprom(4)<<8)|read_eeprom(5);
+      voltage_scale=(read_eeprom(6)<<8)|read_eeprom(7);
+      
+      voltage_delay=read_eeprom(8);
+      
+      watt_scale=10000.0/(current_scale*voltage_scale);
    }
 }
 //Handles initialization of analog to digital hardware, ADC interrupts, 
@@ -40,9 +41,11 @@ void setup_adc()
       write_eeprom(1,200); //filter strength
       write_eeprom(2,0b10); //DC offset high
       write_eeprom(3,0); //DC offset low
-      write_eeprom(4,85); //current scaling factor
-      write_eeprom(5,47); //voltage scaling factor
-      write_eeprom(6,0); //phase delay
+      write_eeprom(4,1); //current scaling factor high
+      write_eeprom(5,85); //current scaling factor low
+      write_eeprom(6,1); //voltage scaling factor high
+      write_eeprom(7,47); //voltage scaling factor low
+      write_eeprom(8,0); //phase delay
       //set the magic flag
       write_eeprom(0,0xCA);
    }
@@ -151,6 +154,8 @@ ISR(ADC_vect)
       //Time to reset the voltage range
       if (voltage_range_reset==255)
       {
+	 //reset the no voltage indicator because we have a full buffer of measurements to base this on
+	 no_voltage=((100.0*(max_voltage-min_voltage))/voltage_scale) < 200;
          max_voltage=0;
          min_voltage=1023;
          voltage_range_reset=0;

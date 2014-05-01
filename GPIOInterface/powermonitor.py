@@ -59,7 +59,7 @@ class PowerMonitor:
     def read_calibration(self):
         """Returns a map containing the calibration paramaters. See specification for details
         If something goes wrong, will throw an exception"""
-        response = self._send_data(0b100, 7)
+        response = self._send_data(0b100, 9)
 
         sum = 0
         for byte in response[:-1]:
@@ -70,17 +70,23 @@ class PowerMonitor:
 
         return {
             "FILTER_STRENGTH": response[0],
-            "SIGNAL_OFFSET": response[1] << 8 | response[2],
-            "CURRENT_SCALE": response[3],
-            "VOLTAGE_SCALE": response[4],
-            "VOLTAGE_PHASE_DELAY": response[5]
+            "SIGNAL_OFFSET": (response[1] << 8) | response[2],
+            "CURRENT_SCALE": (response[3] << 8) | response[4],
+            "VOLTAGE_SCALE": (response[5] << 8) | response[6],
+            "VOLTAGE_PHASE_DELAY": response[7]
         }
 
     def write_calibration(self, filter_strength, signal_offset, current_scale, voltage_scale, voltage_phase_delay):
         """Writes calibration parameters to the microcontroller"""
-        sum = (filter_strength + signal_offset + current_scale + voltage_scale + voltage_phase_delay) % 256
-        response = self._send_data(0b101, 1, filter_strength, signal_offset, current_scale, voltage_scale,
-                                   voltage_phase_delay, sum)
+        signal_offset_high=signal_offset>>8
+        signal_offset_low=signal_offset&0xFF
+        current_scale_high=current_scale>>8
+        current_scale_low=current_scale&0xFF
+        voltage_scale_high=voltage_scale>>8
+        voltage_scale_low=voltage_scale&0xFF
+        sum = (filter_strength + signal_offset_high + signal_offset_low + current_scale_high + current_scale_low + voltage_scale_high + voltage_scale_low + voltage_phase_delay) % 256
+        response = self._send_data(0b101, 1, filter_strength, signal_offset_high, signal_offset_low, current_scale_high, current_scale_low, voltage_scale_high, voltage_scale_low, voltage_phase_delay, sum)
+        return sum
         if response != 0b10101010:
             raise Exception("IO Error",
                             "Did not receive calibration write confirmation from the microcontroller - did it actually "
