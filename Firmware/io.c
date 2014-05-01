@@ -102,7 +102,7 @@ void multiplex(byte channel)
 //Some SPI state variables
 byte transaction;
 byte data_buffer_pos;
-byte data_buffer[8];
+byte data_buffer[9];
 
 //Handles the SPI data received interrupt
 ISR(SPI_STC_vect)
@@ -120,7 +120,6 @@ ISR(SPI_STC_vect)
       if (data_in==0b10100010)
       {
          //Handshake
-         byte no_voltage=(100.0*(max_voltage-min_voltage))/(256+voltage_scale) < 200;
          SPDR=0b10000000|(no_voltage<<3) //no voltage sense flag
                         |((max_sense==1023)<<2) //overcurrent flag
                         |((current_mode==0)<<1); //high current flag
@@ -154,12 +153,12 @@ ISR(SPI_STC_vect)
          //Read calibration numbers
          byte sum=read_eeprom(1);
          SPDR=sum;
-         for (byte i=0; i<5; i++)
+         for (byte i=0; i<7; i++)
          {
             data_buffer[i]=read_eeprom(i+2);
             sum+=data_buffer[i];
          }
-         data_buffer[5]=sum;
+         data_buffer[7]=sum;
          transaction=3;
          data_buffer_pos=0;
       }
@@ -187,26 +186,27 @@ ISR(SPI_STC_vect)
    {
       //continuing Read calibration numbers
       SPDR=data_buffer[data_buffer_pos++];
-      if (data_buffer_pos>5)
+      if (data_buffer_pos>8)
          transaction=0;
    }
    else if (transaction==4)
    {
       //continuing Write calibration numbers
       data_buffer[data_buffer_pos++]=SPDR;
-      if (data_buffer_pos==7)
+      if (data_buffer_pos==9)
       {
          transaction=0;
+
          byte sum=0;
-         for(byte i=0; i<6; i++)
+         for(byte i=0; i<8; i++)
             sum+=data_buffer[i];
-         if (sum!=data_buffer[6])
-            SPDR=0; //checksum error
+         if (sum!=data_buffer[8])
+            SPDR=data_buffer[8]; //checksum error
          else
          {
             //write these new values
             write_eeprom(0,0);
-            for(byte i=0; i<6; i++)
+            for(byte i=0; i<8; i++)
                write_eeprom(i+1,data_buffer[i]);
             write_eeprom(0,0xCA); //magic value
 
