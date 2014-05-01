@@ -191,6 +191,7 @@ ISR(SPI_STC_vect)
    {
       //continuing Write calibration numbers
       data_buffer[data_buffer_pos++]=data_in;
+
       if (data_buffer_pos==9)
       {
          transaction=0;

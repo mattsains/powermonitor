@@ -86,7 +86,6 @@ class PowerMonitor:
         voltage_scale_low=voltage_scale&0xFF
         sum = (filter_strength + signal_offset_high + signal_offset_low + current_scale_high + current_scale_low + voltage_scale_high + voltage_scale_low + voltage_phase_delay) % 256
         response = self._send_data(0b101, 1, filter_strength, signal_offset_high, signal_offset_low, current_scale_high, current_scale_low, voltage_scale_high, voltage_scale_low, voltage_phase_delay, sum)
-        return sum
         if response != 0b10101010:
             raise Exception("IO Error",
                             "Did not receive calibration write confirmation from the microcontroller - did it actually "
