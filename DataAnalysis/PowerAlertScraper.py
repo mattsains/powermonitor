@@ -21,20 +21,16 @@ class PowerAlertScraper():
         Renew the alert tag and usage tags at the same time to reduce network usage
         """
         bs = self.__scraper.get_beautifulsoup()
-        self.__alert = bs.find(lambda tag: tag.name == 'img' and tag.has_attr('width') and tag.has_attr('height') and
-                                           tag.has_attr('alt') and tag.has_attr('src') and tag['alt'] == "1")
+        for td in bs.find_all('td', {'bgcolor': '#FEC5D5', 'align': 'center'}):
+            for img in td.find_all('img'):
+                self.__alert = img  # A for loop had to be used because td.find_all is an iterable
         if self.__alert is not None:  # Remove <> so re doesn't complain
             self.__alert_string = self.__remove_angle_brackets(self.__alert)
 
-        self.__usage = bs.find(lambda tag: tag.name == 'img' and tag.has_attr('width') and tag.has_attr('height') and
-                                           tag.has_attr('alt') and tag.has_attr('src') and
-                                           tag['alt'] == "Electricity usage")
+        for img in bs.find_all('img', {'alt': 'Electricity usage'}):
+            self.__usage = img  # A for loop had to be used because img.find_all is an iterable
         if self.__usage is not None:  # Remove <> so re doesn't complain
             self.__usage_string = self.__remove_angle_brackets(self.__usage)
-
-    def print_tags(self):
-        print(self.__alert_string)
-        print(self.__usage_string)
 
     @staticmethod
     def __remove_angle_brackets(tag):
