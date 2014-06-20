@@ -1,6 +1,4 @@
 import pandas as pd
-import statsmodels as sm
-
 
 class DataFrameAnalyser():
     """Analyse the data collected in the DataFrame"""
