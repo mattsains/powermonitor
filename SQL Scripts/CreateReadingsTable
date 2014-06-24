@@ -1,5 +1,5 @@
 create table readings (
 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-reading, DOUBLE PRECISION,
+reading DOUBLE PRECISION,
 PRIMARY KEY(timestamp)
 );

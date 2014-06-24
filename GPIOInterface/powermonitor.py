@@ -1,7 +1,6 @@
 import spidev
 import ctypes
 
-
 class PowerMonitor:
     def __init__(self):
         self.spidev = spidev.SpiDev()
