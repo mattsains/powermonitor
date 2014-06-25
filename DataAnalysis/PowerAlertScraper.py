@@ -34,21 +34,32 @@ class PowerAlertScraper():
 
     @staticmethod
     def __remove_angle_brackets(tag):
+        """
+        remove the html angle brackets from the tag to ready it for regex search
+        :param tag: The tag to be stripped
+        :return: html tag sans angle brackets (str)
+        """
         return str(tag).replace('<', '').replace('>', '')
 
     def get_alert_level(self):
-        """Get the current Eskom power alert/usage level. Usage ranges from 0 to 100."""
+        """
+        Get the current Eskom power alert/usage level. Usage ranges from 0 to 100.
+        :return: alert level (int)
+        """
         """Still need to figure out what useful information can be extracted from this."""
         pattern = re.compile('(?<=height=")[0-9]?[0-9]')   # Compile regex for the height of the current bar
         if self.__alert_string is not None:
             match = re.search(pattern, self.__alert_string)    # Find the regex
-            return match.end()   # Will only return one item...I hope!
+            return int(match.end())   # Will only return one item...I hope!
         else:
             return None
 
     def get_alert_colour(self):
-        """Get the current Eskom alert/usage colour.
-        Colours are: green, orange, red, black."""
+        """
+        Get the current Eskom alert/usage colour.
+        Colours are: green, orange, red, black.
+        :return: alert colour (str)
+        """
         pattern = re.compile('(?<=bar_)[a-z]{3,6}')  # Compile regex for the colour of the current alert/usage
         if self.__alert_string is not None:
             match = re.search(pattern, self.__alert_string)  # Find the regex
@@ -57,7 +68,10 @@ class PowerAlertScraper():
             return None
 
     def get_usage_status(self):
-        """Get the current Eskom usage trend. The trends are 'up', 'down', or 'stable'"""
+        """
+        Get the current Eskom usage trend. The trends are 'up', 'down', or 'stable'
+        :return: usage status (str)
+        """
         """Eskom can't decide on consistent name for their colours. Seems like orange and yellow are the same to them.
         Probably shouldn't expect too much from them anyway."""
         pattern = re.compile(
