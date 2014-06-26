@@ -25,10 +25,8 @@
                 </select>
             </p>
             <p>
-                <select name="electricity_select" required>
-                    <option value="prepaid">Prepaid</option>
-                    <option value="postpaid">Postpaid</option>
-                </select>
+                Prepaid <input type="radio" name="electricity_type" value="prepaid" required /><br />
+                Postpaid <input type="radio" name="electricity_type" value="postpaid" required />
             </p>
             <input type="submit" name="submit" value="Add User" />
         </form>
