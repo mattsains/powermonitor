@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Power Monitor</title>
+</head>
+<body>
+    <h1>Setup the Household Profile</h1>
+
+    {% if setup %}
+    <p><strong>Setup complete!</strong></p>
+    <a href="/powermonitorweb/">Return to home page</a>
+    {% else %}
+    <p><strong>Register Here!</strong></p>
+    <fieldset>
+        <legend>User Registration</legend>
+        <form id="household_form" method="post" action="/powermonitorweb/setup_household/" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ setup_homeowner_form.as_p }}
+            <p>
+                <select name="food_select" size="5" multiple required>
+                    {% for item in food_list %}
+                    <option value="{{ item.food_description }}">{{ item.food_description }}</option>
+                    {% endfor %}
+                </select>
+            </p>
+            <p>
+                Prepaid <input type="radio" name="electricity_type" value="prepaid" required /><br />
+                Postpaid <input type="radio" name="electricity_type" value="postpaid" required />
+            </p>
+            <input type="submit" name="submit" value="Add User" />
+        </form>
+    </fieldset>
+    {% endif %}
+</body>
+</html>

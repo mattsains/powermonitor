@@ -4,8 +4,8 @@ WebScaper: searches websites for items matching regular expressions
 Requires: beautifulsoup4 (http://www.crummy.com/software/BeautifulSoup/bs4/doc/)
 """
 from bs4 import BeautifulSoup
-import urllib
-import urllib.request
+from urllib2 import urlopen
+from urllib2 import URLError
 import logging
 import re
 
@@ -19,9 +19,9 @@ class Scraper():
     def open_page(self, page_url):
         """Connect to 'url' and extract html content"""
         try:
-            self.__url = urllib.request.urlopen(page_url)
+            self.__url = urlopen(page_url)
             self.__soup = BeautifulSoup(self.__url.read())
-        except (urllib.URLError, urllib.HTMLParserError):
+        except URLError:
             logging.warning("Could not parse: " + page_url)
 
     def find_expression(self, regex):
