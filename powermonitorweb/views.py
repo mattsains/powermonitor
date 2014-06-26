@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 
 from powermonitorweb.forms import UserForm
 from powermonitorweb.forms import HouseholdSetupUserForm, HouseholdSetupFoodsForm, HouseholdElectricityForm
+from powermonitorweb.models import Food, ElectricityType
 
 def index(request):
     context = RequestContext(request)
@@ -19,39 +20,39 @@ def setup_household(request):
                 is deployed and should not require intervention from the user.
     '''
     context = RequestContext(request)
+    food_list = Food.objects.all()
+    electricity_type = ElectricityType.objects.all()
     cursor = connection.cursor()
     cursor.execute("SELECT is_setup FROM powermonitorweb_issetup WHERE id='1'")
     setup = bool(cursor.fetchone()[0])
     if setup:
-        return render_to_response('powermonitorweb/not_admin.html')
+        return HttpResponseRedirect('/powermonitorweb/')
 
     if request.method == 'POST':
         setup_homeowner_form = HouseholdSetupUserForm(data=request.POST)
-        setup_food_form = HouseholdSetupFoodsForm(data=request.POST)
-        setup_electricity_form = HouseholdElectricityForm(data=request.POST)
 
-        if all([setup_homeowner_form.is_valid, setup_food_form.is_valid,setup_electricity_form.is_valid]):
+        foods = request.POST.getlist('food_select')
+        elec = request.POST['electricity_select']
+
+        if setup_homeowner_form.is_valid:
             homeowner = setup_homeowner_form.save()
             homeowner.set_password(homeowner.password)
             homeowner.is_superuser = True
             homeowner.save()
 
-            setup_food_form.save()
-            setup_electricity_form.save()
-
             cursor.execute("UPDATE powermonitorweb_issetup SET is_setup='1' WHERE id='1'")
+            setup = True
         else:
-            print setup_homeowner_form.errors, setup_electricity_form.errors
+            print setup_homeowner_form.errors
     else:
         setup_homeowner_form = HouseholdSetupUserForm()
-        setup_food_form = HouseholdSetupFoodsForm()
-        setup_electricity_form = HouseholdElectricityForm()
 
+    print setup
     return render_to_response(
         'powermonitorweb/setup_household.html',
         {'setup_homeowner_form': setup_homeowner_form,
-         'setup_electricity_form': setup_electricity_form,
-         'setup_food_form': setup_food_form},
+         'food_list': food_list,
+         'electricity_type': electricity_type},
         context
     )
 

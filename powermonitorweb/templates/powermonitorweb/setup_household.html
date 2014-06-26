@@ -7,8 +7,9 @@
 <body>
     <h1>Setup the Household Profile</h1>
 
-    {% if not setup %}
-    <p><strong>Household is already setup</strong></p>
+    {% if setup %}
+    <p><strong>Setup complete!</strong></p>
+    <a href="/powermonitorweb/">Return to home page</a>
     {% else %}
     <p><strong>Register Here!</strong></p>
     <fieldset>
@@ -16,7 +17,19 @@
         <form id="household_form" method="post" action="/powermonitorweb/setup_household/" enctype="multipart/form-data">
             {% csrf_token %}
             {{ setup_homeowner_form.as_p }}
-            {{ setup_electricity_form.as_p }}
+            <p>
+                <select name="food_select" size="5" multiple required>
+                    {% for item in food_list %}
+                    <option value="{{ item.food_description }}">{{ item.food_description }}</option>
+                    {% endfor %}
+                </select>
+            </p>
+            <p>
+                <select name="electricity_select" required>
+                    <option value="prepaid">Prepaid</option>
+                    <option value="postpaid">Postpaid</option>
+                </select>
+            </p>
             <input type="submit" name="submit" value="Add User" />
         </form>
     </fieldset>
