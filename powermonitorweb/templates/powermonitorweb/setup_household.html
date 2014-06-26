@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Power Monitor</title>
+</head>
+<body>
+    <h1>Setup the Household Profile</h1>
+
+    {% if not setup %}
+    <p><strong>Household is already setup</strong></p>
+    {% else %}
+    <p><strong>Register Here!</strong></p>
+    <fieldset>
+        <legend>User Registration</legend>
+        <form id="household_form" method="post" action="/powermonitorweb/setup_household/" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ setup_homeowner_form.as_p }}
+            {{ setup_electricity_form.as_p }}
+            <input type="submit" name="submit" value="Add User" />
+        </form>
+    </fieldset>
+    {% endif %}
+</body>
+</html>
