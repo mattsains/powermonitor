@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 
 from powermonitorweb.forms import UserForm
-from powermonitorweb.forms import HouseholdSetupUserForm, HouseholdSetupFoodsForm, HouseholdElectricityForm
+from powermonitorweb.forms import HouseholdSetupUserForm
 from powermonitorweb.models import Food, ElectricityType
 
 
@@ -102,7 +102,7 @@ def user_login(request):
         user = authenticate(username=username, password=password)
 
         if user:
-            if user.is_active:
+            if user.is_active:  # added this in case we want to use this functionality
                 login(request, user)
                 return HttpResponseRedirect('/powermonitorweb/')
             else:
@@ -117,7 +117,54 @@ def user_login(request):
         return render_to_response('powermonitorweb/login.html', {}, context)
 
 
-@login_required()
+@login_required()   # You can only logout if you're already logged in...obviously
 def user_logout(request):
     logout(request)
     return HttpResponseRedirect('/powermonitorweb/')
+
+
+from powermonitorweb.models import SocialMediaAccount
+@login_required()
+def post_to_socialmedia(request):
+    """
+    Display options for the user to select which social media to post to.
+    """
+    # TODO: This needs to be complete once we are actually able to post to social media sites
+    context = RequestContext(request)
+
+    user = request.user
+    user_accounts = \
+        SocialMediaAccount.objects.all().select_related('users').filter(users=user.id)
+
+    failed = False
+    posted = False
+
+    if request.method == 'POST':
+        account = request.POST.get('account_select')
+        posts = request.POST.getlist('posts')
+        period = request.POST.get('period_select')
+
+        if any(posts):
+            '''If any of the checkboxes are checked, then we can do something.'''
+            if 'current_usage' in posts:
+                # TODO: Post current usage to selected social media
+                pass
+            if 'average_usage' in posts:
+                # TODO: Post average usage to selected social media
+                pass
+            if 'savings' in posts:
+                # TODO: Post savings to selected social media
+                pass
+            if 'graph' in posts:
+                # TODO: Post graph of usage to selected social media
+                pass
+            posted = True
+        else:
+            '''Nothing was posted, so we must tell the user to select a checkbox'''
+            failed = True
+
+    return render_to_response(
+        'powermonitorweb/post_to_socialmedia.html',
+        {'failed': failed, 'user_accounts': user_accounts, 'posted': posted},
+        context
+    )

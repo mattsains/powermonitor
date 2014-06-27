@@ -1,13 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title>Power Monitor</title>
-</head>
-<body>
-    <h1>Invalid Login!</h1>
-    <p>
-        Invalid username or password for <strong>{{ username }}</strong>
-    </p>
-</body>
-</html>
+{% extends 'powermonitorweb/base.html' %}
+{% block title %}Failed Login{% endblock %}
+
+{% block header %}Invalid Login{% endblock %}
+{% block main %}
+    Invalid username or password for <strong>{{ username }}</strong><br />
+    <a href="/powermonitorweb/login/">Try again?</a>
+{% endblock %}
