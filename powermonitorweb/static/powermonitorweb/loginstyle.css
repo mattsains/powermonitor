@@ -1,0 +1,64 @@
+img
+{
+    display: block;
+    margin: auto;
+}
+
+body
+{
+    font-family: sans-serif;
+    background-color: #BEBEBE;
+    background-image: url("images/triangular.png");
+    margin: 0px;
+    padding: 0px;
+}
+
+div#main
+{
+    margin: auto;
+    margin-top: 30px;
+    width: 600px;
+    background-color: #e02927;
+    overflow: auto;
+    border-radius: 0px 0px 10px 10px;
+    box-shadow: -5px 5px 10px #888888;
+}
+
+div#main div.group
+{
+    border: outset gray 1px; /*#bed1cc 1px;*/
+    border-radius: 3px;
+    margin-top: 4px;
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color:  #ede9e3 ;
+}
+
+div#container
+{
+    display: block;
+    margin: 2% 5% 5% 5%;
+}
+
+div#imageholder
+{
+    overflow: auto;
+    background-color: white;
+    border-top: solid black 4px;
+    border-bottom: solid black 4px;
+}
+
+button, #login
+{
+    width: 90px;
+    height: 30px;
+    margin-top: 5px;
+}
+
+h2
+{
+    font-size: 20px;
+    margin: 0px;
+    pagging: 0px;
+}
