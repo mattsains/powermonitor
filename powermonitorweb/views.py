@@ -168,3 +168,14 @@ def post_to_socialmedia(request):
         {'failed': failed, 'user_accounts': user_accounts, 'posted': posted},
         context
     )
+
+
+@login_required()
+def manage_reports(request):
+    context = RequestContext(request)
+    posted = False
+    return render_to_response(
+        'powermonitorweb/manage_reports.html',
+        {'posted': posted},
+        context
+    )

@@ -34,6 +34,20 @@ class AlertTip(models.Model):
         return self.tip_description
 
 
+class Report(models.Model):
+    """
+    User reports. These are custom reports the user sets, and are different from the alerts
+    """
+    users = models.ManyToManyField(User)
+    report_type = models.CharField(max_length=128)
+    occurrence_type = models.CharField(max_length=128)
+    occurrence = models.CharField(max_length=255)
+    datetime = models.DateTimeField()
+
+    def __unicode__(self):
+        return self.report_type
+
+
 class SocialMediaAccount(models.Model):
     """
     Social media account info for each user
