@@ -1,22 +1,8 @@
-<!DOCTYPE html>
-{% load static %}
-<html>
-  <head lang="en">
-    <meta charset="UTF-8">
-    <title>Power Monitor</title>
-    <head lang="en">
-    <meta charset="UTF-8">
-    <link href="{% static "/static/powermonitorweb/loginstyle.css" %}" rel="stylesheet" type="text/css" />
-  </head>
-  <body>
-    <div id="main">
-      <div id="imageholder">
-	<img alt="logo" src="{% static "/static/powermonitorweb/images/Attempt2.png" %}"></img>
-      </div>
-      <div id="container">
+{% extends 'powermonitorweb/login_base.html' %}
+{% block title %}Login {% endblock %}
 
-	<div class="group">
-	  <h2>Sign in:</h2>
+{% block main %}
+<h2>Sign in:</h2>
       <form id="login_form" method="post" action="/powermonitorweb/login/">
             {% csrf_token %}
             <br><label for="username">Username:</label>
@@ -25,8 +11,4 @@
             <br><input type="password" placeholder="password" name="password" id="passwd"></input>
             <br><input id="login" type="submit" value="Login"></input>
       </form>
-	</div>
-      </div>
-    </div>
-  </body>
-</html>
+{% endblock %}

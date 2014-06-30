@@ -1,7 +1,7 @@
-{% extends 'powermonitorweb/base.html' %}
+{% extends 'powermonitorweb/login_base.html' %}
 {% block title %}Failed Login{% endblock %}
 
-{% block header %}Invalid Login{% endblock %}
+<h1>Invalid Login</h1>
 {% block main %}
     Invalid username or password for <strong>{{ username }}</strong><br />
     <a href="/powermonitorweb/login/">Try again?</a>
