@@ -25,7 +25,6 @@
 body
 {
     font-family: sans-serif;
-    background-color: #9f3c3c;
     background-image: url("images/triangular.png");
     margin: 0px;
     padding: 0px;
@@ -54,7 +53,7 @@ div#main
 div.group
 {
     overflow: auto;
-   border: solid #7FB0E7 2px; /*#bed1cc 1px;*/
+ /*  border: solid #7FB0E7 2px; /*#bed1cc 1px;*/
     border-radius: 3px;
     margin-top: 15px;
     background-color:  #ede9e3 ;
@@ -278,11 +277,12 @@ div#footer
     background-color: #8fadc9;
 }
 
-#usertable
+a
 {
-
+   color: inherit;
 }
 
+}
 .half
 {
     text-align: center;

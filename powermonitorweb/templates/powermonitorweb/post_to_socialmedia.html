@@ -11,19 +11,16 @@
     {% else %}
     <form id="post_to_socialmedia_form" method="post" action="/powermonitorweb/post_to_socialmedia/" enctype="multipart/form-data">
         {% csrf_token %}
-        <div id="account_div">
-            <fieldset>
-                <legend>Select Account</legend>
+        <div class="group">
+                <div id="heading"><h3>Select Account</h3></div>
                 <select name="account_select" size="5" multiple required>
                     {% for account in user_accounts %}
                     <option value="{{ account.account_type }}">{{ account.account_type }}</option>
                     {% endfor %}
                 </select>
-            </fieldset>
         </div>
-        <div id="reports">
-            <fieldset>
-                <legend>Select Reports</legend>
+        <div class="group">
+                <div id="heading"><h3>Select Reports</h3></div>
                 <p>Current Usage <input type="checkbox" name="posts" value="current_usage" /></p>
                 <p>Average Usage <input type="checkbox" name="posts" value="average_usage" /></p>
                 <p>Savings <input type="checkbox" name="posts" value="savings" /></p>
@@ -35,7 +32,6 @@
                     <option value="year">Year</option>
                 </select><br />
                 <input type="submit" name="submit" value="Submit" />
-            </fieldset>
         </div>
     </form>
     {% endif %}

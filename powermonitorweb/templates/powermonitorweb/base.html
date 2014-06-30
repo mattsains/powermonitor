@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script type="text/javascript" src="{% static "/static/powermonitorweb/scripts.js" %}"></script>
-    <link href="{% static "/static/powermonitorweb/mainstyle.css" %}" rel="stylesheet" type="text/css" />
+    <link  rel="stylesheet" type="text/css" href="{% static '/static/powermonitorweb/mainstyle.css' %}"/><!-- not so use about the single quotes here -->
     <title>Power Monitor - {% block title %}Intelligent Power Monitoring{% endblock %}</title>   
   </head>
   <body>
@@ -13,7 +13,8 @@
       <div id="imageholder">
 	<h1>Power Monitor</h1>
 	<ul id="bar">
-	  <li class="floatleft">	    
+	  <li class="floatleft">
+
 	    <div class="floatleft">
 	    <img class="icon" alt=""  src="{% static "/static/powermonitorweb/images/users_icon.svg" %}"></img>
 	    </div>
@@ -21,13 +22,13 @@
 	    Users
 	    </div>
 	  </li>	  
-	  <li class="floatleft">	    
-	    <div class="floatleft">
-	    <img class="icon" alt=""  src="{% static "/static/powermonitorweb/images/graphs_icon.svg" %}"></img>
-	    </div>
-	    <div class="floatleft">
-	    Graphs
-	    </div>
+	  <li class="floatleft">
+            <div class="floatleft">
+            <img class="icon" alt=""  src="{% static "/static/powermonitorweb/images/graphs_icon.svg" %}"></img>
+            </div>
+            <div class="floatleft">
+            Graphs
+            </div>
 	    </li>
 	  <li class="floatleft">	   
 	    <div class="floatleft">
@@ -45,21 +46,25 @@
 	      Events
 	    </div>
 	  </li>
-	  <li class="floatleft">	    
+	  <li class="floatleft">
+	  <a href="/powermonitorweb/manage_reports/">
 	    <div class="floatleft">
 	      <img class="icon" alt=""  src="{% static "/static/powermonitorweb/images/reports_icon.svg" %}"></img>
 	      </div>
 	    <div class="floatleft">
 	       Reports
 	    </div>
+	  </a>
 	  </li>
-	  <li class="floatleft">	    
+	  <li class="floatleft">
+	       <a href="/powermonitorweb/post_to_socialmedia/">
 	    <div class="floatleft">
 	      <img class="icon" alt=""  src="{% static "/static/powermonitorweb/images/social_icon.svg" %}"></img>
 	      </div>
 	    <div class="floatleft">
 	    Social
 	    </div>
+	    </a>
 	    </li> 
 	</ul>
 	<img id="lizard" alt="monitor lizard"  src="{% static "/static/powermonitorweb/images/MonitorLizard2.svg" %}"> </img>
@@ -83,9 +88,11 @@
 	{% endblock %}
       </div>
       <div id="footer">
-	{% block footer %}
+        <small>
+	    {% block footer %}
             Copyright &copy; EcoBerry 2014
         {% endblock %}
+        </small>
       </div>
     </div>
   </body>
