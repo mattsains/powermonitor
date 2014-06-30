@@ -9,6 +9,8 @@
     {% if posted %}
     <strong>Report settings saved!</strong>
     {% else %}
+    <div class="group">
+        <div id="heading"><h3>Manage Reports</h3></div>
     <form id="manage_reports_form" method="post" action="/powermonitorweb/manage_reports/" enctype="multipart/form-data">
         {% csrf_token %}
         <div id="reports_list_div">
@@ -39,6 +41,7 @@
             <input type="submit" name="submit" value="Submit" />
         </div>
     </form>
+    </div>
     {% endif %}
     {% endif %}
 {% endblock %}

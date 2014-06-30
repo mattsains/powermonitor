@@ -5,31 +5,89 @@
     <meta charset="UTF-8">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script type="text/javascript" src="{% static "/static/powermonitorweb/scripts.js" %}"></script>
-    <link href="{% static "/static/powermonitorweb/styles.css" %}" rel="stylesheet" type="text/css" />
-    <title>Power Monitor - {% block title %}Intelligent Power Monitoring{% endblock %}</title>
-</head>
-<body>
-    <div id="container">
-        <header>
-            <h1>{% block header %}Welcome to Power Monitor{% endblock %}</h1>
-            <ul>
-                {% if user.is_authenticated %}
+    <link href="{% static "/static/powermonitorweb/mainstyle.css" %}" rel="stylesheet" type="text/css" />
+    <title>Power Monitor - {% block title %}Intelligent Power Monitoring{% endblock %}</title>   
+  </head>
+  <body>
+    <div id="main">
+      <div id="imageholder">
+	<h1>Power Monitor</h1>
+	<ul id="bar">
+	  <li class="floatleft">	    
+	    <div class="floatleft">
+	    <img class="icon" alt=""  src="{% static "/static/powermonitorweb/images/users_icon.svg" %}"></img>
+	    </div>
+	    <div class="floatleft">
+	    Users
+	    </div>
+	  </li>	  
+	  <li class="floatleft">	    
+	    <div class="floatleft">
+	    <img class="icon" alt=""  src="{% static "/static/powermonitorweb/images/graphs_icon.svg" %}"></img>
+	    </div>
+	    <div class="floatleft">
+	    Graphs
+	    </div>
+	    </li>
+	  <li class="floatleft">	   
+	    <div class="floatleft">
+	      <img class="icon" alt=""  src="{% static "/static/powermonitorweb/images/food_icon.svg" %}"></img>
+	      </div>
+	    <div class="floatleft">
+	      Food
+	    </div>
+	  </li>
+	  <li class="floatleft">	   
+	    <div class="floatleft">
+	      <img class="icon" alt=""  src="{% static "/static/powermonitorweb/images/alerts_icon.svg" %}"></img>
+	      </div>
+	    <div class="floatleft">
+	      Events
+	    </div>
+	  </li>
+	  <li class="floatleft">	    
+	    <div class="floatleft">
+	      <img class="icon" alt=""  src="{% static "/static/powermonitorweb/images/reports_icon.svg" %}"></img>
+	      </div>
+	    <div class="floatleft">
+	       Reports
+	    </div>
+	  </li>
+	  <li class="floatleft">	    
+	    <div class="floatleft">
+	      <img class="icon" alt=""  src="{% static "/static/powermonitorweb/images/social_icon.svg" %}"></img>
+	      </div>
+	    <div class="floatleft">
+	    Social
+	    </div>
+	    </li> 
+	</ul>
+	<img id="lizard" alt="monitor lizard"  src="{% static "/static/powermonitorweb/images/MonitorLizard2.svg" %}"> </img>
+      </div>
+      <div id="userdetails">
+	<div class="floatright marginfive">Welcome <span class="username">Bentles</span>
+	  <img id="downarrow" alt=""  src="{% static "/static/powermonitorweb/images/downarrow.svg" %}"> </img>
+	</div>
+
+      </div>
+      <div id="container">
+	     {% block header %}Welcome to Power Monitor{% endblock %}
+	
+	      {% if user.is_authenticated %}
                 <li><a href="/powermonitorweb/logout/">Logout</a></li>
                 {% else %}
                 <li><a href="/powermonitorweb/login/">Login</a></li>
                 {% endif %}
-            </ul>
-        </header>
-        <div id="main">
-            {% block main %}
-
-            {% endblock %}
-        </div>
-        <footer>
-            {% block footer %}
+	
+	{%block main %}
+	{% endblock %}
+      </div>
+      <div id="footer">
+	{% block footer %}
             Copyright &copy; EcoBerry 2014
-            {% endblock %}
-        </footer>
+        {% endblock %}
+      </div>
     </div>
-</body>
+  </body>
 </html>
+
