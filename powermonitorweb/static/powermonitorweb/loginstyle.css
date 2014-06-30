@@ -13,6 +13,29 @@ body
     padding: 0px;
 }
 
+.helptext
+{
+    display : none;
+}
+
+.formlayout
+{
+    width: 50%;
+    text-align: right;
+    margin: 0px auto;
+}
+
+.formlayout select
+{
+    width: 100%;
+}
+
+.button
+{
+    width: 120px;
+    height: 30px;
+}
+
 div#main
 {
     margin: auto;

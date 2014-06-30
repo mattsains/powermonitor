@@ -14,7 +14,7 @@ class UserForm(forms.ModelForm):
         Define the fields that will be shown on the form
         """
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'password')
+        fields = ('username', 'first_name', 'last_name', 'email','password')
 
 
 class HouseholdSetupUserForm(forms.ModelForm):

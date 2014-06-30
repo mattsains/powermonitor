@@ -11,19 +11,27 @@
     <!--<p><strong>Register Here!</strong></p>-->
         <form id="household_form" method="post" action="/powermonitorweb/setup_household/" enctype="multipart/form-data">
             {% csrf_token %}
+            <div class="formlayout">
             {{ setup_homeowner_form.as_p }}
-            <p>
+
+            <!--<p> Don't think this should go here. It's hard to arrange around and it already has a dedicated page
+                            <p>Food choices:</p>
                 <select name="food_select" size="5" multiple required>
                     {% for item in food_list %}
                     <option value="{{ item.food_description }}">{{ item.food_description }}</option>
                     {% endfor %}
                 </select>
-            </p>
+            </p>-->
+
+
+
+            </div>
+            <p>Electricity Type:</p>
             <p>
-                Prepaid <input type="radio" name="electricity_type" value="prepaid" required /><br />
-                Postpaid <input type="radio" name="electricity_type" value="postpaid" required />
+                <input type="radio" name="electricity_type" value="prepaid" required />Prepaid
+                <input type="radio" name="electricity_type" value="postpaid" required />Postpaid
             </p>
-            <input type="submit" name="submit" value="Add User" />
+            <input type="submit" name="submit" value="Add User" class="button"/>
         </form>
     {% endif %}
 {% endblock %}
