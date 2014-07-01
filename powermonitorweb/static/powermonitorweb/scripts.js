@@ -23,4 +23,25 @@ $(document).ready(function() {
 		}
 	});
 	/* END manage reports functions */
+
+    /*Hide the user's menu*/
+	$("#usermenu").css("display", "none");
+
+	/*Set up the function to display and hide the menu*/
+	$("#username").click(function() {
+	    var menu = $("#usermenu");
+
+	    if(menu.css("display") === "none")
+	 	    menu.css("display", "block");
+	 	else
+	 	    menu.css("display", "none");
+	 });
+
+	 /* hide the menu if they click on the page?*/
+	 $(document).click(function (e) {
+	     var menu = $("#usermenu");
+	     var clicked = e.target.id;
+	     if(menu.css("display") === "block" && (clicked != "username" && clicked != "downarrow"))
+	 	     menu.css("display", "none");});
+
 });

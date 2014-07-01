@@ -20,15 +20,12 @@ body
 
 .formlayout
 {
-    width: 50%;
+    width: 52%;
     text-align: right;
     margin: 0px auto;
 }
 
-.formlayout select
-{
-    width: 100%;
-}
+
 
 .button
 {
@@ -58,6 +55,11 @@ div#main div.group
     background-color:  #ede9e3 ;
 }
 
+label
+{
+   font-weight: bold; /*ehhh maybe*/
+}
+
 div#container
 {
     display: block;
@@ -70,13 +72,6 @@ div#imageholder
     background-color: white;
     border-top: solid black 4px;
     border-bottom: solid black 4px;
-}
-
-button, #login
-{
-    width: 90px;
-    height: 30px;
-    margin-top: 5px;
 }
 
 h2

@@ -60,6 +60,8 @@ div.group
     box-shadow: 0 0 10px #AAAAAA ;
 }
 
+
+
 div#container
 {
 
@@ -208,6 +210,44 @@ h3
 {
     height: 30px;    
     background-color: #243A69;
+    position: relative;
+}
+
+#usermenu
+{
+    right: 0px;
+    top: 100%;
+    position: absolute;
+    width: 150px;
+    background-color: #19294B;
+    text-align: left;
+    box-shadow: -2px 2px 2px black;
+}
+
+#usermenu li
+{
+    list-style-type : none;
+    padding: 3px 0px 3px 20px;
+}
+
+#usermenu ul
+{
+    margin: 8px 0px;
+    padding: 0px;
+}
+
+#usermenu li:hover
+{
+    background-color: orange;
+}
+
+#usermenu a
+{
+    color: white;
+    text-decoration: inherit;
+    display: block;
+    width: 100%;
+    height: 100%;
 }
 
 .icon
@@ -233,10 +273,11 @@ h1
 /* font-family: "Courier New";*/
 }
 
-.username
+#username
 {
     color: #CBCFEB;
     text-shadow: 2px 2px 3px #000000;
+    cursor: pointer;
 }
 
 .marginfive

@@ -70,19 +70,21 @@
 	<img id="lizard" alt="monitor lizard"  src="{% static "/static/powermonitorweb/images/MonitorLizard2.svg" %}"> </img>
       </div>
       <div id="userdetails">
-	<div class="floatright marginfive">Welcome <span class="username">Bentles</span>
-	  <img id="downarrow" alt=""  src="{% static "/static/powermonitorweb/images/downarrow.svg" %}"> </img>
+	<div class="floatright marginfive">Welcome <span id="username">Bentles <img id="downarrow" alt=""  src="{% static "/static/powermonitorweb/images/downarrow.svg" %}"> </img></span>
+
+
+	  <div id="usermenu">
+	  <ul>
+	      <li><a href="/powermonitorweb/logout/">Logout</a></li>
+	  </ul>
+	  </div>
+
 	</div>
 
       </div>
       <div id="container">
-	     {% block header %}Welcome to Power Monitor{% endblock %}
-	
-	      {% if user.is_authenticated %}
-                <li><a href="/powermonitorweb/logout/">Logout</a></li>
-                {% else %}
-                <li><a href="/powermonitorweb/login/">Login</a></li>
-                {% endif %}
+	     <!--Not really using header block because there can be several per page
+	      User should be authenticated to see this page at all-->
 	
 	{%block main %}
 	{% endblock %}
