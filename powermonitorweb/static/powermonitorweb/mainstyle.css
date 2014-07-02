@@ -1,0 +1,332 @@
+#lizard
+{
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    height: 200px;
+}
+
+#graphholder
+{
+    width: 90%;
+    display: block;
+    margin: auto;
+}
+
+#graph
+{
+    
+    background-color: white;
+    height: 300px;
+    border: solid black 1px;
+
+}
+
+body
+{
+    font-family: sans-serif;
+    background-image: url("images/triangular.png");
+    margin: 0px;
+    padding: 0px;
+}
+
+div#main
+{
+    border-radius: 10px 10px 0px 0px;
+    margin: auto;
+    margin-top: 45px;
+    width: 1000px;
+    background-color: /*#e02927;*/#CCCBCB;
+    overflow: visible;
+    box-shadow: -5px 5px 10px #888888;
+}
+
+#formholder
+{
+    border-radius: 5px;
+    width: 260px;
+    border: solid grey 1px;
+    height: 300px;
+    text-align: center;
+}
+
+div.group
+{
+    overflow: auto;
+ /*  border: solid #7FB0E7 2px; /*#bed1cc 1px;*/
+    border-radius: 3px;
+    margin-top: 15px;
+    background-color:  #ede9e3 ;
+    box-shadow: 0 0 10px #AAAAAA ;
+}
+
+
+
+div#container
+{
+
+    display: block;
+    margin: 10px 5%;
+}
+
+#confirm
+{
+    text-align: center;
+}
+
+#confirm button
+{
+    width: 200px;
+}
+
+.grid div
+{
+    width: 90%;
+    height: 90%;
+    margin: auto;
+    background-color: white;
+    display: block;
+    border-radius: 20px;
+    text-align: center;
+}
+
+.grid h2
+{
+   /* padding: 5px;*/
+}
+
+.grid
+{
+    width: 25%;
+    height: 200px;
+    display: block;
+    float: left;
+}
+
+ul#bar
+{
+    list-style-type: none;
+    margin: 0px;
+    margin-left: 14px;
+    padding: 0px;    
+}
+
+#bar li
+{
+    text-shadow: 2px 2px 3px #1c3959;
+    font-size: 20px;
+    padding-top: 0px;
+    display: inline-block;
+    text-align: center;
+    /*no borders*/
+    padding: 0px 7px;
+    /*Right border?*/
+    /*padding: 0px 10px 0px 2px;
+    border-right: solid white 1px;*/
+    color: white;
+}
+
+div#imageholder
+{
+    border-radius: 10px 10px 0px 0px;
+    position: relative;
+    background-repeat: no-repeat;
+    background-position: right;
+    overflow: visible;
+    background-color: #2a5382;
+    height: 120px;
+}
+
+button, #login
+{
+    width: 90px;
+    margin-top: 5px;
+}
+
+h2
+{
+    font-size: 20px;
+    margin: 0px;
+    padding: 0px;
+}
+
+.floatright
+{
+    display: block;
+    float:right;
+}
+
+.floatleft
+{
+    display: block;
+    float:left;
+}
+
+
+.toright
+{
+    margin: 20px 10% 20px auto;
+}
+
+.toleft
+{
+    margin: 20px auto 20px 10%;
+}
+
+.tocenter
+{
+    margin: 20px auto;
+}
+
+h3
+{
+  /*  text-shadow: 1px 1px 1px #1c3959;**/
+    font-size: 20px;
+    padding: 5px 0px 5px 0px;
+    margin: 0px;
+}
+
+.wrapper_y
+{
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.wrapper_x
+{
+    padding-left: 30px;
+    padding-right: 30px;
+
+}
+
+#heading
+{
+    background-color: #7FB0E7;
+    text-align: center;
+       
+}
+
+#userdetails
+{
+    height: 30px;    
+    background-color: #243A69;
+    position: relative;
+}
+
+#usermenu
+{
+    right: 0px;
+    top: 100%;
+    position: absolute;
+    width: 150px;
+    background-color: #19294B;
+    text-align: left;
+    box-shadow: -2px 2px 2px black;
+}
+
+#usermenu li
+{
+    list-style-type : none;
+    padding: 3px 0px 3px 20px;
+}
+
+#usermenu ul
+{
+    margin: 8px 0px;
+    padding: 0px;
+}
+
+#usermenu li:hover
+{
+    background-color: orange;
+}
+
+#usermenu a
+{
+    color: white;
+    text-decoration: inherit;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.icon
+{
+    
+    margin: 0px 3px 0px 0px;
+}
+
+#downarrow
+{
+    margin: -2px 4px 2px 3px;
+
+}
+
+h1
+{
+    text-shadow: 2px 2px 3px #1c3959;
+    padding-top: 10px;
+    padding-left: 20px;
+    margin: 0px;
+    font-size: 48pt;
+    color: white;
+/* font-family: "Courier New";*/
+}
+
+#username
+{
+    color: #CBCFEB;
+    text-shadow: 2px 2px 3px #000000;
+    cursor: pointer;
+}
+
+.marginfive
+{
+    margin: 5px;
+}
+
+div#footer
+{
+    background-color: #243A69;
+    text-align: center;
+    height: 30px;
+    color: white;
+}
+
+#tableholder
+{
+    background-color: #a3bdd6;
+    width: 100%;
+}
+
+#scrollbox
+{
+    border-radius: 5px;
+    overflow-y:scroll;
+    width: 260px;
+    background-color: #bad5ef;
+    height: 300px;
+}
+
+#tableholder td
+{
+    padding: 5px;
+}
+
+#tableholder tr:nth-child(even)
+{
+    background-color: #8fadc9;
+}
+
+a
+{
+   color: inherit;
+}
+
+}
+.half
+{
+    text-align: center;
+    float: left;
+    width: 50%;
+}

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{% static "/static/powermonitorweb/scripts.js" %}"></script>
+    <link  rel="stylesheet" type="text/css" href="{% static '/static/powermonitorweb/mainstyle.css' %}"/><!-- not so use about the single quotes here -->
+    <title>Power Monitor - {% block title %}Intelligent Power Monitoring{% endblock %}</title>   
+  </head>
+  <body>
+    <div id="main">
+      <div id="imageholder">
+	<h1>Power Monitor</h1>
+	<ul id="bar">
+	  <li class="floatleft">
+
+	    <div class="floatleft">
+	    <img class="icon" alt=""  src="{% static "/static/powermonitorweb/images/users_icon.svg" %}"></img>
+	    </div>
+	    <div class="floatleft">
+	    Users
+	    </div>
+	  </li>	  
+	  <li class="floatleft">
+            <div class="floatleft">
+            <img class="icon" alt=""  src="{% static "/static/powermonitorweb/images/graphs_icon.svg" %}"></img>
+            </div>
+            <div class="floatleft">
+            Graphs
+            </div>
+	    </li>
+	  <li class="floatleft">	   
+	    <div class="floatleft">
+	      <img class="icon" alt=""  src="{% static "/static/powermonitorweb/images/food_icon.svg" %}"></img>
+	      </div>
+	    <div class="floatleft">
+	      Food
+	    </div>
+	  </li>
+	  <li class="floatleft">	   
+	    <div class="floatleft">
+	      <img class="icon" alt=""  src="{% static "/static/powermonitorweb/images/alerts_icon.svg" %}"></img>
+	      </div>
+	    <div class="floatleft">
+	      Events
+	    </div>
+	  </li>
+	  <li class="floatleft">
+	  <a href="/powermonitorweb/manage_reports/">
+	    <div class="floatleft">
+	      <img class="icon" alt=""  src="{% static "/static/powermonitorweb/images/reports_icon.svg" %}"></img>
+	      </div>
+	    <div class="floatleft">
+	       Reports
+	    </div>
+	  </a>
+	  </li>
+	  <li class="floatleft">
+	       <a href="/powermonitorweb/post_to_socialmedia/">
+	    <div class="floatleft">
+	      <img class="icon" alt=""  src="{% static "/static/powermonitorweb/images/social_icon.svg" %}"></img>
+	      </div>
+	    <div class="floatleft">
+	    Social
+	    </div>
+	    </a>
+	    </li> 
+	</ul>
+	<img id="lizard" alt="monitor lizard"  src="{% static "/static/powermonitorweb/images/MonitorLizard2.svg" %}"> </img>
+      </div>
+      <div id="userdetails">
+	<div class="floatright marginfive">Welcome <span id="username">Bentles <img id="downarrow" alt=""  src="{% static "/static/powermonitorweb/images/downarrow.svg" %}"> </img></span>
+
+
+	  <div id="usermenu">
+	  <ul>
+	      <li><a href="/powermonitorweb/logout/">Logout</a></li>
+	  </ul>
+	  </div>
+
+	</div>
+
+      </div>
+      <div id="container">
+	     <!--Not really using header block because there can be several per page
+	      User should be authenticated to see this page at all-->
+	
+	{%block main %}
+	{% endblock %}
+      </div>
+      <div id="footer">
+        <small>
+	    {% block footer %}
+            Copyright &copy; EcoBerry 2014
+        {% endblock %}
+        </small>
+      </div>
+    </div>
+  </body>
+</html>
+
