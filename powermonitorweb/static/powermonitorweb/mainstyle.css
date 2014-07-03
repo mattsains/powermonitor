@@ -30,6 +30,12 @@ body
     padding: 0px;
 }
 
+.button
+{
+    width: 120px;
+    height: 30px;
+}
+
 div#main
 {
     border-radius: 10px 10px 0px 0px;
@@ -53,7 +59,6 @@ div#main
 div.group
 {
     overflow: auto;
- /*  border: solid #7FB0E7 2px; /*#bed1cc 1px;*/
     border-radius: 3px;
     margin-top: 15px;
     background-color:  #ede9e3 ;
@@ -72,11 +77,6 @@ div#container
 #confirm
 {
     text-align: center;
-}
-
-#confirm button
-{
-    width: 200px;
 }
 
 .grid div
@@ -135,12 +135,6 @@ div#imageholder
     overflow: visible;
     background-color: #2a5382;
     height: 120px;
-}
-
-button, #login
-{
-    width: 90px;
-    margin-top: 5px;
 }
 
 h2
