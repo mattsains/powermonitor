@@ -22,7 +22,6 @@ def setup_household(request):
                 is deployed and should not require intervention from the user.
     """
     context = RequestContext(request)
-    food_list = Food.objects.all()
     electricity_type = ElectricityType.objects.all()
     cursor = connection.cursor()
     cursor.execute("SELECT is_setup FROM powermonitorweb_issetup WHERE id='1'")
@@ -33,7 +32,6 @@ def setup_household(request):
     if request.method == 'POST':
         setup_homeowner_form = HouseholdSetupUserForm(data=request.POST)
 
-        foods = request.POST.getlist('food_select')
         elec = request.POST['electricity_type']
 
         if setup_homeowner_form.is_valid:
@@ -52,11 +50,9 @@ def setup_household(request):
     return render_to_response(
         'powermonitorweb/setup_household.html',
         {'setup_homeowner_form': setup_homeowner_form,
-         'food_list': food_list,
          'electricity_type': electricity_type,
          'setup': setup},
-        context
-    )
+        context)
 
 
 @login_required()

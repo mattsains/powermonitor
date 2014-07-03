@@ -21,14 +21,20 @@ class HouseholdSetupUserForm(forms.ModelForm):
     """
     Get the homeowner's details
     """
-    password = forms.CharField(widget=forms.PasswordInput)
+    password = forms.CharField(widget=forms.PasswordInput, required=True)
+    confirm_password = forms.CharField(widget=forms.PasswordInput, required=True)
+
+    def clean(self):
+        if self.cleaned_data.get('password') != self.cleaned_data.get('confirm_password'):
+            raise forms.validators.ValidationError("Email addresses must match.")
+        return self.cleaned_data
 
     class Meta:
         """
         Define the fields that will be shown on the form
         """
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'password')
+        fields = ('username', 'first_name', 'last_name', 'email', 'password', 'confirm_password')
 
 
 class SocialMediaAccountForm(forms.ModelForm):
