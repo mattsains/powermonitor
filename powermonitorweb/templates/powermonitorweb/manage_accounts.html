@@ -9,7 +9,7 @@
     <a href="/powermonitorweb/">Return to home page</a>
     {% else %}
     <!--<p><strong>Register Here!</strong></p>-->
-        <form id="account_form" method="post" action="/powermonitorweb/setup_household/" enctype="multipart/form-data">
+        <form id="account_form" method="post" action="/powermonitorweb/manage_accounts/" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="group">
                 <div id="heading"><h3>Select Account</h3></div>
