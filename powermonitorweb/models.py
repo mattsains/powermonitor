@@ -41,8 +41,10 @@ class Report(models.Model):
     users = models.ManyToManyField(User)
     report_type = models.CharField(max_length=128)
     occurrence_type = models.CharField(max_length=128)
-    occurrence = models.CharField(max_length=255)
     datetime = models.DateTimeField()
+    report_daily = models.BooleanField()
+    report_weekly = models.BooleanField()
+    report_monthly = models.BooleanField()
 
     def __unicode__(self):
         return self.report_type
