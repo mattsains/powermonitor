@@ -3,10 +3,10 @@ from django.template import RequestContext
 from django.db import connection
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
 
 from powermonitorweb.forms import UserForm
-from powermonitorweb.forms import HouseholdSetupUserForm
+from powermonitorweb.forms import HouseholdSetupUserForm, SocialMediaAccountForm
 from powermonitorweb.models import Food, ElectricityType
 
 
@@ -177,5 +177,30 @@ def manage_reports(request):
     return render_to_response(
         'powermonitorweb/manage_reports.html',
         {'posted': posted},
+        context
+    )
+
+@login_required()
+def manage_accounts(request):
+    """
+    Manage social media accounts
+    """
+    context = RequestContext(request)
+
+    user = request.user
+    user_accounts = \
+        SocialMediaAccount.objects.all().select_related('users').filter(users=user.id)
+
+    if request.method == 'POST':
+        social_media_account_form = SocialMediaAccountForm(data=request.POST, user=request.user)
+    else:
+        social_media_account_form = SocialMediaAccountForm(user=request.user, initial={'account_type': '1'})
+
+    return render_to_response(
+        'powermonitorweb/manage_accounts.html',
+        {
+            'social_media_account_form': social_media_account_form,
+            'user_accounts': user_accounts
+        },
         context
     )

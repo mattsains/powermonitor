@@ -57,6 +57,11 @@ class SocialMediaAccount(models.Model):
     account_username = models.CharField(max_length=255)
     # Still need to find a way to salt and hash the passwords. Assuming we need to store them
     account_password = models.CharField(max_length=255)
+    post_daily = models.BooleanField()
+    post_weekly = models.BooleanField()
+    post_monthly = models.BooleanField()
+    post_yearly = models.BooleanField()
+    is_enabled = models.BooleanField()
 
     def __unicode__(self):
         return self.account_type
