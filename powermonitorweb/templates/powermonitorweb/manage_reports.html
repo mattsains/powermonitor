@@ -14,26 +14,8 @@
     <form id="manage_reports_form" method="post" action="/powermonitorweb/manage_reports/" enctype="multipart/form-data">
         {% csrf_token %}
         <div id="reports_list_div">
-            <select name="option_list" id="option_list" size="5" required>
-                <option value="1">Report 1</option>
-                <option value="2">Report 2</option>
-                <option value="3">Report 3</option>
-                <option value="4">Report 4</option>
-                <option value="5">Report 5</option>
-            </select>
-            <p>When would you like to receive these reports?</p>
-            <p>
-                Once-off <input type="radio" name="occurrence_type" value="onceoff" required /><br />
-                Recurring <input type="radio" name="occurrence_type" value="recurring" checked required />
-            </p>
-            <input id="report_time" type="datetime-local" />
-            <p>Daily <input type="checkbox" name="occurrence" value="daily" class="occurrence" /></p>
-            <p>Weekly <input type="checkbox" name="occurrence" value="weekly" class="occurrence" /></p>
-            <p>Monthly <input type="checkbox" name="occurrence" value="monthly" class="occurrence" /></p>
-        </div>
-        <div id="user_reports_div">
-            <select name="chosen_list" id="chosen_list" size="5">
-            </select>
+            {{ report_type_form.as_p }}
+            {{ report_details_form.as_p }}
         </div>
         <div id="button_div">
             <input type="button" id="add_to_chosen" name="add" value="Add" />

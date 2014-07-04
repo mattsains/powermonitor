@@ -6,8 +6,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
 from powermonitorweb.forms import UserForm
-from powermonitorweb.forms import HouseholdSetupUserForm, SocialMediaAccountForm
-from powermonitorweb.models import Food, ElectricityType
+from powermonitorweb.forms import HouseholdSetupUserForm, SocialMediaAccountForm, ReportTypeForm, ReportDetailsForm
+from powermonitorweb.models import Report, ElectricityType
 
 @login_required()
 def index(request):
@@ -170,9 +170,24 @@ def post_to_socialmedia(request):
 def manage_reports(request):
     context = RequestContext(request)
     posted = False
+
+    user = request.user
+    user_reports = Report.objects.all().select_related('users').filter(users=user.id)
+    user_report_details = None
+
+    if request.method == 'POST':
+        report_type_form = ReportTypeForm(data=request.POST, user=request.user)
+        report_details_form = ReportDetailsForm(data=request.POST, user=request.user)
+    else:
+        report_type_form = ReportTypeForm(user=request.user)
+        report_details_form = ReportDetailsForm(user=request.user)
+
     return render_to_response(
         'powermonitorweb/manage_reports.html',
-        {'posted': posted},
+        {
+            'posted': posted, 'report_type_form': report_type_form, 'report_details_form': report_details_form,
+            'user_reports': user_reports, 'user_report_details': user_report_details
+        },
         context
     )
 

@@ -38,16 +38,21 @@ class Report(models.Model):
     """
     User reports. These are custom reports the user sets, and are different from the alerts
     """
-    users = models.ManyToManyField(User)
+    users = models.ManyToManyField(User, through='UserReports')
     report_type = models.CharField(max_length=128)
+
+    def __unicode__(self):
+        return self.report_type
+
+
+class UserReports(models.Model):
+    user_id = models.ForeignKey(User)
+    report_id = models.ForeignKey(Report)
     occurrence_type = models.CharField(max_length=128)
     datetime = models.DateTimeField()
     report_daily = models.BooleanField()
     report_weekly = models.BooleanField()
     report_monthly = models.BooleanField()
-
-    def __unicode__(self):
-        return self.report_type
 
 
 class SocialMediaAccount(models.Model):

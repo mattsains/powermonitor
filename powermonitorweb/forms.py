@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from powermonitorweb.models import SocialMediaAccount, Report
+from powermonitorweb.models import SocialMediaAccount, Report, UserReports
 
 
 class UserForm(forms.ModelForm):
@@ -41,14 +41,14 @@ class SocialMediaAccountForm(forms.ModelForm):
     class Meta:
         model = SocialMediaAccount
         fields = (
-            'account_type',         # a select list of accounts for the user
-            'account_username',     # the username for the social media account
-            'account_password',     # the password for the social media account
-            'post_daily',           # automatically post daily reports?
-            'post_weekly',          # automatically post weekly reports?
-            'post_monthly',         # automatically post monthly reports?
-            'post_yearly',          # automatically post yearly reports?
-            'is_enabled'            # is the account enabled or not?
+            'account_type',  # a select list of accounts for the user
+            'account_username',  # the username for the social media account
+            'account_password',  # the password for the social media account
+            'post_daily',  # automatically post daily reports?
+            'post_weekly',  # automatically post weekly reports?
+            'post_monthly',  # automatically post monthly reports?
+            'post_yearly',  # automatically post yearly reports?
+            'is_enabled'  # is the account enabled or not?
         )
 
     def __init__(self, *args, **kwargs):
@@ -60,7 +60,7 @@ class SocialMediaAccountForm(forms.ModelForm):
 
         self.fields['account_type'] = forms.ChoiceField(
             widget=forms.Select(attrs={'size': '5', 'required': 'true'}), choices=choice_list)
-        self.fields['account_password'] = forms.CharField(widget=forms.PasswordInput,initial="password")
+        self.fields['account_password'] = forms.CharField(widget=forms.PasswordInput, initial="password")
         self.fields['account_username'] = forms.CharField(widget=forms.TextInput)
         self.fields['post_daily'] = forms.ChoiceField(widget=forms.CheckboxInput())
         self.fields['post_weekly'] = forms.ChoiceField(widget=forms.CheckboxInput())
@@ -70,11 +70,26 @@ class SocialMediaAccountForm(forms.ModelForm):
                                                       choices=[('0', 'disabled'), ('1', 'enabled')])
 
 
-class ManageReportsForm(forms.ModelForm):
+class ReportTypeForm(forms.ModelForm):
     class Meta:
         model = Report
+        fields = ('report_type',)
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user')
+        super(ReportTypeForm, self).__init__(*args, **kwargs)
+
+        choice_list = [
+            (a.id, a.report_type)
+            for a in Report.objects.all().select_related('users').filter(users=user.id)]
+        print choice_list
+        self.fields['report_type'] = forms.ChoiceField(
+            widget=forms.Select(attrs={'size': '5', 'required': 'true'}), choices=choice_list)
+
+class ReportDetailsForm(forms.ModelForm):
+    class Meta:
+        model = UserReports
         fields = (
-            'report_type',
             'user_reports_list',
             'occurrence_type',
             'datetime',
@@ -87,18 +102,12 @@ class ManageReportsForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
-
-        #????? is this a list of tuples or something?
-        choice_list = [
-            (a.id, a.account_type)
-            for a in Report.objects.all().select_related('users').filter(users=user.id)]
-
-        super(ManageReportsForm, self).__init__(*args, **kwargs)
-
-        self.fields['reports_list'] = forms.ChoiceField(
+        super(ReportDetailsForm, self).__init__(*args, **kwargs)
+        self.fields['user_reports_list'] = forms.ChoiceField(
             widget=forms.Select(attrs={'size': '5', 'required': 'true'}))
-        self.fields['occurrence_type'] = forms.CharField(widget=forms.DateTimeInput())
-        self.fields['report_time'] = forms.CharField(widget=forms.TextInput)
+        self.fields['occurrence_type'] = forms.ChoiceField(widget=forms.Select,
+                                                           choices=[('1', 'Recurring'), ('0','Once-Off')])
+        self.fields['datetime'] = forms.SplitDateTimeField(widget=forms.SplitDateTimeWidget())
         self.fields['report_daily'] = forms.ChoiceField(widget=forms.CheckboxInput())
         self.fields['report_weekly'] = forms.ChoiceField(widget=forms.CheckboxInput())
         self.fields['report_monthly'] = forms.ChoiceField(widget=forms.CheckboxInput())
