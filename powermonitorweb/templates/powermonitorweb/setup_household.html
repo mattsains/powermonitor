@@ -13,25 +13,15 @@
             {% csrf_token %}
             <div class="formlayout">
             {{ setup_homeowner_form.as_p }}
-
-            <!--<p> Don't think this should go here. It's hard to arrange around and it already has a dedicated page
-                            <p>Food choices:</p>
-                <select name="food_select" size="5" multiple required>
-                    {% for item in food_list %}
-                    <option value="{{ item.food_description }}">{{ item.food_description }}</option>
-                    {% endfor %}
-                </select>
-            </p>-->
-
-
-
-            </div>
-            <label>Electricity Type:</label>
+            {{ setup_homeowner_form.errors }}
             <p>
-                <input type="radio" name="electricity_type" value="prepaid" required />Prepaid
+                <label>Electricity Type:</label>
+                <input type="radio" name="electricity_type" value="prepaid" required />Prepaid <br/>
                 <input type="radio" name="electricity_type" value="postpaid" required />Postpaid
             </p>
+            </div>
             <input type="submit" name="submit" value="Add User" class="button"/>
+
         </form>
     {% endif %}
 {% endblock %}

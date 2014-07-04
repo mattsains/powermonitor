@@ -3,13 +3,13 @@ from django.template import RequestContext
 from django.db import connection
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
 
 from powermonitorweb.forms import UserForm
-from powermonitorweb.forms import HouseholdSetupUserForm
-from powermonitorweb.models import Food, ElectricityType
+from powermonitorweb.forms import HouseholdSetupUserForm, SocialMediaAccountForm, ReportTypeForm, ReportDetailsForm
+from powermonitorweb.models import Report, ElectricityType
 
-
+@login_required()
 def index(request):
     context = RequestContext(request)
     return render_to_response('powermonitorweb/index.html', {}, context)
@@ -22,7 +22,6 @@ def setup_household(request):
                 is deployed and should not require intervention from the user.
     """
     context = RequestContext(request)
-    food_list = Food.objects.all()
     electricity_type = ElectricityType.objects.all()
     cursor = connection.cursor()
     cursor.execute("SELECT is_setup FROM powermonitorweb_issetup WHERE id='1'")
@@ -33,10 +32,9 @@ def setup_household(request):
     if request.method == 'POST':
         setup_homeowner_form = HouseholdSetupUserForm(data=request.POST)
 
-        foods = request.POST.getlist('food_select')
         elec = request.POST['electricity_type']
 
-        if setup_homeowner_form.is_valid:
+        if setup_homeowner_form.is_valid():
             homeowner = setup_homeowner_form.save()
             homeowner.set_password(homeowner.password)
             homeowner.is_superuser = True
@@ -52,11 +50,9 @@ def setup_household(request):
     return render_to_response(
         'powermonitorweb/setup_household.html',
         {'setup_homeowner_form': setup_homeowner_form,
-         'food_list': food_list,
          'electricity_type': electricity_type,
          'setup': setup},
-        context
-    )
+        context)
 
 
 @login_required()
@@ -174,8 +170,48 @@ def post_to_socialmedia(request):
 def manage_reports(request):
     context = RequestContext(request)
     posted = False
+
+    user = request.user
+    user_reports = Report.objects.all().select_related('users').filter(users=user.id)
+    user_report_details = None
+
+    if request.method == 'POST':
+        report_type_form = ReportTypeForm(data=request.POST, user=request.user)
+        report_details_form = ReportDetailsForm(data=request.POST, user=request.user)
+    else:
+        report_type_form = ReportTypeForm(user=request.user)
+        report_details_form = ReportDetailsForm(user=request.user)
+
     return render_to_response(
         'powermonitorweb/manage_reports.html',
-        {'posted': posted},
+        {
+            'posted': posted, 'report_type_form': report_type_form, 'report_details_form': report_details_form,
+            'user_reports': user_reports, 'user_report_details': user_report_details
+        },
+        context
+    )
+
+@login_required()
+def manage_accounts(request):
+    """
+    Manage social media accounts
+    """
+    context = RequestContext(request)
+
+    user = request.user
+    user_accounts = \
+        SocialMediaAccount.objects.all().select_related('users').filter(users=user.id)
+
+    if request.method == 'POST':
+        social_media_account_form = SocialMediaAccountForm(data=request.POST, user=request.user)
+    else:
+        social_media_account_form = SocialMediaAccountForm(user=request.user, initial={'account_type': '1'})
+
+    return render_to_response(
+        'powermonitorweb/manage_accounts.html',
+        {
+            'social_media_account_form': social_media_account_form,
+            'user_accounts': user_accounts
+        },
         context
     )

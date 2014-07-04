@@ -1,0 +1,39 @@
+{% extends 'powermonitorweb/base.html' %}
+{% block title %}Setup Household Profile{% endblock %}
+
+{% block main %}
+    <h1>Manage Social Media Accounts</h1>
+
+    {% if setup %}
+    <p><strong>Setup complete!</strong></p>
+    <a href="/powermonitorweb/">Return to home page</a>
+    {% else %}
+    <!--<p><strong>Register Here!</strong></p>-->
+        <form id="account_form" method="post" action="/powermonitorweb/manage_accounts/" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="group">
+                <div id="heading"><h3>Select Account</h3></div>
+                    {{ social_media_account_form.account_type }}
+            </div>
+            <div class="group">
+                <div id="heading"><h3>Change Details</h3></div>
+                    <div class="formlayout">
+                        <p>Username: {{ social_media_account_form.account_username }}</p>
+                        <p>Password: {{ social_media_account_form.account_password }}</p>
+                        <p>
+                            Automatic Posts:<br />
+                            {{ social_media_account_form.post_daily }}Daily<br />
+                            {{ social_media_account_form.post_weekly }}Weekly<br />
+                            {{ social_media_account_form.post_monthly }}Monthly<br />
+                            {{ social_media_account_form.post_yearly }}Yearly
+                        </p>
+                        <p>
+                            Account Status:
+                            {{ social_media_account_form.is_enabled }}
+                        </p>
+                    </div>
+                    <input type="submit" name="submit" value="Enable Account" class="button"/>
+                </div>
+        </form>
+    {% endif %}
+{% endblock %}
