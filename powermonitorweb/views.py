@@ -9,7 +9,7 @@ from powermonitorweb.forms import UserForm
 from powermonitorweb.forms import HouseholdSetupUserForm, SocialMediaAccountForm
 from powermonitorweb.models import Food, ElectricityType
 
-
+@login_required()
 def index(request):
     context = RequestContext(request)
     return render_to_response('powermonitorweb/index.html', {}, context)
@@ -34,7 +34,7 @@ def setup_household(request):
 
         elec = request.POST['electricity_type']
 
-        if setup_homeowner_form.is_valid:
+        if setup_homeowner_form.is_valid():
             homeowner = setup_homeowner_form.save()
             homeowner.set_password(homeowner.password)
             homeowner.is_superuser = True

@@ -101,3 +101,9 @@ h2
     margin: 0px;
     pagging: 0px;
 }
+
+ul.errorlist li {
+	list-style-type: none;
+	font-size: 10px;
+	color: Red;
+}

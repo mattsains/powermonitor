@@ -13,6 +13,7 @@
             {% csrf_token %}
             <div class="formlayout">
             {{ setup_homeowner_form.as_p }}
+            {{ setup_homeowner_form.errors }}
             <p>
                 <label>Electricity Type:</label>
                 <input type="radio" name="electricity_type" value="prepaid" required />Prepaid <br/>

@@ -324,3 +324,7 @@ a
     float: left;
     width: 50%;
 }
+
+li {
+	color: Red;
+}
