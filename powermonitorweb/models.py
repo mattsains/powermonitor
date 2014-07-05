@@ -1,7 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
+import datetime
 
-
+class Readings(models.Model)
+    """
+    Stores electricity readings from the power monitoring circuit
+    """
+    time = models.DateTimeField(auto_now_add=True)
+    reading = models.FloatField()
+    
 class Alert(models.Model):
     """
     Alert model. Stores descriptions for each alert.
@@ -62,8 +69,7 @@ class SocialMediaAccount(models.Model):
     users = models.ManyToManyField(User)
     account_type = models.CharField(max_length=255)
     account_username = models.CharField(max_length=255)
-    # Still need to find a way to salt and hash the passwords. Assuming we need to store them
-    account_password = models.CharField(max_length=255)
+    auth_token = models.CharField(max_length=255)
     post_daily = models.BooleanField()
     post_weekly = models.BooleanField()
     post_monthly = models.BooleanField()
@@ -115,8 +121,9 @@ class PostPaid(models.Model):
     unit_cost = models.FloatField()
 
 
-class IsSetup(models.Model):
+class Configuration(models.Model):
     """
-    A simple boolean that stores whether the household has been setup or not.
+    A class storing miscellaneous properties about the household
     """
-    is_setup = models.BooleanField(null=False)
+    field = models.CharField(max_length=256, primary_key=True)
+    value = models.IntegerField(default=0)
