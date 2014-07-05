@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 import datetime
 
-class Readings(models.Model)
+class Readings(models.Model):
     """
     Stores electricity readings from the power monitoring circuit
     """
@@ -125,5 +125,5 @@ class Configuration(models.Model):
     """
     A class storing miscellaneous properties about the household
     """
-    field = models.CharField(max_length=256, primary_key=True)
+    field = models.CharField(max_length=255, primary_key=True)
     value = models.IntegerField(default=0)

@@ -18,7 +18,7 @@ def index(request):
 def setup_household(request):
     """
     Setup up the household profile
-    REQUIRED:   The database table powermonitorweb_issetup must have data. This should be set up when the system
+    REQUIRED:   The database table powermonitorweb_configuratin must have data. This should be set up when the system
                 is deployed and should not require intervention from the user.
     """
     context = RequestContext(request)
