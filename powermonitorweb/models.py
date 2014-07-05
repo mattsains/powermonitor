@@ -69,7 +69,7 @@ class SocialMediaAccount(models.Model):
     users = models.ManyToManyField(User)
     account_type = models.CharField(max_length=255)
     account_username = models.CharField(max_length=255)
-    auth_token = models.CharField(max_length=255)
+    account_token = models.CharField(max_length=255)
     post_daily = models.BooleanField()
     post_weekly = models.BooleanField()
     post_monthly = models.BooleanField()
