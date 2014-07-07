@@ -47,7 +47,7 @@ def setup_household(request):
             homeowner.is_superuser = True
             homeowner.save()
 
-            if norow:
+            if not norow:
                 cursor.execute("INSERT INTO powermonitorweb_configuration(field, value) VALUES ('is_setup',1)")
             else:
                 cursor.execute("UPDATE powermonitorweb_configuration SET value=1 WHERE field='is_setup'")
