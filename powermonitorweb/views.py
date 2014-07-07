@@ -4,6 +4,7 @@ from django.db import connection
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import password_change
 
 from powermonitorweb.forms import UserForm
 from powermonitorweb.forms import HouseholdSetupUserForm, SocialMediaAccountForm, ReportTypeForm, ReportDetailsForm
@@ -25,12 +26,13 @@ def setup_household(request):
     electricity_type = ElectricityType.objects.all()
     cursor = connection.cursor()
     cursor.execute("SELECT value FROM powermonitorweb_configuration WHERE field='is_setup'")
-    norow=True
-    if (cursor.fetchone()==None):
-        setup=False
+    norow = False
+    issetup = cursor.fetchone()
+    if issetup is None:
+        setup = False
     else:
-        setup = bool(cursor.fetchone()[0])
-        norow=True
+        setup = bool(issetup[0])
+        norow = True
     
     if setup:
         return HttpResponseRedirect('/powermonitorweb/')
@@ -46,8 +48,8 @@ def setup_household(request):
             homeowner.is_superuser = True
             homeowner.save()
 
-            if (norow):
-                cursor.execute("INSERT INTO powermonitorweb_configuratin(field, value) VALUES ('is_setup',1)")
+            if not norow:
+                cursor.execute("INSERT INTO powermonitorweb_configuration(field, value) VALUES ('is_setup',1)")
             else:
                 cursor.execute("UPDATE powermonitorweb_configuration SET value=1 WHERE field='is_setup'")
             setup = True
@@ -208,8 +210,7 @@ def manage_accounts(request):
     context = RequestContext(request)
 
     user = request.user
-    user_accounts = \
-        SocialMediaAccount.objects.all().select_related('users').filter(users=user.id)
+    user_accounts = SocialMediaAccount.objects.all().select_related('users').filter(users=user.id)
 
     if request.method == 'POST':
         social_media_account_form = SocialMediaAccountForm(data=request.POST, user=request.user)
@@ -224,3 +225,8 @@ def manage_accounts(request):
         },
         context
     )
+
+@login_required()
+def change_password(request):
+    return password_change(request=request, template_name='powermonitorweb/change_password.html',
+                           post_change_redirect='/powermonitorweb/')
