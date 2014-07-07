@@ -46,7 +46,7 @@ class DbConnection():
                 query.execute(statement, data)
             query.close()
             return query
-        except (pymysql.DatabaseError, pymysql.MySQLError):
+        except (pymysql.DatabaseError, pymysql.MySQLError) as e:
             logging.warning('There was a problem with the SQL query. Check your syntax\n'
                             'Your query: ' + statement)
             return None
@@ -64,7 +64,8 @@ class DbConnection():
             else:
                 query.execute(statement, data)
             query.close()
-        except (pymysql.DatabaseError, pymysql.MySQLError):
+        except (pymysql.DatabaseError, pymysql.MySQLError) as e:
+            print e
             logging.warning('There was a problem with the SQL query. Check your syntax: %s' % statement)
 
     def commit_query(self):

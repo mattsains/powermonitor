@@ -3,7 +3,7 @@ from django.template import RequestContext
 from django.db import connection
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.views import password_change
 
 from powermonitorweb.forms import UserForm
@@ -202,6 +202,7 @@ def manage_reports(request):
         context
     )
 
+
 @login_required()
 def manage_accounts(request):
     """
@@ -225,6 +226,18 @@ def manage_accounts(request):
         },
         context
     )
+
+
+@login_required()
+@user_passes_test(lambda u: u.is_superuser)  # Only the homeowner can access this view
+def manage_users(request):
+    context = RequestContext(request)
+    return render_to_response(
+        'powermonitorweb/manage_users.html',
+        {},
+        context
+    )
+
 
 @login_required()
 def change_password(request):
