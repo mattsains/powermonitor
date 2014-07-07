@@ -209,8 +209,7 @@ def manage_accounts(request):
     context = RequestContext(request)
 
     user = request.user
-    user_accounts = \
-        SocialMediaAccount.objects.all().select_related('users').filter(users=user.id)
+    user_accounts = SocialMediaAccount.objects.all().select_related('users').filter(users=user.id)
 
     if request.method == 'POST':
         social_media_account_form = SocialMediaAccountForm(data=request.POST, user=request.user)
