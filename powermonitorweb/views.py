@@ -25,12 +25,13 @@ def setup_household(request):
     electricity_type = ElectricityType.objects.all()
     cursor = connection.cursor()
     cursor.execute("SELECT value FROM powermonitorweb_configuration WHERE field='is_setup'")
-    norow=True
-    if (cursor.fetchone()==None):
-        setup=False
+    norow = False
+    issetup = cursor.fetchone()
+    if issetup is None:
+        setup = False
     else:
-        setup = bool(cursor.fetchone()[0])
-        norow=True
+        setup = bool(issetup[0])
+        norow = True
     
     if setup:
         return HttpResponseRedirect('/powermonitorweb/')
@@ -46,8 +47,8 @@ def setup_household(request):
             homeowner.is_superuser = True
             homeowner.save()
 
-            if (norow):
-                cursor.execute("INSERT INTO powermonitorweb_configuratin(field, value) VALUES ('is_setup',1)")
+            if norow:
+                cursor.execute("INSERT INTO powermonitorweb_configuration(field, value) VALUES ('is_setup',1)")
             else:
                 cursor.execute("UPDATE powermonitorweb_configuration SET value=1 WHERE field='is_setup'")
             setup = True
