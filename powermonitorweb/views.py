@@ -4,6 +4,7 @@ from django.db import connection
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import password_change
 
 from powermonitorweb.forms import UserForm
 from powermonitorweb.forms import HouseholdSetupUserForm, SocialMediaAccountForm, ReportTypeForm, ReportDetailsForm
@@ -224,3 +225,8 @@ def manage_accounts(request):
         },
         context
     )
+
+@login_required()
+def change_password(request):
+    return password_change(request=request, template_name='powermonitorweb/change_password.html',
+                           post_change_redirect='/powermonitorweb/')
