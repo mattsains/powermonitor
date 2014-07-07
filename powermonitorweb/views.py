@@ -30,9 +30,9 @@ def setup_household(request):
     issetup = cursor.fetchone()
     if issetup is None:
         setup = False
+        norow = True
     else:
         setup = bool(issetup[0])
-        norow = True
     
     if setup:
         return HttpResponseRedirect('/powermonitorweb/')
@@ -48,7 +48,7 @@ def setup_household(request):
             homeowner.is_superuser = True
             homeowner.save()
 
-            if not norow:
+            if norow:
                 cursor.execute("INSERT INTO powermonitorweb_configuration(field, value) VALUES ('is_setup',1)")
             else:
                 cursor.execute("UPDATE powermonitorweb_configuration SET value=1 WHERE field='is_setup'")
