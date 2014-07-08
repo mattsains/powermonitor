@@ -44,4 +44,51 @@ $(document).ready(function() {
 	     if(menu.css("display") === "block" && (clicked != "username" && clicked != "downarrow"))
 	 	     menu.css("display", "none");});
 
+	/* check if a user was selected from the list and do some ajax magic stuff */
+	function getCookie(name) {
+		var cookieValue = null;
+		if (document.cookie && document.cookie != '') {
+			var cookies = document.cookie.split(';');
+			for (var i = 0; i < cookies.length; i++) {
+				var cookie = jQuery.trim(cookies[i]);
+				// Does this cookie string begin with the name we want?
+				if (cookie.substring(0, name.length + 1) == (name + '=')) {
+					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+					break;
+				}
+			}
+		}
+		return cookieValue;
+	}
+	var csrftoken = getCookie('csrftoken');
+
+	function csrfSafeMethod(method) {
+		// these HTTP methods do not require CSRF protection
+		return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+	}
+	$.ajaxSetup({
+		beforeSend: function(xhr, settings) {
+			if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+				xhr.setRequestHeader("X-CSRFToken", csrftoken);
+			}
+		}
+	});
+	
+	$("#id_users").change(function () {
+		var request = $.ajax({
+			url: "/powermonitorweb/manage_users/",
+			type: "POST",
+			data: $("#id_users").serialize(),
+			processData: false,
+			dataType: 'text',
+			success: function(response){
+				var info = $.parseJSON(response);
+				var json = $.parseJSON(info.substring(1,info.length-1));    // Otherwise it bitches alot
+				$("#id_username").val(json.fields.username);
+				$("#id_name").val(json.fields.first_name);
+				$("#id_surname").val(json.fields.last_name);
+				$("#id_email").val(json.fields.email);
+			}
+		});
+	});
 });

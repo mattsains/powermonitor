@@ -107,3 +107,26 @@ class ReportDetailsForm(forms.ModelForm):
         self.fields['report_daily'] = forms.ChoiceField(widget=forms.CheckboxInput())
         self.fields['report_weekly'] = forms.ChoiceField(widget=forms.CheckboxInput())
         self.fields['report_monthly'] = forms.ChoiceField(widget=forms.CheckboxInput())
+
+
+class UserListForm(forms.Form):
+    class Meta:
+        fields = ('users',)
+
+    def __init__(self, *args, **kwargs):
+        users = kwargs.pop('user_list')
+        super(UserListForm, self).__init__(*args, **kwargs)
+        self.fields['users'] = forms.ChoiceField(widget=forms.Select(attrs={'size': '11', 'required': 'true'}),
+                                                 choices=users)
+
+
+class ManageUsersForm(forms.Form):
+    username = forms.CharField(max_length=255)
+    name = forms.CharField(max_length=255)
+    surname = forms.CharField(max_length=255)
+    email = forms.EmailField()
+
+    class Meta:
+        fields = (
+            'username', 'name', 'surname', 'email'
+        )

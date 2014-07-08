@@ -1,0 +1,42 @@
+{% extends 'powermonitorweb/base.html' %}
+{% block title %}Manage Users{% endblock %}
+
+{% block header %}Manage Powermonitor Users{% endblock %}
+{% block main %}
+    {% if failed %}
+    <strong>Something went wrong updating user.</strong>
+    {% else %}
+    {% if posted %}
+    <strong>User settings saved!</strong>
+    {% else %}
+    <div class="group">
+        <div id="heading"><h3>Manage Users</h3></div>
+        <form id="manage_users_form" method="post" action="/powermonitorweb/manage_users/" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="listform">
+            <div class="floatleft">
+                <div class="listlayout">
+                    <h2>All Users</h2>
+                    {{ user_list_form.as_p }}
+                </div>
+            </div>
+            <div class="floatright">
+                <div class="formlayout">
+                <h2>Selected User</h2>
+                    {{ manage_users_form.as_p }}
+                    {{ manage_users_form.errors }}
+                    <br/>
+                 <input class="button" type="button" id="update_user" name="add" value="Update" />
+                </div>
+            </div>
+
+        </div>
+            <div class="buttons">
+                <input class ="button" type="submit" name="submit" value="Save Changes" />
+            </div>
+<div id="response_div"></div>
+    </form>
+    </div>
+    {% endif %}
+    {% endif %}
+{% endblock %}
