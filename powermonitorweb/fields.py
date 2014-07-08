@@ -8,13 +8,10 @@ class UnixTimestampField(models.DateTimeField):
     """
     def __init__(self, null=False, blank=False, **kwargs):
         super(UnixTimestampField, self).__init__(**kwargs)
-        # default for TIMESTAMP is NOT NULL unlike most fields, so we have to
-        # cheat a little:
         self.blank, self.isnull = blank, null
 
     def db_type(self, connection):
         typ=['TIMESTAMP']
-        # See above!
         if self.isnull:
             typ += ['NULL']
         if self.auto_created:
@@ -28,6 +25,6 @@ class UnixTimestampField(models.DateTimeField):
             return models.DateTimeField.to_python(self, value)
 
     def get_db_prep_value(self, value, connection, prepared=False):
-        if value==None:
+        if value is None:
             return None
         return strftime('%Y%m%d%H%M%S',value.timetuple())

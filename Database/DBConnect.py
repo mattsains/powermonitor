@@ -22,15 +22,17 @@ class DbConnection():
                                           passwd=str(base64.b64decode(bytes('cDB3M3JtMG4xdDBy'))),
                                           db='powermonitor')
             self.__conn.autocommit(auto_commit)   # Automatically commit queries
-        except (pymysql.DatabaseError, pymysql.MySQLError):
+        except (pymysql.DatabaseError, pymysql.MySQLError) as e:
             logging.warning('Cannot connect to database. Please check connection.')
+            logging.warning('PyMSQL Message: #%d - %s' % e)
 
     def disconnect(self):
         """Disconnect from the database"""
         try:
             self.__conn.close()
-        except (pymysql.DatabaseError, pymysql.MySQLError):
+        except (pymysql.DatabaseError, pymysql.MySQLError) as e:
             logging.warning('There was a problem disconnecting from the database.')
+            logging.warning('PyMSQL Message: #%d - %s' % e)
 
     def execute_query(self, statement, data=None):
         """Execute a query that returns a result
@@ -49,6 +51,7 @@ class DbConnection():
         except (pymysql.DatabaseError, pymysql.MySQLError) as e:
             logging.warning('There was a problem with the SQL query. Check your syntax\n'
                             'Your query: ' + statement)
+            logging.warning('PyMSQL Message: #%d - %s' % e)
             return None
 
     def execute_non_query(self, statement, data=None):
@@ -65,8 +68,8 @@ class DbConnection():
                 query.execute(statement, data)
             query.close()
         except (pymysql.DatabaseError, pymysql.MySQLError) as e:
-            print e
             logging.warning('There was a problem with the SQL query. Check your syntax: %s' % statement)
+            logging.warning('PyMSQL Message: #%d - %s' % e)
 
     def commit_query(self):
         """Commit all SQL statements.
@@ -74,5 +77,6 @@ class DbConnection():
         are executed."""
         try:
             self.__conn.commit()
-        except pymysql.MySQLError:
+        except pymysql.MySQLError as e:
             logging.warning('There was a problem committing all SQL statements.')
+            logging.warning('PyMSQL Message: #%d - %s' % e)
