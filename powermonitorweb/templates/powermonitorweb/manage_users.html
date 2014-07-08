@@ -17,11 +17,14 @@
             <div class="floatleft">
                 <div class="listlayout">
                     <h2>All Users</h2>
+                    {{ user_list_form.as_p }}
                 </div>
             </div>
             <div class="floatright">
                 <div class="formlayout">
                 <h2>Selected User</h2>
+                    {{ manage_users_form.as_p }}
+                    {{ manage_users_form.errors }}
                     <br/>
                  <input class="button" type="button" id="update_user" name="add" value="Update" />
                 </div>
@@ -31,7 +34,7 @@
             <div class="buttons">
                 <input class ="button" type="submit" name="submit" value="Save Changes" />
             </div>
-
+<div id="response_div"></div>
     </form>
     </div>
     {% endif %}

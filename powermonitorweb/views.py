@@ -5,10 +5,13 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.views import password_change
+from django.core import serializers
+import json
 
 from powermonitorweb.forms import UserForm
-from powermonitorweb.forms import HouseholdSetupUserForm, SocialMediaAccountForm, ReportTypeForm, ReportDetailsForm
-from powermonitorweb.models import Report, ElectricityType
+from powermonitorweb.forms import HouseholdSetupUserForm, SocialMediaAccountForm, ReportTypeForm, ReportDetailsForm, \
+    ManageUsersForm, UserListForm
+from powermonitorweb.models import Report, ElectricityType, User
 
 @login_required()
 def index(request):
@@ -232,9 +235,25 @@ def manage_accounts(request):
 @user_passes_test(lambda u: u.is_superuser)  # Only the homeowner can access this view
 def manage_users(request):
     context = RequestContext(request)
+    users = User.objects.filter(is_superuser='0')
+    user_list = [(u.id, u.username) for u in users]
+
+    if request.is_ajax():
+        data = serializers.serialize('json', User.objects.filter(id=request.POST['users']), fields=('username', 'first_name', 'last_name', 'email'))
+        return HttpResponse(json.dumps(data))
+    elif request.method == 'POST':
+        manage_users_form = ManageUsersForm(data=request.POST)
+        user_list_form = UserListForm(data=request.POST, user_list=user_list)
+    else:
+        manage_users_form = ManageUsersForm()
+        user_list_form = UserListForm(user_list=user_list)
+
     return render_to_response(
         'powermonitorweb/manage_users.html',
-        {},
+        {
+            'manage_users_form': manage_users_form,
+            'user_list_form': user_list_form,
+        },
         context
     )
 
