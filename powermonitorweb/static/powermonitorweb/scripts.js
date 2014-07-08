@@ -82,11 +82,8 @@ $(document).ready(function() {
 			processData: false,
 			dataType: 'text',
 			success: function(response){
-				console.log(response);
 				var info = $.parseJSON(response);
-				console.log(info.substring(1,info.length-1));
-				var json = $.parseJSON(info.substring(1,info.length-1));
-				console.log(json.fields.username);
+				var json = $.parseJSON(info.substring(1,info.length-1));    // Otherwise it bitches alot
 				$("#id_username").val(json.fields.username);
 				$("#id_name").val(json.fields.first_name);
 				$("#id_surname").val(json.fields.last_name);
