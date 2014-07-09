@@ -6,7 +6,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.views import password_change
 from django.core import serializers
-import json
 
 from powermonitorweb.forms import UserForm
 from powermonitorweb.forms import HouseholdSetupUserForm, SocialMediaAccountForm, ReportTypeForm, ReportDetailsForm, \
@@ -234,14 +233,22 @@ def manage_accounts(request):
 @login_required()
 @user_passes_test(lambda u: u.is_superuser)  # Only the homeowner can access this view
 def manage_users(request):
+    """
+    Only the homeowner has permission to manage the user accounts. However, they can't change passwords, only send
+    password reset requests.
+    """
     context = RequestContext(request)
     users = User.objects.filter(is_superuser='0')
     user_list = [(u.id, u.username) for u in users]
 
     if request.is_ajax():
-        data = serializers.serialize('json', User.objects.filter(id=request.POST['users']), fields=('username', 'first_name', 'last_name', 'email'))
-        return HttpResponse(json.dumps(data))
+        # Create JSON object to pass back to the page so that fields can be populated
+        JSONdata = serializers.serialize('json', User.objects.filter(id=request.POST['users']),
+                                     fields=('username', 'first_name', 'last_name', 'email'))
+        return HttpResponse(JSONdata.replace('[', '').replace(']', ''))  # clean and send data
     elif request.method == 'POST':
+        # otherwise we got a post request, so we must handle it
+        # TODO: Update user information
         manage_users_form = ManageUsersForm(data=request.POST)
         user_list_form = UserListForm(data=request.POST, user_list=user_list)
     else:

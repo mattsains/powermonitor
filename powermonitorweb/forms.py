@@ -128,5 +128,5 @@ class ManageUsersForm(forms.Form):
 
     class Meta:
         fields = (
-            'username', 'name', 'surname', 'email'
+            'username', 'first_name', 'last_name', 'email', 'password'
         )
