@@ -4,8 +4,9 @@ from django.db import connection
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth.views import password_change
+from django.contrib.auth.views import password_change, password_reset, password_reset_confirm, password_reset_complete
 from django.core import serializers
+from django.core.urlresolvers import reverse
 
 from powermonitorweb.forms import UserForm
 from powermonitorweb.forms import HouseholdSetupUserForm, SocialMediaAccountForm, ReportTypeForm, ReportDetailsForm, \
@@ -291,3 +292,19 @@ def manage_users(request):
 def change_password(request):
     return password_change(request=request, template_name='powermonitorweb/change_password.html',
                            post_change_redirect='/powermonitorweb/')
+
+
+def reset_password_confirm(request, uidb64=None, token=None):
+    return password_reset_confirm(request, template_name='powermonitorweb/reset_password_confirm.html', uidb64=uidb64,
+                                  token=token, post_reset_redirect=reverse('powermonitorweb:reset_password_complete'))
+
+
+def reset_password(request):
+    return password_reset(request, template_name='powermonitorweb/reset_password.html',
+                          email_template_name='powermonitorweb/reset_password_email.html',
+                          subject_template_name='powermonitorweb/reset_subject.txt',
+                          post_reset_redirect=reverse('powermonitorweb:login'))
+
+
+def reset_password_complete(request):
+    return password_reset_complete(request, template_name='powermonitorweb/reset_password_complete.html')
