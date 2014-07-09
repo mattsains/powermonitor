@@ -3,6 +3,7 @@ from django.template import RequestContext
 from django.db import connection
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.views import password_change, password_reset, password_reset_confirm, password_reset_complete
 from django.core import serializers
@@ -246,7 +247,8 @@ def manage_users(request):
         # Create JSON object to pass back to the page so that fields can be populated
         datadict = request.POST
         JSONdata = None
-        if datadict.get('users') and datadict.get('username'):
+        if datadict.get('users') and datadict.get('username') and datadict.get('first_name') and \
+                datadict.get('last_name') and datadict.get('email'):
             save_user = User.objects.filter(id=datadict.get('users'))[0]
 
             # check each field for a change, and set the new value appropriately
@@ -263,11 +265,21 @@ def manage_users(request):
             # send the id and username back so the user list can be updated
             JSONdata = serializers.serialize('json', User.objects.filter(id=save_user.id),
                                              fields=('id', 'username'))
+        elif not datadict.get('users') and not datadict.get('username') and not datadict.get('first_name') and not \
+                datadict.get('last_name') and datadict.get('email'):
+            form = PasswordResetForm({'email': str(datadict.get('email'))})
+            try:
+                saved = form.save(email_template_name='powermonitorweb/reset_password_email.html', request=request)
+            except:
+                saved = 'false'
+            if saved is None:
+                saved = 'true'
+            JSONdata = '{"email_sent": %s}' % saved
         elif datadict.get('users'):
             JSONdata = serializers.serialize('json', User.objects.filter(id=datadict.get('users')),
                                              fields=('username', 'first_name', 'last_name', 'email'))
         else:
-            JSONdata = serializers.serialize('json', None)
+            JSONdata = "[{}]"
         return HttpResponse(JSONdata.replace('[', '').replace(']', ''))  # clean and send data
 
     elif request.method == 'POST':

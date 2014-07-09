@@ -105,4 +105,22 @@ $(document).ready(function() {
 			}
 		});
 	});
+	/* Send the user a password reset email */
+	$("#reset_password").click(function() {
+		var request = $.ajax({
+			url: "/powermonitorweb/manage_users/",
+			type: "POST",
+			data: $("#id_email").serialize(),
+			processData: false,
+			dataType: 'text',
+			success: function(response) {
+				var json = $.parseJSON(response);
+				if(json.email_sent) {
+					alert("Email sent");
+				} else {
+					alert("There was a problem sending the email.");
+				}
+			}
+		});
+	});
 });
