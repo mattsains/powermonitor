@@ -243,12 +243,34 @@ def manage_users(request):
 
     if request.is_ajax():
         # Create JSON object to pass back to the page so that fields can be populated
-        JSONdata = serializers.serialize('json', User.objects.filter(id=request.POST['users']),
-                                     fields=('username', 'first_name', 'last_name', 'email'))
+        datadict = request.POST
+        JSONdata = None
+        if datadict.get('users') and datadict.get('username'):
+            save_user = User.objects.filter(id=datadict.get('users'))[0]
+
+            # check each field for a change, and set the new value appropriately
+            if save_user.username != datadict.get('username'):
+                save_user.username = datadict.get('username')
+            if save_user.first_name != datadict.get('first_name'):
+                save_user.first_name = datadict.get('first_name')
+            if save_user.last_name != datadict.get('last_name'):
+                save_user.last_name = datadict.get('last_name')
+            if save_user.email != datadict.get('email'):
+                save_user.email = datadict.get('email')
+            # save the user so it persists to the DB
+            save_user.save()
+            # send the id and username back so the user list can be updated
+            JSONdata = serializers.serialize('json', User.objects.filter(id=save_user.id),
+                                             fields=('id', 'username'))
+        elif datadict.get('users'):
+            JSONdata = serializers.serialize('json', User.objects.filter(id=datadict.get('users')),
+                                             fields=('username', 'first_name', 'last_name', 'email'))
+        else:
+            JSONdata = serializers.serialize('json', None)
         return HttpResponse(JSONdata.replace('[', '').replace(']', ''))  # clean and send data
+
     elif request.method == 'POST':
         # otherwise we got a post request, so we must handle it
-        # TODO: Update user information
         manage_users_form = ManageUsersForm(data=request.POST)
         user_list_form = UserListForm(data=request.POST, user_list=user_list)
     else:
