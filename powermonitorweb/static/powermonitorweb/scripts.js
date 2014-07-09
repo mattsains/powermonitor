@@ -45,6 +45,7 @@ $(document).ready(function() {
 	 	     menu.css("display", "none");});
 
 	/* check if a user was selected from the list and do some ajax magic stuff */
+	/* first do some fancy stuff to ensure the csrf token is passed to the server so it knows the data is secure */
 	function getCookie(name) {
 		var cookieValue = null;
 		if (document.cookie && document.cookie != '') {
@@ -61,7 +62,7 @@ $(document).ready(function() {
 		return cookieValue;
 	}
 	var csrftoken = getCookie('csrftoken');
-
+	/* More csrf stuff */
 	function csrfSafeMethod(method) {
 		// these HTTP methods do not require CSRF protection
 		return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
@@ -73,7 +74,7 @@ $(document).ready(function() {
 			}
 		}
 	});
-	
+	/* Where the magic happens - Now know as the Mnet method */
 	$("#id_users").change(function () {
 		var request = $.ajax({
 			url: "/powermonitorweb/manage_users/",
@@ -82,12 +83,25 @@ $(document).ready(function() {
 			processData: false,
 			dataType: 'text',
 			success: function(response){
-				var info = $.parseJSON(response);
-				var json = $.parseJSON(info.substring(1,info.length-1));    // Otherwise it bitches alot
+				var json = $.parseJSON(response);
 				$("#id_username").val(json.fields.username);
-				$("#id_name").val(json.fields.first_name);
-				$("#id_surname").val(json.fields.last_name);
+				$("#id_first_name").val(json.fields.first_name);
+				$("#id_last_name").val(json.fields.last_name);
 				$("#id_email").val(json.fields.email);
+			}
+		});
+	});
+	/* Update the user, then update the list with the new username */
+	$("#update_user").click(function() {
+		var request = $.ajax({
+			url: "/powermonitorweb/manage_users/",
+			type: "POST",
+			data: $("#manage_users_form").serialize(),
+			processData: false,
+			dataType: 'text',
+			success: function(response){
+				var json = $.parseJSON(response);
+				$('#id_users [value="'+json.pk+'"]').text(json.fields.username);
 			}
 		});
 	});

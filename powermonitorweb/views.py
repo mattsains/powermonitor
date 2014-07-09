@@ -6,7 +6,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.views import password_change
 from django.core import serializers
-import json
 
 from powermonitorweb.forms import UserForm
 from powermonitorweb.forms import HouseholdSetupUserForm, SocialMediaAccountForm, ReportTypeForm, ReportDetailsForm, \
@@ -234,14 +233,44 @@ def manage_accounts(request):
 @login_required()
 @user_passes_test(lambda u: u.is_superuser)  # Only the homeowner can access this view
 def manage_users(request):
+    """
+    Only the homeowner has permission to manage the user accounts. However, they can't change passwords, only send
+    password reset requests.
+    """
     context = RequestContext(request)
     users = User.objects.filter(is_superuser='0')
     user_list = [(u.id, u.username) for u in users]
 
     if request.is_ajax():
-        data = serializers.serialize('json', User.objects.filter(id=request.POST['users']), fields=('username', 'first_name', 'last_name', 'email'))
-        return HttpResponse(json.dumps(data))
+        # Create JSON object to pass back to the page so that fields can be populated
+        datadict = request.POST
+        JSONdata = None
+        if datadict.get('users') and datadict.get('username'):
+            save_user = User.objects.filter(id=datadict.get('users'))[0]
+
+            # check each field for a change, and set the new value appropriately
+            if save_user.username != datadict.get('username'):
+                save_user.username = datadict.get('username')
+            if save_user.first_name != datadict.get('first_name'):
+                save_user.first_name = datadict.get('first_name')
+            if save_user.last_name != datadict.get('last_name'):
+                save_user.last_name = datadict.get('last_name')
+            if save_user.email != datadict.get('email'):
+                save_user.email = datadict.get('email')
+            # save the user so it persists to the DB
+            save_user.save()
+            # send the id and username back so the user list can be updated
+            JSONdata = serializers.serialize('json', User.objects.filter(id=save_user.id),
+                                             fields=('id', 'username'))
+        elif datadict.get('users'):
+            JSONdata = serializers.serialize('json', User.objects.filter(id=datadict.get('users')),
+                                             fields=('username', 'first_name', 'last_name', 'email'))
+        else:
+            JSONdata = serializers.serialize('json', None)
+        return HttpResponse(JSONdata.replace('[', '').replace(']', ''))  # clean and send data
+
     elif request.method == 'POST':
+        # otherwise we got a post request, so we must handle it
         manage_users_form = ManageUsersForm(data=request.POST)
         user_list_form = UserListForm(data=request.POST, user_list=user_list)
     else:
