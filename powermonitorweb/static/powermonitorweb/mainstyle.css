@@ -129,8 +129,6 @@ div.group
     box-shadow: 0 0 10px #AAAAAA ;
 }
 
-
-
 div#container
 {
 
@@ -188,6 +186,43 @@ ul#bar
     /*padding: 0px 10px 0px 2px;
     border-right: solid white 1px;*/
     color: white;
+}
+
+#subBar {
+	clear: both;
+}
+
+#bar li a:link, #bar li a:visited {
+	display:block;
+	text-decoration:none;
+	/*background-color:#ede9e3;*/
+	margin:0;
+}
+
+#bar li a:hover {
+	/*background-color:#0CF;*/
+}
+
+#bar li ul {
+	position: absolute;
+	visibility: hidden;
+	margin: 0;
+	padding: 0;
+	z-index: 5000;
+}
+
+#bar li ul li {
+	font-size: 12px;
+	display: inline;
+}
+
+#bar li ul li a:link, #bar li ul li a:visited {
+	width:auto;
+	/*background-color:#09F;*/
+}
+
+#bar li ul li a:hover {
+	/*background-color:#0CF;*/
 }
 
 div#imageholder

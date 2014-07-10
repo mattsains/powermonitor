@@ -43,6 +43,15 @@ $(document).ready(function() {
 	     var clicked = e.target.id;
 	     if(menu.css("display") === "block" && (clicked != "username" && clicked != "downarrow"))
 	 	     menu.css("display", "none");});
+			 
+	$("#bar > li").bind("mouseover", openSubMenu);
+	function openSubMenu() {
+		$(this).find('ul').css('visibility', 'visible');
+	}
+	$("#bar > li").bind("mouseout", closeSubMenu);
+	function closeSubMenu() {
+		$(this).find('ul').css('visibility', 'hidden');
+	}
 
 	/* check if a user was selected from the list and do some ajax magic stuff */
 	/* first do some fancy stuff to ensure the csrf token is passed to the server so it knows the data is secure */
