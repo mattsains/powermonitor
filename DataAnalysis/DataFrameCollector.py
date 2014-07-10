@@ -3,7 +3,7 @@ DataCollector: Extract data from the database in specified periods for data anal
 
 Requires: pandas (http://pandas.pydata.org/)
 """
-from Database.DBConnect import DbConnection as db
+from Database.DBConnect import DbConnection
 import pandas as pd
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -53,13 +53,16 @@ class DataFrameCollector():
                 self.__do_month(period_start, period_length, period_end)
             elif period_type == 'year':
                 self.__do_year(period_start, period_length, period_end)
+            else
+                raise Exception #invalid flag passed
         except:
             raise LookupError('There was an error retrieving your data. Check the values passed to this method.')
-
-        sql = "select timestamp, reading from readings where timestamp >= '%s' and timestamp <= '%s';" % \
-              (self.__start.strftime(self.__format), self.__end.strftime(self.__format))
-        result = db().execute_query(sql)
-        db().disconnect()   # close the database connection.
+        
+        db=DBConnection()
+        sql = "select timestamp, reading from readings where timestamp >= '%s' and timestamp <= '%s';"
+        params =(self.__start.strftime(self.__format), self.__end.strftime(self.__format))
+        result = db.execute_query(sql, params)
+        db.disconnect()
         if result.rowcount != 0:
             '''Create the DataFrame object from the data collected from the database'''
             data_frame = pd.DataFrame(list(result), columns=('timestamp', 'reading'))
@@ -81,7 +84,7 @@ class DataFrameCollector():
         if period_end is None:
             if period_length is None:   # If no end and period length was set, collect data up to the current time
                 period_end = datetime.now()
-            elif period_length is not None:  # If a period length was specified, set the end time accordingly
+            else:
                 period_end = self.__start + relativedelta(hours=period_length)
         self.__end = period_end  # Set the end time for collect_period to get data from
 
@@ -93,7 +96,7 @@ class DataFrameCollector():
         if period_end is None:
             if period_length is None:
                 period_end = datetime.now()
-            elif period_length is not None:
+            else:
                 period_end = self.__start + relativedelta(days=period_length)
         self.__end = period_end
 
@@ -105,7 +108,7 @@ class DataFrameCollector():
         if period_end is None:
             if period_length is None:
                 period_end = datetime.now()
-            elif period_length is not None:
+            else:
                 period_end = self.__start + relativedelta(weeks=period_length)
         self.__end = period_end
 
@@ -117,7 +120,7 @@ class DataFrameCollector():
         if period_end is None:
             if period_length is None:
                 period_end = datetime.now()
-            elif period_length is not None:
+            else:
                 period_end = self.__start + relativedelta(months=period_length)
         self.__end = period_end
 
@@ -129,6 +132,6 @@ class DataFrameCollector():
         if period_end is None:
             if period_length is None:
                 period_end = datetime.now()
-            elif period_length is not None:
+            else:
                 period_end = self.__start + relativedelta(years=period_length)
         self.__end = period_end
