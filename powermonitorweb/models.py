@@ -2,13 +2,15 @@ from django.db import models
 from django.contrib.auth.models import User
 from powermonitorweb.fields import UnixTimestampField
 
+
 class Readings(models.Model):
     """
     Stores electricity readings from the power monitoring circuit
     """
     time = UnixTimestampField(auto_created=True, primary_key=True, null=False)
     reading = models.FloatField()
-    
+
+
 class Alert(models.Model):
     """
     Alert model. Stores descriptions for each alert.

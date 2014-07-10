@@ -9,7 +9,7 @@ urlpatterns = patterns('',
     # url(r'^$', 'ecoberry.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
 
-    url(r'^powermonitorweb/', include('powermonitorweb.urls')),
+    url(r'^powermonitorweb/', include('powermonitorweb.urls', namespace='powermonitorweb')),
     url(r'^admin/', include(admin.site.urls)),
 )
 
