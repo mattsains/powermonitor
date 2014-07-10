@@ -7,6 +7,7 @@ from Database.DBConnect import DbConnection
 import pandas as pd
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from Database.DBConnect import DbConnection
 import logging
 
 
@@ -18,7 +19,6 @@ class DataFrameCollector():
         self.__start = None
         self.__end = None
         self.__format = '%Y-%m-%d %H:%M:%S'
-        logging.INFO
 
     def collect_period(self, period_type='hour', period_start=None, period_length=None, period_end=None):
         """Specify the period that you want to collect the data for.
@@ -53,14 +53,14 @@ class DataFrameCollector():
                 self.__do_month(period_start, period_length, period_end)
             elif period_type == 'year':
                 self.__do_year(period_start, period_length, period_end)
-            else
-                raise Exception #invalid flag passed
+            else:
+                raise Exception  # invalid flag passed
         except:
             raise LookupError('There was an error retrieving your data. Check the values passed to this method.')
-        
-        db=DBConnection()
-        sql = "select timestamp, reading from readings where timestamp >= '%s' and timestamp <= '%s';"
-        params =(self.__start.strftime(self.__format), self.__end.strftime(self.__format))
+
+        db = DbConnection()
+        sql = "select time, reading from powermonitorweb_readings where timestamp >= '%s' and timestamp <= '%s';"
+        params = (self.__start.strftime(self.__format), self.__end.strftime(self.__format))
         result = db.execute_query(sql, params)
         db.disconnect()
         if result.rowcount != 0:
@@ -76,13 +76,14 @@ class DataFrameCollector():
     It's probably better to try and refactor these methods. They were written like they currently are just to get this
     module working.
     '''
+
     def __do_hour(self, period_start, period_length, period_end):
-        if period_start is None:    # If there is no start period, default to 1 hour back
+        if period_start is None:  # If there is no start period, default to 1 hour back
             period_start = datetime.now() - relativedelta(hours=1)
         self.__start = period_start  # Set the start time for collect_period to get data from
 
         if period_end is None:
-            if period_length is None:   # If no end and period length was set, collect data up to the current time
+            if period_length is None:  # If no end and period length was set, collect data up to the current time
                 period_end = datetime.now()
             else:
                 period_end = self.__start + relativedelta(hours=period_length)
