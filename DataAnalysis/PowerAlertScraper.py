@@ -4,7 +4,6 @@ PowerAlertScraper: Connect to www.poweralert.co.za, and collect data to use for 
 import DataAnalysis.WebScraper
 import re
 
-
 class PowerAlertScraper():
     """Class to scrape power alerts from Eskom's power alert website.
     http://www.poweralert.co.za/poweralert5/index.php"""
