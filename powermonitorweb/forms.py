@@ -121,10 +121,10 @@ class UserListForm(forms.Form):
 
 
 class ManageUsersForm(forms.Form):
-    username = forms.CharField(max_length=255)
-    first_name = forms.CharField(max_length=255)
-    last_name = forms.CharField(max_length=255)
-    email = forms.EmailField()
+    username = forms.CharField(widget=forms.TextInput(attrs={'required': True}), max_length=255)
+    first_name = forms.CharField(widget=forms.TextInput(attrs={'required': True}), max_length=255)
+    last_name = forms.CharField(widget=forms.TextInput(attrs={'required': True}), max_length=255)
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'required': True}))
 
     class Meta:
         fields = (
