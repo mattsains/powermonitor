@@ -269,8 +269,9 @@ def manage_users(request):
                 datadict.get('last_name') and datadict.get('email'):
             form = PasswordResetForm({'email': str(datadict.get('email'))})
             try:
-                saved = form.save(email_template_name='powermonitorweb/reset_password_email.html', request=request)
-            except:
+                if form.is_valid():
+                    saved = form.save(email_template_name='powermonitorweb/reset_password_email.html', request=request)
+            except Exception as e:
                 saved = 'false'
             if saved is None:
                 saved = 'true'
