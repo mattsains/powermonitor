@@ -3,10 +3,11 @@ from django.template import RequestContext
 from django.db import connection
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth.views import password_change
+from django.contrib.auth.views import password_change, password_reset, password_reset_confirm, password_reset_complete
 from django.core import serializers
-import json
+from django.core.urlresolvers import reverse
 
 from powermonitorweb.forms import UserForm
 from powermonitorweb.forms import HouseholdSetupUserForm, SocialMediaAccountForm, ReportTypeForm, ReportDetailsForm, \
@@ -234,14 +235,55 @@ def manage_accounts(request):
 @login_required()
 @user_passes_test(lambda u: u.is_superuser)  # Only the homeowner can access this view
 def manage_users(request):
+    """
+    Only the homeowner has permission to manage the user accounts. However, they can't change passwords, only send
+    password reset requests.
+    """
     context = RequestContext(request)
     users = User.objects.filter(is_superuser='0')
     user_list = [(u.id, u.username) for u in users]
 
     if request.is_ajax():
-        data = serializers.serialize('json', User.objects.filter(id=request.POST['users']), fields=('username', 'first_name', 'last_name', 'email'))
-        return HttpResponse(json.dumps(data))
+        # Create JSON object to pass back to the page so that fields can be populated
+        datadict = request.POST
+        JSONdata = None
+        if datadict.get('users') and datadict.get('username') and datadict.get('first_name') and \
+                datadict.get('last_name') and datadict.get('email'):
+            save_user = User.objects.filter(id=datadict.get('users'))[0]
+
+            # check each field for a change, and set the new value appropriately
+            if save_user.username != datadict.get('username'):
+                save_user.username = datadict.get('username')
+            if save_user.first_name != datadict.get('first_name'):
+                save_user.first_name = datadict.get('first_name')
+            if save_user.last_name != datadict.get('last_name'):
+                save_user.last_name = datadict.get('last_name')
+            if save_user.email != datadict.get('email'):
+                save_user.email = datadict.get('email')
+            # save the user so it persists to the DB
+            save_user.save()
+            # send the id and username back so the user list can be updated
+            JSONdata = serializers.serialize('json', User.objects.filter(id=save_user.id),
+                                             fields=('id', 'username'))
+        elif not datadict.get('users') and not datadict.get('username') and not datadict.get('first_name') and not \
+                datadict.get('last_name') and datadict.get('email'):
+            form = PasswordResetForm({'email': str(datadict.get('email'))})
+            try:
+                saved = form.save(email_template_name='powermonitorweb/reset_password_email.html', request=request)
+            except:
+                saved = 'false'
+            if saved is None:
+                saved = 'true'
+            JSONdata = '{"email_sent": %s}' % saved
+        elif datadict.get('users'):
+            JSONdata = serializers.serialize('json', User.objects.filter(id=datadict.get('users')),
+                                             fields=('username', 'first_name', 'last_name', 'email'))
+        else:
+            JSONdata = "[{}]"
+        return HttpResponse(JSONdata.replace('[', '').replace(']', ''))  # clean and send data
+
     elif request.method == 'POST':
+        # otherwise we got a post request, so we must handle it
         manage_users_form = ManageUsersForm(data=request.POST)
         user_list_form = UserListForm(data=request.POST, user_list=user_list)
     else:
@@ -262,3 +304,19 @@ def manage_users(request):
 def change_password(request):
     return password_change(request=request, template_name='powermonitorweb/change_password.html',
                            post_change_redirect='/powermonitorweb/')
+
+
+def reset_password_confirm(request, uidb64=None, token=None):
+    return password_reset_confirm(request, template_name='powermonitorweb/reset_password_confirm.html', uidb64=uidb64,
+                                  token=token, post_reset_redirect=reverse('powermonitorweb:reset_password_complete'))
+
+
+def reset_password(request):
+    return password_reset(request, template_name='powermonitorweb/reset_password.html',
+                          email_template_name='powermonitorweb/reset_password_email.html',
+                          subject_template_name='powermonitorweb/reset_subject.txt',
+                          post_reset_redirect=reverse('powermonitorweb:login'))
+
+
+def reset_password_complete(request):
+    return password_reset_complete(request, template_name='powermonitorweb/reset_password_complete.html')

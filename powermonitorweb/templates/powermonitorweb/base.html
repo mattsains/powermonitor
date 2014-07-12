@@ -4,7 +4,7 @@
 <head lang="en">
     <meta charset="UTF-8">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script type="text/javascript" src="{% static "/static/powermonitorweb/scripts.js" %}"></script>
+    <script type="text/javascript" src="{% static '/static/powermonitorweb/scripts.js' %}"></script>
     <link  rel="stylesheet" type="text/css" href="{% static '/static/powermonitorweb/mainstyle.css' %}"/><!-- not so use about the single quotes here -->
     <title>Power Monitor - {% block title %}Intelligent Power Monitoring{% endblock %}</title>   
   </head>
@@ -16,16 +16,24 @@
 	  <li class="floatleft">
         <a href="/powermonitorweb/manage_users/">
 	    <div class="floatleft">
-	    <img class="icon" alt=""  src="{% static "/static/powermonitorweb/images/users_icon.svg" %}"></img>
+	    <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/users_icon.svg' %}" />
 	    </div>
 	    <div class="floatleft">
-	    Users
+	    User
 	    </div>
 	    </a>
+	    <div id="subBar">
+	    <ul>
+	        <a href="/powermonitorweb/profile/"><li>Change Profile</li></a>
+	        {% if user.is_superuser %}
+	        <a href="/powermonitorweb/manage_users/"><li>Manage Users</li></a>
+	        {% endif %}
+	    </ul>
+	    </div>
 	  </li>	  
 	  <li class="floatleft">
             <div class="floatleft">
-            <img class="icon" alt=""  src="{% static "/static/powermonitorweb/images/graphs_icon.svg" %}"></img>
+            <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/graphs_icon.svg' %}" />
             </div>
             <div class="floatleft">
             Graphs
@@ -33,7 +41,7 @@
 	    </li>
 	  <li class="floatleft">	   
 	    <div class="floatleft">
-	      <img class="icon" alt=""  src="{% static "/static/powermonitorweb/images/food_icon.svg" %}"></img>
+	      <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/food_icon.svg' %}" />
 	      </div>
 	    <div class="floatleft">
 	      Food
@@ -41,7 +49,7 @@
 	  </li>
 	  <li class="floatleft">	   
 	    <div class="floatleft">
-	      <img class="icon" alt=""  src="{% static "/static/powermonitorweb/images/alerts_icon.svg" %}"></img>
+	      <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/alerts_icon.svg' %}" />
 	      </div>
 	    <div class="floatleft">
 	      Events
@@ -50,7 +58,7 @@
 	  <li class="floatleft">
 	  <a href="/powermonitorweb/manage_reports/">
 	    <div class="floatleft">
-	      <img class="icon" alt=""  src="{% static "/static/powermonitorweb/images/reports_icon.svg" %}"></img>
+	      <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/reports_icon.svg' %}" />
 	      </div>
 	    <div class="floatleft">
 	       Reports
@@ -60,7 +68,7 @@
 	  <li class="floatleft">
 	       <a href="/powermonitorweb/post_to_socialmedia/">
 	    <div class="floatleft">
-	      <img class="icon" alt=""  src="{% static "/static/powermonitorweb/images/social_icon.svg" %}"></img>
+	      <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/social_icon.svg' %}" />
 	      </div>
 	    <div class="floatleft">
 	    Social
@@ -68,10 +76,10 @@
 	    </a>
 	    </li> 
 	</ul>
-	<img id="lizard" alt="monitor lizard"  src="{% static "/static/powermonitorweb/images/MonitorLizard2.svg" %}"> </img>
+	<img id="lizard" alt="monitor lizard"  src="{% static '/static/powermonitorweb/images/MonitorLizard2.svg' %}" />
       </div>
       <div id="userdetails">
-	<div class="floatright marginfive">Welcome <span id="username">{{user.username}}<img id="downarrow" alt=""  src="{% static "/static/powermonitorweb/images/downarrow.svg" %}"> </img></span>
+	<div class="floatright marginfive">Welcome <span id="username">{{user.username}}<img id="downarrow" alt=""  src="{% static '/static/powermonitorweb/images/downarrow.svg' %}" /></span>
 
 
 	  <div id="usermenu">
