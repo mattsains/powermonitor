@@ -4,6 +4,8 @@
 <head lang="en">
     <meta charset="UTF-8">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="{% static '/static/powermonitorweb/plugins/jquery.datetimepicker.js' %}" ></script> <!-- a jquery datetime picker -->
+    <link rel="stylesheet" type="text/css" href="{% static '/static/powermonitorweb/plugins/jquery.datetimepicker.css' %}"/>
     <script type="text/javascript" src="{% static '/static/powermonitorweb/scripts.js' %}"></script>
     <link  rel="stylesheet" type="text/css" href="{% static '/static/powermonitorweb/mainstyle.css' %}"/><!-- not so use about the single quotes here -->
     <title>Power Monitor - {% block title %}Intelligent Power Monitoring{% endblock %}</title>   

@@ -24,6 +24,7 @@ $(document).ready(function() {
 	});
 	/* END manage reports functions */
 
+    /*Start top-right user menu code*/
     /*Hide the user's menu*/
 	$("#usermenu").css("display", "none");
 
@@ -37,13 +38,15 @@ $(document).ready(function() {
 	 	    menu.css("display", "none");
 	 });
 
-	 /* hide the menu if they click on the page?*/
+	 /* hide the menu if they click on the page*/
 	 $(document).click(function (e) {
 	     var menu = $("#usermenu");
 	     var clicked = e.target.id;
 	     if(menu.css("display") === "block" && (clicked != "username" && clicked != "downarrow"))
 	 	     menu.css("display", "none");});
-			 
+	 /*END user menu code*/
+
+	/*Start dropdown submenu code*/
 	$("#bar > li").bind("mouseover", openSubMenu);
 	function openSubMenu() {
 		$(this).find('ul').css('visibility', 'visible');
@@ -52,9 +55,13 @@ $(document).ready(function() {
 	function closeSubMenu() {
 		$(this).find('ul').css('visibility', 'hidden');
 	}
+	/*END dropdown submenu code*/
 
+    /*START ajax code for dynamic fields and posting without refreshing*/
+    /*=================================================================*/
 	/* check if a user was selected from the list and do some ajax magic stuff */
 	/* first do some fancy stuff to ensure the csrf token is passed to the server so it knows the data is secure */
+
 	function getCookie(name) {
 		var cookieValue = null;
 		if (document.cookie && document.cookie != '') {
@@ -100,6 +107,7 @@ $(document).ready(function() {
 			}
 		});
 	});
+
 	/* Update the user, then update the list with the new username */
 	$("#update_user").click(function() {
 		var request = $.ajax({
@@ -110,10 +118,11 @@ $(document).ready(function() {
 			dataType: 'text',
 			success: function(response){
 				var json = $.parseJSON(response);
-				$('#id_users [value="'+json.pk+'"]').text(json.fields.username);
+				$('#id_users [value="'+json.pk+ '"]').text(json.fields.username);
 			}
 		});
 	});
+
 	/* Send the user a password reset email */
 	$("#reset_password").click(function() {
 		var request = $.ajax({
@@ -132,4 +141,12 @@ $(document).ready(function() {
 			}
 		});
 	});
+	/*END of ajax code*/
+
+	/*START Add a datetime picker to page*/
+    $('#id_datetime').datetimepicker({
+        formatTime:'H:i',
+        formatDate:'d.m.Y',
+    });
+	/*END datetimepicker code*/
 });

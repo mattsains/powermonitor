@@ -80,10 +80,22 @@ class ReportTypeForm(forms.ModelForm):
         user = kwargs.pop('user')
         super(ReportTypeForm, self).__init__(*args, **kwargs)
 
-        choice_list = [
-            (a.id, a.report_type)
-            for a in Report.objects.all().select_related('users').filter(users=user.id)]
+        user_choices = []
+        remaining_choices = []
+
+        for a in Report.objects.all().select_related("users").filter(users=user.id):
+            if a.id == user.id:
+                user_choices.append((a.id, a.report_type))
+            else:
+                remaining_choices.append((a.id, a.report_type))
+
+        print user_choices
+        print remaining_choices
+
+        #create two groups in the listbox
+        choice_list = user_choices + remaining_choices
         print choice_list
+
         self.fields['report_type'] = forms.ChoiceField(
             widget=forms.Select(attrs={'size': '15', 'required': 'true'}), choices=choice_list, label="Reports")
 
@@ -103,7 +115,7 @@ class ReportDetailsForm(forms.ModelForm):
         super(ReportDetailsForm, self).__init__(*args, **kwargs)
         self.fields['occurrence_type'] = forms.ChoiceField(widget=forms.Select,
                                                            choices=[('1', 'Recurring'), ('0','Once-Off')])
-        self.fields['datetime'] = forms.SplitDateTimeField(widget=forms.SplitDateTimeWidget())
+        self.fields['datetime'] = forms.SplitDateTimeField(widget=forms.DateTimeInput())
         self.fields['report_daily'] = forms.ChoiceField(widget=forms.CheckboxInput())
         self.fields['report_weekly'] = forms.ChoiceField(widget=forms.CheckboxInput())
         self.fields['report_monthly'] = forms.ChoiceField(widget=forms.CheckboxInput())
@@ -115,6 +127,7 @@ class UserListForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         users = kwargs.pop('user_list')
+        print users
         super(UserListForm, self).__init__(*args, **kwargs)
         self.fields['users'] = forms.ChoiceField(widget=forms.Select(attrs={'size': '11', 'required': 'true'}),
                                                  choices=users)

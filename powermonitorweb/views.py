@@ -187,7 +187,7 @@ def manage_reports(request):
     posted = False
 
     user = request.user
-    user_reports = Report.objects.all().select_related('users').filter(users=user.id)
+    user_reports = Report.objects.all().select_related('').filter(users=user.id)
     user_report_details = None
 
     if request.method == 'POST':
@@ -250,7 +250,7 @@ def manage_users(request):
         if datadict.get('users') and datadict.get('username') and datadict.get('first_name') and \
                 datadict.get('last_name') and datadict.get('email'):
             save_user = User.objects.filter(id=datadict.get('users'))[0]
-
+            # user has clicked "update"
             # check each field for a change, and set the new value appropriately
             if save_user.username != datadict.get('username'):
                 save_user.username = datadict.get('username')
@@ -267,6 +267,7 @@ def manage_users(request):
                                              fields=('id', 'username'))
         elif not datadict.get('users') and not datadict.get('username') and not datadict.get('first_name') and not \
                 datadict.get('last_name') and datadict.get('email'):
+            # User has clicked "Reset Password"
             form = PasswordResetForm({'email': str(datadict.get('email'))})
             try:
                 if form.is_valid():
@@ -277,6 +278,7 @@ def manage_users(request):
                 saved = 'true'
             JSONdata = '{"email_sent": %s}' % saved
         elif datadict.get('users'):
+            #User has clicked on a different entry
             JSONdata = serializers.serialize('json', User.objects.filter(id=datadict.get('users')),
                                              fields=('username', 'first_name', 'last_name', 'email'))
         else:
