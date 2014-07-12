@@ -396,6 +396,11 @@ div#footer
     color: white;
 }
 
+option[data-enabled]
+{
+    color: green;
+}
+
 #tableholder
 {
     background-color: #a3bdd6;

@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from powermonitorweb.models import SocialMediaAccount, Report, UserReports
+from powermonitorweb import widgets
 
 
 class UserForm(forms.ModelForm):
@@ -80,24 +81,19 @@ class ReportTypeForm(forms.ModelForm):
         user = kwargs.pop('user')
         super(ReportTypeForm, self).__init__(*args, **kwargs)
 
-        user_choices = []
-        remaining_choices = []
+        enabled_choices = []
+        choices = []
 
+        # create a list of IDs of all enabled reports
         for a in Report.objects.all().select_related("users").filter(users=user.id):
-            if a.id == user.id:
-                user_choices.append((a.id, a.report_type))
-            else:
-                remaining_choices.append((a.id, a.report_type))
+            enabled_choices.append(a.id)
 
-        print user_choices
-        print remaining_choices
-
-        #create two groups in the listbox
-        choice_list = user_choices + remaining_choices
-        print choice_list
+        for a in Report.objects.all():
+            choices.append((a.id, a.report_type))
 
         self.fields['report_type'] = forms.ChoiceField(
-            widget=forms.Select(attrs={'size': '15', 'required': 'true'}), choices=choice_list, label="Reports")
+            widget=widgets.EnabledSelect(enabled_choices, attrs={'size': '15', 'required': 'true'}),
+            choices=choices, label='Reports')
 
 
 class ReportDetailsForm(forms.ModelForm):
@@ -127,7 +123,6 @@ class UserListForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         users = kwargs.pop('user_list')
-        print users
         super(UserListForm, self).__init__(*args, **kwargs)
         self.fields['users'] = forms.ChoiceField(widget=forms.Select(attrs={'size': '11', 'required': 'true'}),
                                                  choices=users)
