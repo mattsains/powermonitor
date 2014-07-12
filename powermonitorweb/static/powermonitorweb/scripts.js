@@ -90,57 +90,54 @@ $(document).ready(function() {
 			}
 		}
 	});
-	/* Where the magic happens - Now know as the Mnet method */
-	$("#id_users").change(function () {
-		var request = $.ajax({
-			url: "/powermonitorweb/manage_users/",
-			type: "POST",
-			data: $("#id_users").serialize(),
-			processData: false,
-			dataType: 'text',
-			success: function(response){
-				var json = $.parseJSON(response);
-				$("#id_username").val(json.fields.username);
-				$("#id_first_name").val(json.fields.first_name);
-				$("#id_last_name").val(json.fields.last_name);
-				$("#id_email").val(json.fields.email);
-			}
-		});
-	});
+
+    /* Generates an ajax POST function */
+	function ajaxPOSTFactory(pageUrl, formID, successFunction)
+	{
+        return function()
+        {
+            var request = $.ajax({
+                url: pageUrl,
+                type: "POST",
+                data: $(formID).serialize(),
+                processData: false,
+                dataType:"text",
+                success: successFunction
+            })
+        }
+	}
+
+    /* Generates a function that fills in appropriate fields */
+	function changeFieldsFactory(/* names, of, fields */)
+	{
+	    var args = arguments;
+	    return function(response)
+	    {
+	        var json = $.parseJSON(response);
+	        for (var i = 0; i < args.length; i++)
+                $("#id_" + args[i]).val(json.fields[args[i]]);
+	    }
+	}
+
+	/* Where the magic happens - Now known as the Mnet method */
+	$("#id_users").change(
+	    ajaxPOSTFactory("/powermonitorweb/manage_users/","#id_users",
+	        changeFieldsFactory("username","first_name", "last_name", "email")));
 
 	/* Update the user, then update the list with the new username */
-	$("#update_user").click(function() {
-		var request = $.ajax({
-			url: "/powermonitorweb/manage_users/",
-			type: "POST",
-			data: $("#manage_users_form").serialize(),
-			processData: false,
-			dataType: 'text',
-			success: function(response){
-				var json = $.parseJSON(response);
-				$('#id_users [value="'+json.pk+ '"]').text(json.fields.username);
-			}
-		});
-	});
+	$("#update_user").click(ajaxPOSTFactory("/powermonitorweb/manage_users/", "#manage_users_form",
+	    function(response){
+		    var json = $.parseJSON(response);
+			$('#id_users [value="'+json.pk+ '"]').text(json.fields.username);}));
 
 	/* Send the user a password reset email */
-	$("#reset_password").click(function() {
-		var request = $.ajax({
-			url: "/powermonitorweb/manage_users/",
-			type: "POST",
-			data: $("#id_email").serialize(),
-			processData: false,
-			dataType: 'text',
-			success: function(response) {
-				var json = $.parseJSON(response);
-				if(json.email_sent) {
-					alert("Email sent");
-				} else {
-					alert("There was a problem sending the email.");
-				}
-			}
-		});
-	});
+    $("#reset_password").click(ajaxPOSTFactory("/powermonitorweb/manage_users/", "#id_email",
+        function(response) {
+		    var json = $.parseJSON(response);
+		    if(json.email_sent) {
+				alert("Email sent");
+			} else {
+				alert("There was a problem sending the email.");}}));
 	/*END of ajax code*/
 
 	/*START Add a datetime picker to page*/
