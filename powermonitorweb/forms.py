@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from powermonitorweb.models import SocialMediaAccount, Report, UserReports
+from powermonitorweb import widgets
 
 
 class UserForm(forms.ModelForm):
@@ -8,13 +9,25 @@ class UserForm(forms.ModelForm):
     Get the user's information.
     """
     password = forms.CharField(widget=forms.PasswordInput)
+    confirm_password = forms.CharField(widget=forms.PasswordInput)
 
     class Meta:
         """
         Define the fields that will be shown on the form
         """
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'password')
+        fields = ('username', 'first_name', 'last_name', 'email', 'password', 'confirm_password')
+
+    def __init__(self, *args, **kwargs):
+        super(UserForm, self).__init__(*args, **kwargs)
+        # Remove the annoying help text from add user form
+        self.fields['username'].help_text = None
+
+    def clean(self):
+        super(UserForm, self).clean()
+        if self.cleaned_data.get('password') != self.cleaned_data.get('confirm_password'):
+            raise forms.ValidationError("Passwords must match.")
+        return self.cleaned_data
 
 
 class HouseholdSetupUserForm(forms.ModelForm):
@@ -80,12 +93,19 @@ class ReportTypeForm(forms.ModelForm):
         user = kwargs.pop('user')
         super(ReportTypeForm, self).__init__(*args, **kwargs)
 
-        choice_list = [
-            (a.id, a.report_type)
-            for a in Report.objects.all().select_related('users').filter(users=user.id)]
-        print choice_list
+        enabled_choices = []
+        choices = []
+
+        # create a list of IDs of all enabled reports
+        for a in Report.objects.all().select_related("users").filter(users=user.id):
+            enabled_choices.append(a.id)
+
+        for a in Report.objects.all():
+            choices.append((a.id, a.report_type))
+
         self.fields['report_type'] = forms.ChoiceField(
-            widget=forms.Select(attrs={'size': '15', 'required': 'true'}), choices=choice_list, label="Reports")
+            widget=widgets.EnabledSelect(enabled_choices, attrs={'size': '15', 'required': 'true'}),
+            choices=choices, label='Reports')
 
 
 class ReportDetailsForm(forms.ModelForm):
@@ -103,7 +123,7 @@ class ReportDetailsForm(forms.ModelForm):
         super(ReportDetailsForm, self).__init__(*args, **kwargs)
         self.fields['occurrence_type'] = forms.ChoiceField(widget=forms.Select,
                                                            choices=[('1', 'Recurring'), ('0','Once-Off')])
-        self.fields['datetime'] = forms.SplitDateTimeField(widget=forms.SplitDateTimeWidget())
+        self.fields['datetime'] = forms.SplitDateTimeField(widget=forms.DateTimeInput())
         self.fields['report_daily'] = forms.ChoiceField(widget=forms.CheckboxInput())
         self.fields['report_weekly'] = forms.ChoiceField(widget=forms.CheckboxInput())
         self.fields['report_monthly'] = forms.ChoiceField(widget=forms.CheckboxInput())
@@ -121,10 +141,10 @@ class UserListForm(forms.Form):
 
 
 class ManageUsersForm(forms.Form):
-    username = forms.CharField(max_length=255)
-    first_name = forms.CharField(max_length=255)
-    last_name = forms.CharField(max_length=255)
-    email = forms.EmailField()
+    username = forms.CharField(widget=forms.TextInput(attrs={'required': True}), max_length=255)
+    first_name = forms.CharField(widget=forms.TextInput(attrs={'required': True}), max_length=255)
+    last_name = forms.CharField(widget=forms.TextInput(attrs={'required': True}), max_length=255)
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'required': True}))
 
     class Meta:
         fields = (

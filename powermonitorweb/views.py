@@ -187,7 +187,7 @@ def manage_reports(request):
     posted = False
 
     user = request.user
-    user_reports = Report.objects.all().select_related('users').filter(users=user.id)
+    user_reports = Report.objects.all().select_related('').filter(users=user.id)
     user_report_details = None
 
     if request.method == 'POST':
@@ -250,7 +250,7 @@ def manage_users(request):
         if datadict.get('users') and datadict.get('username') and datadict.get('first_name') and \
                 datadict.get('last_name') and datadict.get('email'):
             save_user = User.objects.filter(id=datadict.get('users'))[0]
-
+            # user has clicked "update"
             # check each field for a change, and set the new value appropriately
             if save_user.username != datadict.get('username'):
                 save_user.username = datadict.get('username')
@@ -267,15 +267,18 @@ def manage_users(request):
                                              fields=('id', 'username'))
         elif not datadict.get('users') and not datadict.get('username') and not datadict.get('first_name') and not \
                 datadict.get('last_name') and datadict.get('email'):
+            # User has clicked "Reset Password"
             form = PasswordResetForm({'email': str(datadict.get('email'))})
             try:
-                saved = form.save(email_template_name='powermonitorweb/reset_password_email.html', request=request)
-            except:
+                if form.is_valid():
+                    saved = form.save(email_template_name='powermonitorweb/reset_password_email.html', request=request)
+            except Exception as e:
                 saved = 'false'
             if saved is None:
                 saved = 'true'
             JSONdata = '{"email_sent": %s}' % saved
         elif datadict.get('users'):
+            #User has clicked on a different entry
             JSONdata = serializers.serialize('json', User.objects.filter(id=datadict.get('users')),
                                              fields=('username', 'first_name', 'last_name', 'email'))
         else:
@@ -284,17 +287,32 @@ def manage_users(request):
 
     elif request.method == 'POST':
         # otherwise we got a post request, so we must handle it
-        manage_users_form = ManageUsersForm(data=request.POST)
-        user_list_form = UserListForm(data=request.POST, user_list=user_list)
+        # Save the add user data
+        add_user_form = UserForm(data=request.POST)
+        if add_user_form.is_valid():
+            add_user_form.save()
+            user_added = True
+        else:
+            print add_user_form.errors
+            user_added = False
+        # These two are handled with Ajax, so ignore them
+        manage_users_form = ManageUsersForm()
+        users = User.objects.filter(is_superuser='0')   # refresh the user list for the new user
+        user_list = [(u.id, u.username) for u in users]
+        user_list_form = UserListForm(user_list=user_list)
     else:
         manage_users_form = ManageUsersForm()
         user_list_form = UserListForm(user_list=user_list)
+        add_user_form = UserForm()
+        user_added = False
 
     return render_to_response(
         'powermonitorweb/manage_users.html',
         {
             'manage_users_form': manage_users_form,
             'user_list_form': user_list_form,
+            'add_user_form': add_user_form,
+            'user_added': user_added
         },
         context
     )

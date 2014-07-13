@@ -24,6 +24,7 @@ $(document).ready(function() {
 	});
 	/* END manage reports functions */
 
+    /*Start top-right user menu code*/
     /*Hide the user's menu*/
 	$("#usermenu").css("display", "none");
 
@@ -37,13 +38,15 @@ $(document).ready(function() {
 	 	    menu.css("display", "none");
 	 });
 
-	 /* hide the menu if they click on the page?*/
+	 /* hide the menu if they click on the page*/
 	 $(document).click(function (e) {
 	     var menu = $("#usermenu");
 	     var clicked = e.target.id;
 	     if(menu.css("display") === "block" && (clicked != "username" && clicked != "downarrow"))
 	 	     menu.css("display", "none");});
-			 
+	 /*END user menu code*/
+
+	/*Start dropdown submenu code*/
 	$("#bar > li").bind("mouseover", openSubMenu);
 	function openSubMenu() {
 		$(this).find('ul').css('visibility', 'visible');
@@ -52,9 +55,32 @@ $(document).ready(function() {
 	function closeSubMenu() {
 		$(this).find('ul').css('visibility', 'hidden');
 	}
+	/*END dropdown submenu code*/
+	
+	/* START manage users in page menu */
+	/* show and hide manage users/add user forms */
+	$("#manage_users").click(function() {
+		showAndHide("#manage_form", "#add_form");
+		$("#manage_users").css('color', '#f00');
+		$("#add_users").css('color', '#00f');
+	});
+	$("#add_users").click(function() {
+		showAndHide("#add_form", "#manage_form");
+		$("#add_users").css('color', '#f00');
+		$("#manage_users").css('color', '#00f');
+	});
 
+	function showAndHide(idToShow, idToHide) {
+		$(idToHide).css('display', 'none');
+		$(idToShow).css('display', 'block');
+	}
+	/* END manage users in page menu */
+
+    /*START ajax code for dynamic fields and posting without refreshing*/
+    /*=================================================================*/
 	/* check if a user was selected from the list and do some ajax magic stuff */
 	/* first do some fancy stuff to ensure the csrf token is passed to the server so it knows the data is secure */
+
 	function getCookie(name) {
 		var cookieValue = null;
 		if (document.cookie && document.cookie != '') {
@@ -83,53 +109,60 @@ $(document).ready(function() {
 			}
 		}
 	});
-	/* Where the magic happens - Now know as the Mnet method */
-	$("#id_users").change(function () {
-		var request = $.ajax({
-			url: "/powermonitorweb/manage_users/",
-			type: "POST",
-			data: $("#id_users").serialize(),
-			processData: false,
-			dataType: 'text',
-			success: function(response){
-				var json = $.parseJSON(response);
-				$("#id_username").val(json.fields.username);
-				$("#id_first_name").val(json.fields.first_name);
-				$("#id_last_name").val(json.fields.last_name);
-				$("#id_email").val(json.fields.email);
-			}
-		});
-	});
+
+    /* Generates an ajax POST function */
+	function ajaxPOSTFactory(pageUrl, formID, successFunction)
+	{
+        return function()
+        {
+            var request = $.ajax({
+                url: pageUrl,
+                type: "POST",
+                data: $(formID).serialize(),
+                processData: false,
+                dataType:"text",
+                success: successFunction
+            })
+        }
+	}
+
+    /* Generates a function that fills in appropriate fields */
+	function changeFieldsFactory(/* names, of, fields */)
+	{
+	    var args = arguments;
+	    return function(response)
+	    {
+	        var json = $.parseJSON(response);
+	        for (var i = 0; i < args.length; i++)
+                $("#id_" + args[i]).val(json.fields[args[i]]);
+	    }
+	}
+
+	/* Where the magic happens - Now known as the Mnet method */
+	$("#id_users").change(
+	    ajaxPOSTFactory("/powermonitorweb/manage_users/","#id_users",
+	        changeFieldsFactory("username","first_name", "last_name", "email")));
+
 	/* Update the user, then update the list with the new username */
-	$("#update_user").click(function() {
-		var request = $.ajax({
-			url: "/powermonitorweb/manage_users/",
-			type: "POST",
-			data: $("#manage_users_form").serialize(),
-			processData: false,
-			dataType: 'text',
-			success: function(response){
-				var json = $.parseJSON(response);
-				$('#id_users [value="'+json.pk+'"]').text(json.fields.username);
-			}
-		});
-	});
+	$("#update_user").click(ajaxPOSTFactory("/powermonitorweb/manage_users/", "#manage_users_form",
+	    function(response){
+		    var json = $.parseJSON(response);
+			$('#id_users [value="'+json.pk+ '"]').text(json.fields.username);}));
+
 	/* Send the user a password reset email */
-	$("#reset_password").click(function() {
-		var request = $.ajax({
-			url: "/powermonitorweb/manage_users/",
-			type: "POST",
-			data: $("#id_email").serialize(),
-			processData: false,
-			dataType: 'text',
-			success: function(response) {
-				var json = $.parseJSON(response);
-				if(json.email_sent) {
-					alert("Email sent");
-				} else {
-					alert("There was a problem sending the email.");
-				}
-			}
-		});
-	});
+    $("#reset_password").click(ajaxPOSTFactory("/powermonitorweb/manage_users/", "#id_email",
+        function(response) {
+		    var json = $.parseJSON(response);
+		    if(json.email_sent) {
+				alert("Email sent");
+			} else {
+				alert("There was a problem sending the email.");}}));
+	/*END of ajax code*/
+
+	/*START Add a datetime picker to page*/
+    $('#id_datetime').datetimepicker({
+        formatTime:'H:i',
+        formatDate:'d.m.Y',
+    });
+	/*END datetimepicker code*/
 });

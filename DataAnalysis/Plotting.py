@@ -87,14 +87,14 @@ class Plotter():
         dataFrameWeighted = None
         # # check length of typeWeight
         if (weightType == "EWMA"):
-            dataFrameWeighted = self.emwaResampling(dataFrameIn, weight, freqVal, minPeriodsVal)
+            dataFrameWeighted = self.ewmaResampling(dataFrameIn, weight, freqVal, minPeriodsVal)
             legendToSend = "Weighted Average plot"
         else:
             dataFrameWeighted = self.equalWeightMovingAverage(dataFrameIn, freqVal, minPeriodsVal)
             legendToSend = "Rolling Average plot"
 
         return self.plotDataBetweenTwoDataFrames(dataFrameIn, dataFrameWeighted, legendLabelWeighted=legendToSend,
-                                                 title=title, YLabel=YLabel, XLabel=XLabel, FileName=fileName)
+                                                 title=title, YLabel=YLabel, XLabel=XLabel, fileName=fileName)
 
     def equalWeightMovingAverage(self, dataFrameIn, freqVal='1min', minPeriodsVal=10):
         """ Resamples data using a rolling mean
