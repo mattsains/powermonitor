@@ -1,0 +1,10 @@
+{{ title }}
+--------------------
+
+Hello {{ name }},
+Usage Warning!
+
+You're currently using {{ power_peak }}kW of electricity.
+This is unusually higher than your average of {{ power_average }}kW around this time.
+
+Go to {{ reporting_url }} to see usage history.

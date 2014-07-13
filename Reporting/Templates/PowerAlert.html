@@ -1,0 +1,20 @@
+{% include '_header.html' }
+    <div id="header">
+        <h1>{{ title }}</h1>
+    </div>
+    <div id="section">
+        <p>Hello {{ name }},</p>
+        <p>Power Alert Issued</p>
+        <p>Eskom have issued a {{ power_alert_status }} power alert. You're currently using {{ power_peak }}kW of electricity.</p>
+        
+        <p>Here's a graph of your usage history:</p>
+        <img src="{{ image_url }}" alt="Electricity usage graph" />
+        
+        <p>Some things you can do to save electricity:</p>
+        <ul>
+        {% for tip in tips %}
+            <li>{{ tip }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+{% include '_footer.html' }
