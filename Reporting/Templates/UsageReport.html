@@ -8,6 +8,9 @@
         <p>Between {{ report_begin }} and {{ report_end }}, you used {{ power_sum }}kWh.</p>
         <p>That's an average of {{ power_average }}kW</p>
         
-        <img src="{{ image_url }}" alt="Electricity usage graph" />
+        <a href="reporting_url">
+            <img src="{{ image_url }}" alt="Electricity usage graph" />
+        </a>
+        
     </div>
 {% include '_footer.html' }
