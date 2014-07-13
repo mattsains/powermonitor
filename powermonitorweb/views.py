@@ -287,17 +287,32 @@ def manage_users(request):
 
     elif request.method == 'POST':
         # otherwise we got a post request, so we must handle it
-        manage_users_form = ManageUsersForm(data=request.POST)
-        user_list_form = UserListForm(data=request.POST, user_list=user_list)
+        # Save the add user data
+        add_user_form = UserForm(data=request.POST)
+        if add_user_form.is_valid():
+            add_user_form.save()
+            user_added = True
+        else:
+            print add_user_form.errors
+            user_added = False
+        # These two are handled with Ajax, so ignore them
+        manage_users_form = ManageUsersForm()
+        users = User.objects.filter(is_superuser='0')   # refresh the user list for the new user
+        user_list = [(u.id, u.username) for u in users]
+        user_list_form = UserListForm(user_list=user_list)
     else:
         manage_users_form = ManageUsersForm()
         user_list_form = UserListForm(user_list=user_list)
+        add_user_form = UserForm()
+        user_added = False
 
     return render_to_response(
         'powermonitorweb/manage_users.html',
         {
             'manage_users_form': manage_users_form,
             'user_list_form': user_list_form,
+            'add_user_form': add_user_form,
+            'user_added': user_added
         },
         context
     )

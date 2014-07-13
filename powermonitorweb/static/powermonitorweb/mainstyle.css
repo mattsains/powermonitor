@@ -442,3 +442,26 @@ a
 li {
 	color: Red;
 }
+
+div#mini_menu {
+	text-align: center;
+}
+
+div#mini_menu ul {
+	list-style-type: none;
+}
+
+div#mini_menu ul li {
+	color: #0000FF;
+	display: inline-block;
+	margin-left: 5px;
+	cursor: pointer;
+}
+
+div#mini_menu #manage_users {
+	color: #f00;
+}
+
+div#add_form {
+	display: none;
+}

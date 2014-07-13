@@ -9,13 +9,25 @@ class UserForm(forms.ModelForm):
     Get the user's information.
     """
     password = forms.CharField(widget=forms.PasswordInput)
+    confirm_password = forms.CharField(widget=forms.PasswordInput)
 
     class Meta:
         """
         Define the fields that will be shown on the form
         """
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'password')
+        fields = ('username', 'first_name', 'last_name', 'email', 'password', 'confirm_password')
+
+    def __init__(self, *args, **kwargs):
+        super(UserForm, self).__init__(*args, **kwargs)
+        # Remove the annoying help text from add user form
+        self.fields['username'].help_text = None
+
+    def clean(self):
+        super(UserForm, self).clean()
+        if self.cleaned_data.get('password') != self.cleaned_data.get('confirm_password'):
+            raise forms.ValidationError("Passwords must match.")
+        return self.cleaned_data
 
 
 class HouseholdSetupUserForm(forms.ModelForm):

@@ -11,9 +11,15 @@
     {% else %}
     <div class="group">
         <div id="heading"><h3>Manage Users</h3></div>
-        <form id="manage_users_form" method="post" action="/powermonitorweb/manage_users/" enctype="multipart/form-data">
+        <form id="manage_users_form" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <div class="listform">
+        <div id="mini_menu">
+            <ul>
+                <li id="manage_users">Manage Users</li>
+                <li id="add_users">Add Users</li>
+            </ul>
+        </div>
+        <div id="manage_form" class="listform">
             <div class="floatleft">
                 <div class="listlayout">
                     <h2>All Users</h2>
@@ -31,11 +37,22 @@
                 <input class="button" type="button" id="reset_password" name="reset_password" value="Reset Password">
                 </div>
             </div>
-
         </div>
-<div id="response_div"></div>
+
     </form>
+        <div id="add_form" class="listform">
+            <form id="add_users_form" method="post" action="/powermonitorweb/manage_users/" enctype="multipart/form-data">
+                {% csrf_token %}
+            <div class="floatcenter">
+                {{ add_user_form.as_p }}
+                <input type="submit" name="submit" value="Add User" />
+            </div>
+            </form>
+        </div>
     </div>
     {% endif %}
+    {% endif %}
+    {% if user_added %}
+    <script>alert('User Added!');</script>
     {% endif %}
 {% endblock %}

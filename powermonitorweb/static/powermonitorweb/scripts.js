@@ -56,6 +56,25 @@ $(document).ready(function() {
 		$(this).find('ul').css('visibility', 'hidden');
 	}
 	/*END dropdown submenu code*/
+	
+	/* START manage users in page menu */
+	/* show and hide manage users/add user forms */
+	$("#manage_users").click(function() {
+		showAndHide("#manage_form", "#add_form");
+		$("#manage_users").css('color', '#f00');
+		$("#add_users").css('color', '#00f');
+	});
+	$("#add_users").click(function() {
+		showAndHide("#add_form", "#manage_form");
+		$("#add_users").css('color', '#f00');
+		$("#manage_users").css('color', '#00f');
+	});
+
+	function showAndHide(idToShow, idToHide) {
+		$(idToHide).css('display', 'none');
+		$(idToShow).css('display', 'block');
+	}
+	/* END manage users in page menu */
 
     /*START ajax code for dynamic fields and posting without refreshing*/
     /*=================================================================*/
