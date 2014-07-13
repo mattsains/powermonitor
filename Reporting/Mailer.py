@@ -44,9 +44,16 @@ class Mailer():
             return '%s <%s>' % (name, address)
         return address
 
-    def create_multipart_mail(self, template_name, email_context, subject, recipients, sender=None, images=()):
+    def create_multipart_mail(self, template_name, email_context, subject, recipients, sender=None, images={}):
         """Create a multi-part email that contains both html and plain-text.
-        Returns an EmailMessage object. All messages should be placed in a list to be sent using send_emails."""
+        Returns an EmailMessage object. All messages should be placed in a list to be sent using send_emails.
+        template_name: the template to use to create both plain text and html emails. You must have both templates
+        email_context: A dictionary containing the values to insert into the template
+        subject: Subject line of the email
+        recipients: A list of addresses to send the email to
+        sender: (Optional) The From: line in the email. Defaults to our Gmail account
+        images: (Optional) A dictionary of images - the key is the Content-ID (use in html as src="cid:{key}") and the value is the filename of the image to send.
+        """
         settings.configure(TEMPLATE_DIRS=('./Templates/',))  # Indicate the location of the templates
 
         '''If there is no sender, use the details specified in the class.'''
@@ -71,14 +78,14 @@ class Mailer():
 
         '''Insert any images into the html section of the email, and attach them to the email.'''
         '''At the moment, images should be placed in the Reporting folder in order to be attached.'''
-        if images is not None:
-            for img in images:
-                fp = open(settings.MEDIA_ROOT+img[0], 'rb')  # Open the file in binary mode
+        if images:
+            for img_name, img_filename in images:
+                fp = open(settings.MEDIA_ROOT + img_filename, 'rb')  # Open the file in binary mode
                 msg_image = MIMEImage(fp.read())    # Create the MIMEImage to be attached to the email
                 fp.close()
                 '''Add the image to the header so that the template can insert it into the correct
                 place in the html.'''
-                msg_image.add_header('Content-ID', '<'+img[1]+'>')
+                msg_image.add_header('Content-ID', '<'+img_name+'>')
                 msg.attach(msg_image)   # Attach the image to the email. Yes this is different to adding to header.
         return msg
 
