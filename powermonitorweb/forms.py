@@ -30,6 +30,12 @@ class UserForm(forms.ModelForm):
         return self.cleaned_data
 
 
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'email')
+
+
 class HouseholdSetupUserForm(forms.ModelForm):
     """
     Get the homeowner's details
