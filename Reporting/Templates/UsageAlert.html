@@ -9,6 +9,8 @@
         <p>This is unusually higher than your average of {{ power_average }}kW around this time.</p>
         
         <p>Here's a graph of your usage history:</p>
-        <img src="{{ image_url }}" alt="Electricity usage graph" />
+        <a href="reporting_url">
+            <img src="{{ image_url }}" alt="Electricity usage graph" />
+        </a>
     </div>
 {% include '_footer.html' }

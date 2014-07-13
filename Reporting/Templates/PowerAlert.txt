@@ -10,5 +10,5 @@ Go to {{ reporting_url }} to see usage history.
 
 Some things you can do to save electricity:
 {% for tip in tips %}
- * {{ tip }}
+ * {{ tip.tip_description }}
 {% endfor %}
