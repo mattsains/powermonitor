@@ -3,8 +3,10 @@ PowerAlertScraper: Connect to www.poweralert.co.za, and collect data to use for 
 """
 import DataAnalysis.WebScraper
 import re
+from Decorators import Singleton
 
-class PowerAlertScraper():
+@Singleton
+class PowerAlertScraper:
     """Class to scrape power alerts from Eskom's power alert website.
     http://www.poweralert.co.za/poweralert5/index.php"""
     def __init__(self):
