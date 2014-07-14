@@ -11,8 +11,7 @@ $(document).ready(function(){
     }).change();
 
     $("select#id_report_type").change(
-    function()
-    {
+    function () {
         var enabled = $("select#id_report_type option:selected").attr("data-enabled");
         hideButtons();
         if (enabled)
@@ -22,8 +21,7 @@ $(document).ready(function(){
         }
         else
             $("input#enable").show();
-    }
-    );
+    });
 
     function hideButtons()
     {
