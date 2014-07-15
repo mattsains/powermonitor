@@ -15,6 +15,7 @@
       <div id="imageholder">
 	<h1>Power Monitor</h1>
 	<ul id="bar">
+          {% if user.is_superuser %}
 	  <li class="floatleft">
         <a href="/powermonitorweb/manage_users/">
 	    <div class="floatleft">
@@ -24,15 +25,8 @@
 	    User
 	    </div>
 	    </a>
-	    <div id="subBar">
-	    <ul>
-	        <a href="/powermonitorweb/profile/"><li>Change Profile</li></a>
-	        {% if user.is_superuser %}
-	        <a href="/powermonitorweb/manage_users/"><li>Manage Users</li></a>
-	        {% endif %}
-	    </ul>
-	    </div>
-	  </li>	  
+	  </li>
+        {% endif %}
 	  <li class="floatleft">
             <div class="floatleft">
             <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/graphs_icon.svg' %}" />
@@ -41,7 +35,7 @@
             Graphs
             </div>
 	    </li>
-	  <li class="floatleft">	   
+	  <li class="floatleft">
 	    <div class="floatleft">
 	      <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/food_icon.svg' %}" />
 	      </div>
@@ -49,7 +43,7 @@
 	      Food
 	    </div>
 	  </li>
-	  <li class="floatleft">	   
+	  <li class="floatleft">
 	    <div class="floatleft">
 	      <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/alerts_icon.svg' %}" />
 	      </div>
@@ -76,7 +70,7 @@
 	    Social
 	    </div>
 	    </a>
-	    </li> 
+	    </li>
 	</ul>
 	<img id="lizard" alt="monitor lizard"  src="{% static '/static/powermonitorweb/images/MonitorLizard2.svg' %}" />
       </div>
@@ -86,6 +80,7 @@
 
 	  <div id="usermenu">
 	  <ul>
+          <li><a href="/powermonitorweb/profile/">Change Profile</a></li>
 	      <li><a href="/powermonitorweb/logout/">Logout</a></li>
 	  </ul>
 	  </div>

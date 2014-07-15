@@ -11,13 +11,14 @@ from django.core.urlresolvers import reverse
 
 from powermonitorweb.forms import UserForm
 from powermonitorweb.forms import HouseholdSetupUserForm, SocialMediaAccountForm, ReportTypeForm, ReportDetailsForm, \
-    ManageUsersForm, UserListForm
+    ManageUsersForm, UserListForm, ProfileForm
 from powermonitorweb.models import Report, ElectricityType, User
 
 @login_required()
 def index(request):
     context = RequestContext(request)
     return render_to_response('powermonitorweb/index.html', {}, context)
+    #return HttpResponseRedirect('/powermonitorweb/graphs/')  # start at the graphs page
 
 
 def setup_household(request):
@@ -240,16 +241,17 @@ def manage_users(request):
     password reset requests.
     """
     context = RequestContext(request)
-    users = User.objects.filter(is_superuser='0')
+    users = User.objects.filter(is_superuser='0')  # the homeowner can manage their profile the same as normal users
     user_list = [(u.id, u.username) for u in users]
 
     if request.is_ajax():
         # Create JSON object to pass back to the page so that fields can be populated
         datadict = request.POST
         JSONdata = None
+        saved = None
         if datadict.get('users') and datadict.get('username') and datadict.get('first_name') and \
-                datadict.get('last_name') and datadict.get('email'):
-            save_user = User.objects.filter(id=datadict.get('users'))[0]
+                datadict.get('last_name') and datadict.get('email') and not datadict.get('delete'):
+            save_user = User.objects.get(id=datadict.get('users'))
             # user has clicked "update"
             # check each field for a change, and set the new value appropriately
             if save_user.username != datadict.get('username'):
@@ -266,7 +268,7 @@ def manage_users(request):
             JSONdata = serializers.serialize('json', User.objects.filter(id=save_user.id),
                                              fields=('id', 'username'))
         elif not datadict.get('users') and not datadict.get('username') and not datadict.get('first_name') and not \
-                datadict.get('last_name') and datadict.get('email'):
+                datadict.get('last_name') and datadict.get('email') and not datadict.get('delete'):
             # User has clicked "Reset Password"
             form = PasswordResetForm({'email': str(datadict.get('email'))})
             try:
@@ -277,12 +279,23 @@ def manage_users(request):
             if saved is None:
                 saved = 'true'
             JSONdata = '{"email_sent": %s}' % saved
-        elif datadict.get('users'):
-            #User has clicked on a different entry
+        elif datadict.get('users') and not datadict.get('username') and not datadict.get('first_name') and not \
+                datadict.get('last_name') and not datadict.get('email') and not datadict.get('delete'):
+            #User has clicked on a different user, so update the form
             JSONdata = serializers.serialize('json', User.objects.filter(id=datadict.get('users')),
                                              fields=('username', 'first_name', 'last_name', 'email'))
+        elif datadict.get('delete') and datadict.get('users') and not datadict.get('username') and not \
+                datadict.get('first_name') and not datadict.get('last_name') and not datadict.get('email'):
+            # Delete the selected user
+            print 'deleting'
+            user = User.objects.get(id=datadict.get('users'))
+            if user:
+                user.delete()
+                JSONdata = '{"deleted": true}'
+            else:
+                JSONdata = '{"deleted": false}'
         else:
-            JSONdata = "[{}]"
+            JSONdata = "[{}]"   # Give it an empty dictionary
         return HttpResponse(JSONdata.replace('[', '').replace(']', ''))  # clean and send data
 
     elif request.method == 'POST':
@@ -338,3 +351,31 @@ def reset_password(request):
 
 def reset_password_complete(request):
     return password_reset_complete(request, template_name='powermonitorweb/reset_password_complete.html')
+
+
+@login_required()
+def profile(request):
+    """
+    Manage profile page for users
+    """
+    context = RequestContext(request)
+    user = request.user
+    if request.method == 'POST':
+        profile_form = ProfileForm(data=request.POST, instance=request.user)
+        if profile_form.is_valid():
+            if request.POST['first_name'] and user.first_name != request.POST['first_name']:
+                user.first_name = request.POST['first_name']
+            if request.POST['last_name'] and user.last_name != request.POST['last_name']:
+                user.last_name = request.POST['last_name']
+            if request.POST['email'] and user.email != request.POST['email']:
+                user.email = request.POST['email']
+            user.save()
+        else:
+            print profile_form.errors
+    else:
+        profile_form = ProfileForm(instance=request.user)
+    return render_to_response(
+        'powermonitorweb/profile.html',
+        {'profile_form': profile_form},
+        context
+        )

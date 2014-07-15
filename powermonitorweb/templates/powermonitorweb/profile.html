@@ -1,0 +1,28 @@
+{% extends 'powermonitorweb/base.html' %}
+{% block title %}Profile{% endblock %}
+
+{% block header %}Change Your Profile{% endblock %}
+{% block main %}
+    {% if failed %}
+    <strong>Something went wrong saving your profile.</strong>
+    {% else %}
+    {% if posted %}
+    <strong>Profile saved!</strong>
+    {% else %}
+    <div class="group">
+        <div id="heading"><h3>Manage Profile</h3></div>
+        <form id="profile_form" method="post" action="/powermonitorweb/profile/" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="listform">
+            {{ profile_form.as_p }}
+            <a href="/powermonitorweb/change_password/">Change Password</a>
+        </div>
+        <div class="buttons">
+            <input class ="button" type="submit" name="submit" value="Save Changes" />
+        </div>
+
+    </form>
+    </div>
+    {% endif %}
+    {% endif %}
+{% endblock %}
