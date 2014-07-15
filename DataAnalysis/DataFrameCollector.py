@@ -58,16 +58,17 @@ class DataFrameCollector():
         except:
             raise LookupError('There was an error retrieving your data. Check the values passed to this method.')
 
-        db = DbConnection()
-        sql = "select time, reading from powermonitorweb_readings where timestamp >= '%s' and timestamp <= '%s';"
+        db = DbConnection.instance()
+        # Damn you MariaDB! Why you no work same as MySQL?! This is a little cleaner though
+        sql = "SELECT * FROM powermonitor.powermonitorweb_readings WHERE time >= %s and time <= %s;"
         params = (self.__start.strftime(self.__format), self.__end.strftime(self.__format))
-        result = db.execute_query(sql, params)
+        result = db.execute_query(statement=sql, data=params)
         db.disconnect()
-        if result.rowcount != 0:
+        if result and result.rowcount != 0:
             '''Create the DataFrame object from the data collected from the database'''
-            data_frame = pd.DataFrame(list(result), columns=('timestamp', 'reading'))
+            data_frame = pd.DataFrame(list(result), columns=('time', 'reading'))
             '''Set the index type to DatetimeIndex to allow us to resample the data'''
-            data_frame.set_index(pd.DatetimeIndex(data_frame['timestamp']), inplace=True)
+            data_frame.set_index(pd.DatetimeIndex(data_frame['time']), inplace=True)
             return data_frame
         else:
             return None
