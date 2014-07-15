@@ -6,15 +6,16 @@ Requires: pymysql (https://github.com/PyMySQL/PyMySQL)
 import pymysql
 import base64
 import logging
+from Decorators import Singleton
 
-
-class DbConnection():
+@Singleton
+class DbConnection:
     """Class to connect to the database and execute queries"""
     def __init__(self, auto_commit=1):
         self.__conn = None
         self.connect(auto_commit)
 
-    def connect(self, auto_commit):
+    def connect(self, auto_commit=1):
         """Open the connection to the database"""
         """Connects to a mysql database called powermonitor with username 'powermonitor'"""
         try:
@@ -24,7 +25,7 @@ class DbConnection():
             self.__conn.autocommit(auto_commit)   # Automatically commit queries
         except (pymysql.DatabaseError, pymysql.MySQLError) as e:
             logging.warning('Cannot connect to database. Please check connection.')
-            logging.warning('PyMSQL Message: #%d - %s' % e)
+            #logging.warning('PyMSQL Message: #%d - %s' % e)
 
     def disconnect(self):
         """Disconnect from the database"""
@@ -32,7 +33,7 @@ class DbConnection():
             self.__conn.close()
         except (pymysql.DatabaseError, pymysql.MySQLError) as e:
             logging.warning('There was a problem disconnecting from the database.')
-            logging.warning('PyMSQL Message: #%d - %s' % e)
+            #logging.warning('PyMSQL Message: #%d - %s' % e)
 
     def execute_query(self, statement, data=None):
         """Execute a query that returns a result
@@ -50,8 +51,8 @@ class DbConnection():
             return query
         except (pymysql.DatabaseError, pymysql.MySQLError) as e:
             logging.warning('There was a problem with the SQL query. Check your syntax\n'
-                            'Your query: ' + statement)
-            logging.warning('PyMSQL Message: #%d - %s' % e)
+                            'Your query: %s' % statement)
+            #logging.warning('PyMSQL Message: #%d - %s' % e)
             return None
 
     def execute_non_query(self, statement, data=None):
@@ -69,7 +70,7 @@ class DbConnection():
             query.close()
         except (pymysql.DatabaseError, pymysql.MySQLError) as e:
             logging.warning('There was a problem with the SQL query. Check your syntax: %s' % statement)
-            logging.warning('PyMSQL Message: #%d - %s' % e)
+            #logging.warning('PyMSQL Message: #%d - %s' % e)
 
     def commit_query(self):
         """Commit all SQL statements.
@@ -79,4 +80,4 @@ class DbConnection():
             self.__conn.commit()
         except pymysql.MySQLError as e:
             logging.warning('There was a problem committing all SQL statements.')
-            logging.warning('PyMSQL Message: #%d - %s' % e)
+            #logging.warning('PyMSQL Message: #%d - %s' % e)

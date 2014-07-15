@@ -8,7 +8,7 @@ or
 - premailer (https://pypi.python.org/pypi/premailer)    Preferred
 """
 '''Django packages for HTML templating, and email compilation'''
-from django.conf import settings
+from ecoberry import settings
 from django.template import loader, Context
 from django.core.mail import EmailMultiAlternatives
 from django.core.mail.backends import smtp
@@ -26,8 +26,7 @@ to transform('%s.html' % template_name))'''
 from premailer import transform
 
 
-class Mailer():
-
+class Mailer:
     __charset = 'utf-8'
     __smtp_server = 'smtp.gmail.com'
     __smtp_port = 587
@@ -35,6 +34,7 @@ class Mailer():
     __smtp_pass = str(base64.b64decode(bytes('cDB3M3JtMG4xdDByQDNjMGIzcnJ5')))
     __email = 'powermonitor.ecoberry@gmail.com'
     __email_name = 'PowerMonitor'
+    __mail_list = []
 
     email.charset.add_charset(__charset, email.charset.SHORTEST, None, None)
 
@@ -44,7 +44,7 @@ class Mailer():
             return '%s <%s>' % (name, address)
         return address
 
-    def create_multipart_mail(self, template_name, email_context, subject, recipients, sender=None, images={}):
+    def create_multipart_mail(self, template_name, email_context, subject, recipients, sender=None, images=()):
         """Create a multi-part email that contains both html and plain-text.
         Returns an EmailMessage object. All messages should be placed in a list to be sent using send_emails.
         template_name: the template to use to create both plain text and html emails. You must have both templates
@@ -54,7 +54,7 @@ class Mailer():
         sender: (Optional) The From: line in the email. Defaults to our Gmail account
         images: (Optional) A dictionary of images - the key is the Content-ID (use in html as src="cid:{key}") and the value is the filename of the image to send.
         """
-        settings.configure(TEMPLATE_DIRS=('./Templates/',))  # Indicate the location of the templates
+        #settings.configure(TEMPLATE_DIRS=('./Templates/',))  # Indicate the location of the templates
 
         '''If there is no sender, use the details specified in the class.'''
         if not sender:
@@ -87,13 +87,22 @@ class Mailer():
                 place in the html.'''
                 msg_image.add_header('Content-ID', '<'+img_name+'>')
                 msg.attach(msg_image)   # Attach the image to the email. Yes this is different to adding to header.
+        self.__mail_list.append(msg)
         return msg
 
     def send_emails(self, messages=()):
         """Sends all emails in a single session. This ensures that the system does not need to connect to the smtp
         server many times when sending multiple emails, which should save on bandwidth and cpu cycles."""
         if len(messages) is not 0:
+            if messages != self.__mail_list:
+                self.__mail_list = messages
+            else:
+                self.__mail_list = tuple(self.__mail_list)
             server = smtp.EmailBackend(host=self.__smtp_server, port=self.__smtp_port, username=self.__email,
                                        password=self.__smtp_pass, use_tls=True)  # Set up a secure connection.
-            server.send_messages(messages)  # Send all emails in one session.
+            server.send_messages(self.__mail_list)  # Send all emails in one session.
             server.close()  #Close the session
+        self.__mail_list = []
+
+    def get_mail_list(self):
+        return self.__mail_list
