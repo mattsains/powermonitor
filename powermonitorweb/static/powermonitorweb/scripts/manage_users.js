@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(document).ready(function() {
     //Some aliases for our functions
     var createPOSTFunction = ecoberry.ajax.createPOSTFunction;
     var createFieldFiller = ecoberry.ajax.createFieldFiller;
@@ -42,4 +42,4 @@ $(document).ready(function(){
 		    $("#id_users").val($("#id_users option:first").val()).change(); //Select the first user
 		} else { alert("There was a problem deleting the user"); }
 	    }});});
-};
+});

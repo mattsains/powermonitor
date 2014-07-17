@@ -191,7 +191,10 @@ def manage_reports(request):
     user_reports = Report.objects.all().select_related('').filter(users=user.id)
     user_report_details = None
 
-    if request.method == 'POST':
+    if request.is_ajax():
+        datadict = request.body
+
+    elif request.method == 'POST':
         report_type_form = ReportTypeForm(data=request.POST, user=request.user)
         report_details_form = ReportDetailsForm(data=request.POST, user=request.user)
     else:

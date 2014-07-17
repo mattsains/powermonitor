@@ -1,8 +1,10 @@
 {% extends 'powermonitorweb/base.html' %}
+{% load staticfiles %}
 {% block title %}Manage Users{% endblock %}
 
 {% block header %}Manage Powermonitor Users{% endblock %}
 {% block main %}
+    <script src="{% static '/static/powermonitorweb/scripts/manage_users.js' %}" ></script>
     {% if failed %}
     <strong>Something went wrong updating user.</strong>
     {% else %}
