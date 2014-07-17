@@ -27,4 +27,10 @@ $(document).ready(function(){
     {
        $("input[type=button]").hide();
     }
+
+    /*Add a datetime picker to page*/
+    $('#id_datetime').datetimepicker({
+        formatTime:'H:i',
+        formatDate:'d.m.Y'
+    });
 });

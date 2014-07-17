@@ -1,4 +1,96 @@
-$(document).ready(function() {
+/* A javascript 'namespace' as explained at http://en.wikipedia.org/wiki/Unobtrusive_JavaScript#Namespaces */
+
+var ecoberry;
+if (!ecoberry) //main namespace
+    ecoberry = {};
+else if (typeof ecoberry != 'object'){
+    throw new Error("ecoberry already exists and is not an object.");
+}
+if (!ecoberry.security) //for csrf related stuff
+    ecoberry.security = {};
+else if (typeof ecoberry.security != 'object'){
+    throw new Error("ecoberry.security already exists and is not an object.");
+}
+if (!ecoberry.ajax)
+    ecoberry.ajax = {};
+else if (typeof ecoberry.ajax != 'object'){
+    throw new Error("ecoberry.ajax already exists and is not an object.");
+}
+
+ecoberry.security.passCSRFtoken = function() {
+    // Define private data and functions here
+
+    /* check if a user was selected from the list and do some ajax magic stuff */
+    /* first do some fancy stuff to ensure the csrf token is passed to the server so it knows the data is secure */
+    function getCookie(name) {
+	var cookieValue = null;
+	if (document.cookie && document.cookie != '') {
+	    var cookies = document.cookie.split(';');
+	    for (var i = 0; i < cookies.length; i++) {
+		var cookie = jQuery.trim(cookies[i]);
+		// Does this cookie string begin with the name we want?
+		if (cookie.substring(0, name.length + 1) == (name + '=')) {
+		    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+		    break;
+		}
+	    }
+	}
+	return cookieValue;
+    }
+  
+    /* More csrf stuff */
+    function csrfSafeMethod(method) {
+	// these HTTP methods do not require CSRF protection
+	return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    // Return public pointers to functions or properties
+    // that are to be public.
+    return function()
+    {
+	var csrftoken = getCookie('csrftoken');
+	$.ajaxSetup({
+	    beforeSend: function(xhr, settings) {
+		if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+		    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+		}
+	    }
+	});
+    };}();
+
+ /* Generates an ajax POST function */
+ecoberry.ajax.createPOSTFunction = function (pageUrl, formID, successFunction)
+{
+    return function()
+    {
+        var request = $.ajax({
+            url: pageUrl,
+            type: "POST",
+            data: $(formID).serialize(),
+            processData: false,
+            dataType:"text",
+            success: successFunction
+        });
+    };
+};
+
+/* Generates a function that fills in appropriate fields */
+ecoberry.ajax.createFieldFiller = function(/* names, of, fields */)
+{
+    /* "arguments" gives a list of arguments passed into the function.
+       I needed to refer to the outer function's arguments from within the inner function
+       hence the creation of "args". Probably a better way to do this. */
+    
+    var args = arguments;
+    return function(response)
+    {
+	var json = $.parseJSON(response);
+	for (var i = 0; i < args.length; i++)
+            $("#id_" + args[i]).val(json.fields[args[i]]);
+    };
+};
+
+$(document).ready(function() {    
 	/*	Functions for add and removing items from a select listbox	*/
 	$("#add_to_chosen").click(function() {
         if ( $("#chosen_list option[value='"+$("#option_list option:selected").val()+"'").length == 0 ){
@@ -78,79 +170,25 @@ $(document).ready(function() {
 
     /*START ajax code for dynamic fields and posting without refreshing*/
     /*=================================================================*/
-	/* check if a user was selected from the list and do some ajax magic stuff */
-	/* first do some fancy stuff to ensure the csrf token is passed to the server so it knows the data is secure */
+    ecoberry.security.passCSRFtoken();
 
-	function getCookie(name) {
-		var cookieValue = null;
-		if (document.cookie && document.cookie != '') {
-			var cookies = document.cookie.split(';');
-			for (var i = 0; i < cookies.length; i++) {
-				var cookie = jQuery.trim(cookies[i]);
-				// Does this cookie string begin with the name we want?
-				if (cookie.substring(0, name.length + 1) == (name + '=')) {
-					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-					break;
-				}
-			}
-		}
-		return cookieValue;
-	}
-	var csrftoken = getCookie('csrftoken');
-	/* More csrf stuff */
-	function csrfSafeMethod(method) {
-		// these HTTP methods do not require CSRF protection
-		return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-	}
-	$.ajaxSetup({
-		beforeSend: function(xhr, settings) {
-			if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-				xhr.setRequestHeader("X-CSRFToken", csrftoken);
-			}
-		}
-	});
-
-    /* Generates an ajax POST function */
-	function ajaxPOSTFactory(pageUrl, formID, successFunction)
-	{
-        return function()
-        {
-            var request = $.ajax({
-                url: pageUrl,
-                type: "POST",
-                data: $(formID).serialize(),
-                processData: false,
-                dataType:"text",
-                success: successFunction
-            })
-        }
-	}
-
-    /* Generates a function that fills in appropriate fields */
-	function changeFieldsFactory(/* names, of, fields */)
-	{
-	    var args = arguments;
-	    return function(response)
-	    {
-	        var json = $.parseJSON(response);
-	        for (var i = 0; i < args.length; i++)
-                $("#id_" + args[i]).val(json.fields[args[i]]);
-	    }
-	}
+    //Some aliases for our functions
+    var createPOSTFunction = ecoberry.ajax.createPOSTFunction;
+    var createFieldFiller = ecoberry.ajax.createFieldFiller;
 
 	/* Where the magic happens - Now known as the Mnet method */
 	$("#id_users").change(
-	    ajaxPOSTFactory("/powermonitorweb/manage_users/","#id_users",
-	        changeFieldsFactory("username","first_name", "last_name", "email")));
+	    createPOSTFunction("/powermonitorweb/manage_users/","#id_users",
+	        createFieldFiller("username","first_name", "last_name", "email")));
 
 	/* Update the user, then update the list with the new username */
-	$("#update_user").click(ajaxPOSTFactory("/powermonitorweb/manage_users/", "#manage_users_form",
+	$("#update_user").click(createPOSTFunction("/powermonitorweb/manage_users/", "#manage_users_form",
 	    function(response){
 		    var json = $.parseJSON(response);
 			$('#id_users [value="'+json.pk+ '"]').text(json.fields.username);}));
 			
 	/* Send the user a password reset email */
-    $("#reset_password").click(ajaxPOSTFactory("/powermonitorweb/manage_users/", "#id_email",
+    $("#reset_password").click(createPOSTFunction("/powermonitorweb/manage_users/", "#id_email",
         function(response) {
 		    var json = $.parseJSON(response);
 		    if(json.email_sent) {
@@ -159,7 +197,7 @@ $(document).ready(function() {
 				alert("There was a problem sending the email.");}}));
 				
 	/* Delete the user, and update the list so their name doesn't show any more */
-	/* Tried fitting this in with the ajaxPOSTFactory but it was stubborn as hell...so here's a horrible big function */
+	/* Tried fitting this in with the createPOSTFunction but it was stubborn as hell...so here's a horrible big function */
 	$("#delete_user").click(function() {
 		var request = $.ajax({
 			url: "/powermonitorweb/manage_users/",
@@ -180,7 +218,7 @@ $(document).ready(function() {
 	/*START Add a datetime picker to page*/
     $('#id_datetime').datetimepicker({
         formatTime:'H:i',
-        formatDate:'d.m.Y',
+        formatDate:'d.m.Y'
     });
 	/*END datetimepicker code*/
 });
