@@ -33,12 +33,12 @@ class DataFrameCollector():
         Returns a pandas DataFrame object with timestamp and reading columns"""
         if period_start is not None:
             try:
-                period_start = datetime.strptime(period_start, '%Y-%m-%d %H:%M:%S')
+                period_start = datetime.strptime(period_start, self.__format)
             except:
                 raise ValueError('Invalid date format: date must be in format YYYY-MM-DD HH:MM:SS')
         if period_end is not None:
             try:
-                period_end = datetime.strptime(period_end, '%Y-%m-%d %H:%M:%S')
+                period_end = datetime.strptime(period_end, self.__format)
             except:
                 raise ValueError('Invalid date format: date must be in format YYYY-MM-DD HH:MM:SS')
 
