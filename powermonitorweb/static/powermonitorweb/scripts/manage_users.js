@@ -6,7 +6,7 @@ $(document).ready(function() {
     /*
       We'll have each POST identify itself so the server can easily tell what to code to run.
       I think a convention for this could be something like:
-      id_function without the #
+      id_function
       Example:
       id_users_change  
     */
