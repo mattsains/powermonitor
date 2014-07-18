@@ -61,14 +61,16 @@ ecoberry.security.passCSRFtoken = function() {
     };}();
 
  /* Generates an ajax POST function */
-ecoberry.ajax.createPOSTFunction = function (pageUrl, formID, successFunction)
+ecoberry.ajax.createPOSTFunction = function (pageUrl, formID, identifier, successFunction)
 {
     return function()
     {
+	var data =  $(formID).serialize();
+	var identifiedData = data + (data.length === 0? "" : "&") + "identifier=" + identifier;
         var request = $.ajax({
             url: pageUrl,
             type: "POST",
-            data: $(formID).serialize(),
+            data: identifiedData,
             processData: false,
             dataType:"text",
             success: successFunction
@@ -90,21 +92,18 @@ ecoberry.ajax.createFieldFiller = function(/* names, of, fields */)
 	if(json)
 	    {
 		for (var i = 0; i < args.length; i++)
-		{
-		    if ($("#id_" + args[i]).prop("type") === "checkbox")			
+		{		    
+		    if ($("#id_" + args[i]).prop("type") === "checkbox")  //a checkbox			
 			$("#id_" + args[i]).prop("checked", json.fields[args[i]]);
-		    else if ($("#id_" + args[i]).is("select"))
+		    else if ($("#id_" + args[i]).is("select"))            //a list
 			{
 			    $("#id_" + args[i] + " option").filter(function() {
 				//may want to use $.trim in here
-				return $(this).text().toLowerCase() == json.fields[args[i]];
-				//tolowercase is a bit hacky. but why are options captialised? not sure it looks better.
-				//TODO: change forms so that option tags are lower case... if it looks better like that
+				return $(this).text() == json.fields[args[i]];
 			    }).prop("selected", true);			
 			}
-		    else			
-			$("#id_" + args[i]).val(json.fields[args[i]]);
-			
+		    else			                         //anything else  
+			$("#id_" + args[i]).val(json.fields[args[i]]);			
 		}
 	    }
 	else

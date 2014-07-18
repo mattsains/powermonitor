@@ -193,7 +193,7 @@ def manage_reports(request):
 
     if request.is_ajax():
         datadict = request.POST
-        if datadict.get('report_type'):
+        if datadict.get('identifier') == 'id_report_type_change':
             #User has clicked on a different user, so update the form
             try:
                 myreport = user_reports.filter(report_id=datadict.get('report_type'))
@@ -264,12 +264,10 @@ def manage_users(request):
     if request.is_ajax():
         # Create JSON object to pass back to the page so that fields can be populated
         datadict = request.POST
-        print(request.body)
-        print(datadict.get('username'))
+        print(datadict.get('identifier'))
         JSONdata = None
         saved = None
-        if datadict.get('users') and datadict.get('username') and datadict.get('first_name') and \
-                datadict.get('last_name') and datadict.get('email') and not datadict.get('delete'):
+        if datadict.get('identifier') == 'update_user_click':
             save_user = User.objects.get(id=datadict.get('users'))
             # user has clicked "update"
             # check each field for a change, and set the new value appropriately
@@ -286,8 +284,7 @@ def manage_users(request):
             # send the id and username back so the user list can be updated
             JSONdata = serializers.serialize('json', User.objects.filter(id=save_user.id),
                                              fields=('id', 'username'))
-        elif not datadict.get('users') and not datadict.get('username') and not datadict.get('first_name') and not \
-                datadict.get('last_name') and datadict.get('email') and not datadict.get('delete'):
+        elif not datadict.get('identifier') == 'reset_password_click':
             # User has clicked "Reset Password"
             form = PasswordResetForm({'email': str(datadict.get('email'))})
             try:
@@ -298,13 +295,11 @@ def manage_users(request):
             if saved is None:
                 saved = 'true'
             JSONdata = '{"email_sent": %s}' % saved
-        elif datadict.get('users') and not datadict.get('username') and not datadict.get('first_name') and not \
-                datadict.get('last_name') and not datadict.get('email') and not datadict.get('delete'):
+        elif datadict.get('identifier') == 'id_users_change':
             #User has clicked on a different user, so update the form
             JSONdata = serializers.serialize('json', User.objects.filter(id=datadict.get('users')),
                                              fields=('username', 'first_name', 'last_name', 'email'))
-        elif datadict.get('delete') and datadict.get('users') and not datadict.get('username') and not \
-                datadict.get('first_name') and not datadict.get('last_name') and not datadict.get('email'):
+        elif datadict.get('identifier') == 'delete_user_click':
             # Delete the selected user
             print 'deleting'
             user = User.objects.get(id=datadict.get('users'))

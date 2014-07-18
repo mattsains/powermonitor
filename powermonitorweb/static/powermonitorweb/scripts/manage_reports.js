@@ -5,22 +5,22 @@ $(document).ready(function(){
 
     /*Change the details in the fields to match the selected entry */
     $("#id_report_type").change(
-	createPOSTFunction("/powermonitorweb/manage_reports/", "#id_report_type",
+	createPOSTFunction("/powermonitorweb/manage_reports/", "#id_report_type", "id_report_type_change",
 			   createFieldFiller("occurrence_type", "datetime", "report_daily", "report_weekly", "report_monthly")));
 
     /* save changes to an enabled entry */
-    $("#save").click(
-	createPOSTFunction("/powermonitorweb/manage_reports/", "#manage_reports_form",
+    $("#save_report").click(
+	createPOSTFunction("/powermonitorweb/manage_reports/", "#manage_reports_form", "save_report_click",
 			  function(){alert("TEST!");}));
 
     /* enable a disabled entry */
-    $("#enable").click(
-	createPOSTFunction("/powermonistorweb/manage_reports/", "#id_report_type",
+    $("#enable_report").click(
+	createPOSTFunction("/powermonistorweb/manage_reports/", "#id_report_type", "enable_report_click",
 			  function(){alert("TEST2!");}));
 
     /* disable an enabled entry */
-    $("#disable").click(
-	createPOSTFunction("/powermonistorweb/manage_reports/", "#id_report_type",
+    $("#disable_report").click(
+	createPOSTFunction("/powermonistorweb/manage_reports/", "#id_report_type", "disiable_report_click",
 			   function(){alert("TEST3!");}));
     
     hideButtons();
