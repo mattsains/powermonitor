@@ -1,12 +1,14 @@
 /* A javascript 'namespace' as explained at http://en.wikipedia.org/wiki/Unobtrusive_JavaScript#Namespaces */
-
+/* ecoberry is the namespace */
+/* ecoberry.security is for csrf stuff */
+/* ecoberry.ajax is for functions to facilitate easier ajax POSTs and whatnot */
 var ecoberry;
-if (!ecoberry) //main namespace
+if (!ecoberry)
     ecoberry = {};
 else if (typeof ecoberry != 'object'){
     throw new Error("ecoberry already exists and is not an object.");
 }
-if (!ecoberry.security) //for csrf related stuff
+if (!ecoberry.security)
     ecoberry.security = {};
 else if (typeof ecoberry.security != 'object'){
     throw new Error("ecoberry.security already exists and is not an object.");
@@ -85,11 +87,35 @@ ecoberry.ajax.createFieldFiller = function(/* names, of, fields */)
     return function(response)
     {
 	var json = $.parseJSON(response);
-	for (var i = 0; i < args.length; i++)
-            $("#id_" + args[i]).val(json.fields[args[i]]);
+	if(json)
+	    {
+		for (var i = 0; i < args.length; i++)
+		{
+		    if ($("#id_" + args[i]).prop("type") === "checkbox")			
+			$("#id_" + args[i]).prop("checked", json.fields[args[i]]);
+		    else if ($("#id_" + args[i]).is("select"))
+			{
+			    $("#id_" + args[i] + " option").filter(function() {
+				//may want to use $.trim in here
+				return $(this).text().toLowerCase() == json.fields[args[i]];
+				//tolowercase is a bit hacky. but why are options captialised? not sure it looks better.
+				//TODO: change forms so that option tags are lower case... if it looks better like that
+			    }).prop("selected", true);			
+			}
+		    else			
+			$("#id_" + args[i]).val(json.fields[args[i]]);
+			
+		}
+	    }
+	else
+	{
+	    //TODO: reset all fields
+	}
     };
 };
 
+/* Code for the base page follows */
+/* ============================== */
 $(document).ready(function() {    
 	/*	Functions for add and removing items from a select listbox	*/
 	$("#add_to_chosen").click(function() {
@@ -168,11 +194,5 @@ $(document).ready(function() {
 	}
 	/* END manage users in page menu */
 
-    /*START ajax code for dynamic fields and posting without refreshing*/
-    /*=================================================================*/
     ecoberry.security.passCSRFtoken();
-
-    	/*END of ajax code*/
-
-
 });

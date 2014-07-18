@@ -12,7 +12,7 @@ from django.core.urlresolvers import reverse
 from powermonitorweb.forms import UserForm
 from powermonitorweb.forms import HouseholdSetupUserForm, SocialMediaAccountForm, ReportTypeForm, ReportDetailsForm, \
     ManageUsersForm, UserListForm, ProfileForm
-from powermonitorweb.models import Report, ElectricityType, User
+from powermonitorweb.models import Report, ElectricityType, User, UserReports
 
 @login_required()
 def index(request):
@@ -188,12 +188,26 @@ def manage_reports(request):
     posted = False
 
     user = request.user
-    user_reports = Report.objects.all().select_related('').filter(users=user.id)
+    user_reports = UserReports.objects.all().filter(user_id=user.id)
     user_report_details = None
 
     if request.is_ajax():
-        datadict = request.body
+        datadict = request.POST
+        if datadict.get('report_type'):
+            #User has clicked on a different user, so update the form
+            try:
+                myreport = user_reports.filter(report_id=datadict.get('report_type'))
+            except Exception:
+                myreport = None
 
+            JSONdata = serializers.serialize('json', myreport, fields=('occurrence_type', 'datetime', 'report_daily',
+                                                                       'report_weekly', 'report_monthly'))
+            print (JSONdata)
+            print("end")
+        else:
+            JSONdata = '[{}]'
+
+        return HttpResponse(JSONdata.replace('[', '').replace(']', ''))  # clean and send data
     elif request.method == 'POST':
         report_type_form = ReportTypeForm(data=request.POST, user=request.user)
         report_details_form = ReportDetailsForm(data=request.POST, user=request.user)
@@ -250,6 +264,8 @@ def manage_users(request):
     if request.is_ajax():
         # Create JSON object to pass back to the page so that fields can be populated
         datadict = request.POST
+        print(request.body)
+        print(datadict.get('username'))
         JSONdata = None
         saved = None
         if datadict.get('users') and datadict.get('username') and datadict.get('first_name') and \
