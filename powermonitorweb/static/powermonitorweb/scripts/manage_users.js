@@ -43,7 +43,9 @@ $(document).ready(function() {
             processData: false,
             dataType:"text",
             success: function(response){
+			console.log(response);
 		var json = $.parseJSON(response);
+		
 		if(json.deleted) {
 		    alert("User Deleted");
 		    $("#id_users option:selected").remove(); // Delete the user from the list

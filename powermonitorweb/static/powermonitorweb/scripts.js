@@ -66,7 +66,7 @@ ecoberry.ajax.createPOSTFunction = function (pageUrl, formID, identifier, succes
     return function()
     {
 	var data =  $(formID).serialize();
-	var identifiedData = data + (data.length === 0? "" : "&") + "identifier=" + identifier;
+	var identifiedData = data + (data.length == 0 ? "" : "&") + "identifier=" + identifier;
         var request = $.ajax({
             url: pageUrl,
             type: "POST",

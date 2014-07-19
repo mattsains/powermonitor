@@ -14,6 +14,7 @@ from powermonitorweb.forms import HouseholdSetupUserForm, SocialMediaAccountForm
     ManageUsersForm, UserListForm, ProfileForm
 from powermonitorweb.models import Report, ElectricityType, User, UserReports
 # requirements for graphing
+from DataAnalysis.Forecasting import PowerForecasting as pf
 from DataAnalysis.Plotting import Plotter as plt
 from DataAnalysis.DataFrameCollector import DataFrameCollector as dfc
 from datetime import datetime
@@ -270,7 +271,7 @@ def manage_users(request):
     if request.is_ajax():
         # Create JSON object to pass back to the page so that fields can be populated
         datadict = request.POST
-        print(datadict.get('identifier'))
+        # print(datadict.get('identifier'))
         JSONdata = None
         saved = None
         if datadict.get('identifier') == 'update_user_click':
@@ -290,7 +291,7 @@ def manage_users(request):
             # send the id and username back so the user list can be updated
             JSONdata = serializers.serialize('json', User.objects.filter(id=save_user.id),
                                              fields=('id', 'username'))
-        elif not datadict.get('identifier') == 'reset_password_click':
+        elif datadict.get('identifier') == 'reset_password_click':
             # User has clicked "Reset Password"
             form = PasswordResetForm({'email': str(datadict.get('email'))})
             try:
@@ -307,7 +308,6 @@ def manage_users(request):
                                              fields=('username', 'first_name', 'last_name', 'email'))
         elif datadict.get('identifier') == 'delete_user_click':
             # Delete the selected user
-            print 'deleting'
             user = User.objects.get(id=datadict.get('users'))
             if user:
                 user.delete()
@@ -453,8 +453,20 @@ def graphs(request):
         elif datadict.get('period_select') == 'year':
             graph_name = generate_graph(period_type='year', length=1)
         elif datadict.get('period_select') == 'predict':
-            pass  # TODO: generate prediction graph
-        JSONdata = '{"graph": %s}' % graph_name  # return the name of the new graph to display
+            frame = dfc().collect_period(period_type='hour',
+                                         period_start=str(datetime.now().replace(microsecond=0) -
+                                                          relativedelta(hours=12)),
+                                         period_length=12)
+            if frame is not None:
+                prediction_frame = pf.predict_usage(frame, True)
+                graph_name = 'prediction_graph.svg'
+                plt().plot_single_frame(data_frame=prediction_frame, title='Predicted Usage', y_label='Usage (kW)',
+                                        x_label='Time', file_name=filename + graph_name)
+        if graph_name != 'null':
+            graph_html = "<img src='/static/powermonitorweb/images/graphs/%s' />" % graph_name
+        else:
+            graph_html = "<strong>No graph found. There may be insufficient data to generate a graph.</strong>"
+        JSONdata = '{"graph": "%s"}' % graph_html  # return the name of the new graph to display
         return HttpResponse(JSONdata)
     else:
         graph_name = generate_graph(period_type='hour', length=12)  # by default display the last 12 hours
