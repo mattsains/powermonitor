@@ -13,6 +13,12 @@ from powermonitorweb.forms import UserForm
 from powermonitorweb.forms import HouseholdSetupUserForm, SocialMediaAccountForm, ReportTypeForm, ReportDetailsForm, \
     ManageUsersForm, UserListForm, ProfileForm
 from powermonitorweb.models import Report, ElectricityType, User, UserReports
+# requirements for graphing
+from DataAnalysis.Plotting import Plotter as plt
+from DataAnalysis.DataFrameCollector import DataFrameCollector as dfc
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+import os
 
 @login_required()
 def index(request):
@@ -393,3 +399,67 @@ def profile(request):
         {'profile_form': profile_form},
         context
         )
+
+
+@login_required()
+def graphs(request):
+    """
+    Generates a new graph when a user requests it. I think we should stick away from live graphs for now to keep some of
+    the strain off the CPU. We don't know yet how the whole system will perform when everything is running.
+    :param request:
+    :return:
+    """
+    context = RequestContext(request)
+    filename = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'powermonitorweb\\static\\powermonitorweb\\'
+                                                                        'images\\graphs\\')
+    graph_name = 'null'
+    def generate_graph(period_type, length):
+        new_graph_name = graph_name
+        if period_type == 'hour':
+            delta = relativedelta(hours=length)
+        elif period_type == 'day':
+            delta = relativedelta(days=length)
+        elif period_type == 'week':
+            delta = relativedelta(weeks=length)
+        elif period_type == 'month':
+            delta = relativedelta(months=length)
+        else:
+            delta = relativedelta(years=length)
+        frame = dfc().collect_period(period_type=period_type,
+                                     period_start=str(datetime.now().replace(microsecond=0) - delta),
+                                     period_length=length)
+        if frame is not None:
+            new_graph_name = 'last_%d%s.svg' % (length, period_type)
+            plot_title = 'Last %d %s' % (length, period_type)
+            plt().plot_single_frame(data_frame=frame, title=plot_title, y_label='Usage (kW)',
+                                    x_label='Time', file_name=filename + new_graph_name)
+        return new_graph_name
+
+    if request.is_ajax():   # The user has selected a different graph
+        datadict = request.POST
+        # generate a new graph based on the user's selection
+        if datadict.get('period_select') == '1hour':
+            graph_name = generate_graph(period_type='hour', length=1)
+        elif datadict.get('period_select') == '12hour':
+            graph_name = generate_graph(period_type='hour', length=12)
+        elif datadict.get('period_select') == 'day':
+            graph_name = generate_graph(period_type='day', length=1)
+        elif datadict.get('period_select') == 'week':
+            graph_name = generate_graph(period_type='week', length=1)
+        elif datadict.get('period_select') == '1month':
+            graph_name = generate_graph(period_type='month', length=1)
+        elif datadict.get('period_select') == '6month':
+            graph_name = generate_graph(period_type='month', length=6)
+        elif datadict.get('period_select') == 'year':
+            graph_name = generate_graph(period_type='year', length=1)
+        elif datadict.get('period_select') == 'predict':
+            pass  # TODO: generate prediction graph
+        JSONdata = '{"graph": %s}' % graph_name  # return the name of the new graph to display
+        return HttpResponse(JSONdata)
+    else:
+        graph_name = generate_graph(period_type='hour', length=12)  # by default display the last 12 hours
+    return render_to_response(
+        'powermonitorweb/graphs.html',
+        {'graph': graph_name},
+        context
+    )

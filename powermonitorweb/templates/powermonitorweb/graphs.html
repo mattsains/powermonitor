@@ -1,0 +1,31 @@
+{% extends 'powermonitorweb/base.html' %}
+{% load staticfiles %}
+{% block title %}Graphs{% endblock %}
+
+{% block header %}Usage Graphs{% endblock %}
+{% block main %}
+    <script src="{% static '/static/powermonitorweb/scripts/graphs.js' %}" ></script>
+    <div class="group">
+        <div id="heading"><h3>Graphs</h3></div>
+        <div>
+            Select the period you wish to view:
+            <select id="period_select" name="period_select">
+                <option value="1hour">Last Hour</option>
+                <option value="12hour">Last 12 Hours</option>
+                <option value="day">Last Day</option>
+                <option value="week">Last Week</option>
+                <option value="1month">Last Month</option>
+                <option value="6month">Last 6 Months</option>
+                <option value="year">Last Year</option>
+                <option value="predict">1 Hour Prediction</option>
+            </select>
+        </div>
+        <div id="graphdiv">
+            {% if graph != 'null' %}
+            <img src="{{ STATIC_URL }}powermonitorweb/images/graphs/{{ graph }}" alt="" width="80%" height="80%"/>
+            {% else %}
+            <strong>No graph found. There may not be any data to graph. Try another period to display</strong>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

@@ -260,6 +260,16 @@ h2
     width: 50%;
 }
 
+#graphdiv {
+	background-color: #fff;
+    border: solid black 1px;
+    border-radius: 5px;
+    padding: 10px 5px;
+    margin: 20px 60px;
+    display: block;
+    overflow: auto;
+}
+
 .listform
 {
     border: solid black 1px;
