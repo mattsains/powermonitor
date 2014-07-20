@@ -9,7 +9,7 @@ from django.contrib.auth.views import password_change, password_reset, password_
 from django.core import serializers
 from django.core.urlresolvers import reverse
 
-from powermonitorweb.forms import UserForm
+from powermonitorweb.forms import UserForm, SelectGraphPeriodForm
 from powermonitorweb.forms import HouseholdSetupUserForm, SocialMediaAccountForm, ReportTypeForm, ReportDetailsForm, \
     ManageUsersForm, UserListForm, ProfileForm
 from powermonitorweb.models import Report, ElectricityType, User, UserReports
@@ -437,22 +437,23 @@ def graphs(request):
 
     if request.is_ajax():   # The user has selected a different graph
         datadict = request.POST
+        print datadict
         # generate a new graph based on the user's selection
-        if datadict.get('period_select') == '1hour':
+        if datadict.get('period') == '1hour':
             graph_name = generate_graph(period_type='hour', length=1)
-        elif datadict.get('period_select') == '12hour':
+        elif datadict.get('period') == '12hour':
             graph_name = generate_graph(period_type='hour', length=12)
-        elif datadict.get('period_select') == 'day':
+        elif datadict.get('period') == 'day':
             graph_name = generate_graph(period_type='day', length=1)
-        elif datadict.get('period_select') == 'week':
+        elif datadict.get('period') == 'week':
             graph_name = generate_graph(period_type='week', length=1)
-        elif datadict.get('period_select') == '1month':
+        elif datadict.get('period') == '1month':
             graph_name = generate_graph(period_type='month', length=1)
-        elif datadict.get('period_select') == '6month':
+        elif datadict.get('period') == '6month':
             graph_name = generate_graph(period_type='month', length=6)
-        elif datadict.get('period_select') == 'year':
+        elif datadict.get('period') == 'year':
             graph_name = generate_graph(period_type='year', length=1)
-        elif datadict.get('period_select') == 'predict':
+        elif datadict.get('period') == 'predict':
             frame = dfc().collect_period(period_type='hour',
                                          period_start=str(datetime.now().replace(microsecond=0) -
                                                           relativedelta(hours=12)),
@@ -469,9 +470,10 @@ def graphs(request):
         JSONdata = '{"graph": "%s"}' % graph_html  # return the name of the new graph to display
         return HttpResponse(JSONdata)
     else:
+        graph_period_form = SelectGraphPeriodForm()
         graph_name = generate_graph(period_type='hour', length=12)  # by default display the last 12 hours
     return render_to_response(
         'powermonitorweb/graphs.html',
-        {'graph': graph_name},
+        {'graph': graph_name, 'graph_period_form': graph_period_form},
         context
     )

@@ -9,16 +9,7 @@
         <div id="heading"><h3>Graphs</h3></div>
         <div>
             Select the period you wish to view:
-            <select id="period_select" name="period_select">
-                <option value="1hour">Last Hour</option>
-                <option value="12hour">Last 12 Hours</option>
-                <option value="day">Last Day</option>
-                <option value="week">Last Week</option>
-                <option value="1month">Last Month</option>
-                <option value="6month">Last 6 Months</option>
-                <option value="year">Last Year</option>
-                <option value="predict">1 Hour Prediction</option>
-            </select>
+            {{ graph_period_form.as_p }}
         </div>
         <div id="graphdiv">
             {% if graph != 'null' %}
