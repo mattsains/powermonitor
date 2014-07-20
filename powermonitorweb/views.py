@@ -12,7 +12,14 @@ from django.core.urlresolvers import reverse
 from powermonitorweb.forms import UserForm
 from powermonitorweb.forms import HouseholdSetupUserForm, SocialMediaAccountForm, ReportTypeForm, ReportDetailsForm, \
     ManageUsersForm, UserListForm, ProfileForm
-from powermonitorweb.models import Report, ElectricityType, User
+from powermonitorweb.models import Report, ElectricityType, User, UserReports
+# requirements for graphing
+from DataAnalysis.Forecasting import PowerForecasting as pf
+from DataAnalysis.Plotting import Plotter as plt
+from DataAnalysis.DataFrameCollector import DataFrameCollector as dfc
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+import os
 
 @login_required()
 def index(request):
@@ -188,10 +195,27 @@ def manage_reports(request):
     posted = False
 
     user = request.user
-    user_reports = Report.objects.all().select_related('').filter(users=user.id)
+    user_reports = UserReports.objects.all().filter(user_id=user.id)
     user_report_details = None
 
-    if request.method == 'POST':
+    if request.is_ajax():
+        datadict = request.POST
+        if datadict.get('identifier') == 'id_report_type_change':
+            #User has clicked on a different user, so update the form
+            try:
+                myreport = user_reports.filter(report_id=datadict.get('report_type'))
+            except Exception:
+                myreport = None
+
+            JSONdata = serializers.serialize('json', myreport, fields=('occurrence_type', 'datetime', 'report_daily',
+                                                                       'report_weekly', 'report_monthly'))
+            print (JSONdata)
+            print("end")
+        else:
+            JSONdata = '[{}]'
+
+        return HttpResponse(JSONdata.replace('[', '').replace(']', ''))  # clean and send data
+    elif request.method == 'POST':
         report_type_form = ReportTypeForm(data=request.POST, user=request.user)
         report_details_form = ReportDetailsForm(data=request.POST, user=request.user)
     else:
@@ -247,10 +271,10 @@ def manage_users(request):
     if request.is_ajax():
         # Create JSON object to pass back to the page so that fields can be populated
         datadict = request.POST
+        # print(datadict.get('identifier'))
         JSONdata = None
         saved = None
-        if datadict.get('users') and datadict.get('username') and datadict.get('first_name') and \
-                datadict.get('last_name') and datadict.get('email') and not datadict.get('delete'):
+        if datadict.get('identifier') == 'update_user_click':
             save_user = User.objects.get(id=datadict.get('users'))
             # user has clicked "update"
             # check each field for a change, and set the new value appropriately
@@ -267,8 +291,7 @@ def manage_users(request):
             # send the id and username back so the user list can be updated
             JSONdata = serializers.serialize('json', User.objects.filter(id=save_user.id),
                                              fields=('id', 'username'))
-        elif not datadict.get('users') and not datadict.get('username') and not datadict.get('first_name') and not \
-                datadict.get('last_name') and datadict.get('email') and not datadict.get('delete'):
+        elif datadict.get('identifier') == 'reset_password_click':
             # User has clicked "Reset Password"
             form = PasswordResetForm({'email': str(datadict.get('email'))})
             try:
@@ -279,15 +302,12 @@ def manage_users(request):
             if saved is None:
                 saved = 'true'
             JSONdata = '{"email_sent": %s}' % saved
-        elif datadict.get('users') and not datadict.get('username') and not datadict.get('first_name') and not \
-                datadict.get('last_name') and not datadict.get('email') and not datadict.get('delete'):
+        elif datadict.get('identifier') == 'id_users_change':
             #User has clicked on a different user, so update the form
             JSONdata = serializers.serialize('json', User.objects.filter(id=datadict.get('users')),
                                              fields=('username', 'first_name', 'last_name', 'email'))
-        elif datadict.get('delete') and datadict.get('users') and not datadict.get('username') and not \
-                datadict.get('first_name') and not datadict.get('last_name') and not datadict.get('email'):
+        elif datadict.get('identifier') == 'delete_user_click':
             # Delete the selected user
-            print 'deleting'
             user = User.objects.get(id=datadict.get('users'))
             if user:
                 user.delete()
@@ -379,3 +399,79 @@ def profile(request):
         {'profile_form': profile_form},
         context
         )
+
+
+@login_required()
+def graphs(request):
+    """
+    Generates a new graph when a user requests it. I think we should stick away from live graphs for now to keep some of
+    the strain off the CPU. We don't know yet how the whole system will perform when everything is running.
+    :param request:
+    :return:
+    """
+    context = RequestContext(request)
+    filename = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'powermonitorweb\\static\\powermonitorweb\\'
+                                                                        'images\\graphs\\')
+    graph_name = 'null'
+    def generate_graph(period_type, length):
+        new_graph_name = graph_name
+        if period_type == 'hour':
+            delta = relativedelta(hours=length)
+        elif period_type == 'day':
+            delta = relativedelta(days=length)
+        elif period_type == 'week':
+            delta = relativedelta(weeks=length)
+        elif period_type == 'month':
+            delta = relativedelta(months=length)
+        else:
+            delta = relativedelta(years=length)
+        frame = dfc().collect_period(period_type=period_type,
+                                     period_start=str(datetime.now().replace(microsecond=0) - delta),
+                                     period_length=length)
+        if frame is not None:
+            new_graph_name = 'last_%d%s.svg' % (length, period_type)
+            plot_title = 'Last %d %s' % (length, period_type)
+            plt().plot_single_frame(data_frame=frame, title=plot_title, y_label='Usage (kW)',
+                                    x_label='Time', file_name=filename + new_graph_name)
+        return new_graph_name
+
+    if request.is_ajax():   # The user has selected a different graph
+        datadict = request.POST
+        # generate a new graph based on the user's selection
+        if datadict.get('period_select') == '1hour':
+            graph_name = generate_graph(period_type='hour', length=1)
+        elif datadict.get('period_select') == '12hour':
+            graph_name = generate_graph(period_type='hour', length=12)
+        elif datadict.get('period_select') == 'day':
+            graph_name = generate_graph(period_type='day', length=1)
+        elif datadict.get('period_select') == 'week':
+            graph_name = generate_graph(period_type='week', length=1)
+        elif datadict.get('period_select') == '1month':
+            graph_name = generate_graph(period_type='month', length=1)
+        elif datadict.get('period_select') == '6month':
+            graph_name = generate_graph(period_type='month', length=6)
+        elif datadict.get('period_select') == 'year':
+            graph_name = generate_graph(period_type='year', length=1)
+        elif datadict.get('period_select') == 'predict':
+            frame = dfc().collect_period(period_type='hour',
+                                         period_start=str(datetime.now().replace(microsecond=0) -
+                                                          relativedelta(hours=12)),
+                                         period_length=12)
+            if frame is not None:
+                prediction_frame = pf.predict_usage(frame, True)
+                graph_name = 'prediction_graph.svg'
+                plt().plot_single_frame(data_frame=prediction_frame, title='Predicted Usage', y_label='Usage (kW)',
+                                        x_label='Time', file_name=filename + graph_name)
+        if graph_name != 'null':
+            graph_html = "<img src='/static/powermonitorweb/images/graphs/%s' />" % graph_name
+        else:
+            graph_html = "<strong>No graph found. There may be insufficient data to generate a graph.</strong>"
+        JSONdata = '{"graph": "%s"}' % graph_html  # return the name of the new graph to display
+        return HttpResponse(JSONdata)
+    else:
+        graph_name = generate_graph(period_type='hour', length=12)  # by default display the last 12 hours
+    return render_to_response(
+        'powermonitorweb/graphs.html',
+        {'graph': graph_name},
+        context
+    )

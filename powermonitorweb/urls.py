@@ -16,5 +16,6 @@ urlpatterns = patterns('',
                            views.reset_password_confirm, name='reset_password_confirm'),
                        url(r'^reset_password/$', views.reset_password, name='reset_password'),
                        url(r'^reset_password_complete/$', views.reset_password_complete, name='reset_password_complete'),
-                       url(r'^profile/$', views.profile, name='profile')
+                       url(r'^profile/$', views.profile, name='profile'),
+                       url(r'^graphs/$', views.graphs, name='graphs')
                        )
