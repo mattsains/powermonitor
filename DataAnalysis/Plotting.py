@@ -49,8 +49,8 @@ class Plotter:
         Return: return the figure or a stringIO of the figure if no filename is given
         """
         # Review comments: How does this end up in the plt object? Don't have docs to check
-        unweighted_data_frame.reading.plot(label=unweighted_legend, color='g')
-        weighted_data_frame.plot(label=weighted_legend, color='Y', marker='o')
+        unweighted_data_frame.reading.plot(label=unweighted_legend, color='g', linewidth=0.5)
+        weighted_data_frame.plot(label=weighted_legend, color='Y', marker='o', linewidth=0.5)
 
         if title:
             plt.title(title)

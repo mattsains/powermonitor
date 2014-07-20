@@ -487,4 +487,9 @@ div.metrics {
     overflow: auto;
 }
 
+div#eskom_image {
+	margin-left: auto;
+	margin-right: auto;
+}
+
 div#clearfloat { clear: both; }

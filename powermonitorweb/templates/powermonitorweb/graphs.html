@@ -25,25 +25,43 @@
             <div id="current_usage" class="metrics">
                 <h4>Current Usage:</h4>
                 <p>
+                    {% if current_usage != None %}
                     {{ current_usage }}
+                    {% else %}
+                    No data available.
+                    {% endif %}
                 </p>
             </div>
             <div id="average_usage" class="metrics">
                 <h4>Average Usage Per Hour:</h4>
                 <p>
+                    {% if average_usage != None %}
                     {{ average_usage }}
+                    {% else %}
+                    No data available.
+                    {% endif %}
                 </p>
             </div>
             <div id="eskom_status" class="metrics">
                 <h4>Country Power Rating:</h4>
-                <p>
-                    {{ eskom_status }}
-                </p>
+                    {% if eskom_status != None %}
+                    <div id="eskom_image">
+                        <img src="{{ STATIC_URL }}powermonitorweb/images/{{ eskom_status }}" alt="" width="50%" />
+                    </div>
+                    {% else %}
+                    <p>
+                        No data available.
+                    </p>
+                    {% endif %}
             </div>
             <div id="savings" class="metrics">
                 <h4>Your Savings:</h4>
                 <p>
+                    {% if savings != None %}
                     {{ savings }}
+                    {% else %}
+                    No data available.
+                    {% endif %}
                 </p>
             </div>
             <div id="clearfloat"></div>
