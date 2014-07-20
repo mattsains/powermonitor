@@ -311,11 +311,10 @@ h3
 
 }
 
-#heading
+div.heading /* changed this to class so it can be used in 2 divs in the graph page */
 {
     background-color: #7FB0E7;
     text-align: center;
-       
 }
 
 #userdetails
@@ -475,3 +474,17 @@ div#mini_menu #manage_users {
 div#add_form {
 	display: none;
 }
+
+div.metrics {
+	float: left;
+	width: 22.5%;
+	padding: 5px 5px;
+	margin: 15px 5px;
+	background-color: #fff;
+    border: solid black 1px;
+    border-radius: 5px;
+    display: block;
+    overflow: auto;
+}
+
+div#clearfloat { clear: both; }

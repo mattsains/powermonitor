@@ -413,6 +413,7 @@ def graphs(request):
     filename = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'powermonitorweb\\static\\powermonitorweb\\'
                                                                         'images\\graphs\\')
     graph_name = 'null'
+
     def generate_graph(period_type, length):
         new_graph_name = graph_name
         if period_type == 'hour':
@@ -430,14 +431,13 @@ def graphs(request):
                                      period_length=length)
         if frame is not None:
             new_graph_name = 'last_%d%s.svg' % (length, period_type)
-            plot_title = 'Last %d %s' % (length, period_type)
+            plot_title = 'Last %d %s' % (length, period_type.capitalize())
             plt().plot_single_frame(data_frame=frame, title=plot_title, y_label='Usage (kW)',
                                     x_label='Time', file_name=filename + new_graph_name)
         return new_graph_name
 
     if request.is_ajax():   # The user has selected a different graph
         datadict = request.POST
-        print datadict
         # generate a new graph based on the user's selection
         if datadict.get('period') == '1hour':
             graph_name = generate_graph(period_type='hour', length=1)
@@ -454,19 +454,30 @@ def graphs(request):
         elif datadict.get('period') == 'year':
             graph_name = generate_graph(period_type='year', length=1)
         elif datadict.get('period') == 'predict':
-            frame = dfc().collect_period(period_type='hour',
-                                         period_start=str(datetime.now().replace(microsecond=0) -
-                                                          relativedelta(hours=12)),
-                                         period_length=12)
-            if frame is not None:
-                prediction_frame = pf.predict_usage(frame, True)
-                graph_name = 'prediction_graph.svg'
-                plt().plot_single_frame(data_frame=prediction_frame, title='Predicted Usage', y_label='Usage (kW)',
-                                        x_label='Time', file_name=filename + graph_name)
+            # Generating a prediction graph works a little differently
+            try:
+                pre_predction_frame = dfc().collect_period(period_type='hour',
+                                                           period_start=str(datetime.now().replace(microsecond=0) -
+                                                                            relativedelta(hours=12)),
+                                                           period_length=12)
+                # print frame
+                if pre_predction_frame is not None:
+                    prediction_frame = pf().predict_usage(data_frame=pre_predction_frame, smooth=True)
+                    graph_name = 'prediction_graph.svg'
+                    plt().plot_single_frame(data_frame=prediction_frame, title='Predicted Usage', y_label='Usage (kW)',
+                                            x_label='Time', file_name=filename + graph_name)
+            except:
+                graph_name = 'null'
         if graph_name != 'null':
+            # A graph was produced!
+            # It seemed easier to generate the html tag here, then just use JS to plonk it in the div
             graph_html = "<img src='/static/powermonitorweb/images/graphs/%s' />" % graph_name
         else:
-            graph_html = "<strong>No graph found. There may be insufficient data to generate a graph.</strong>"
+            # Generic error message tag if no graph was produced
+            graph_html = "<strong>No graph found. There may be insufficient data to generate a graph.<br />" \
+                         "Try selecting another period.</strong>" \
+                         "<p>If a power outage has occurred, you may need to wait 12hours before predictions can be" \
+                         "calculated</p>"
         JSONdata = '{"graph": "%s"}' % graph_html  # return the name of the new graph to display
         return HttpResponse(JSONdata)
     else:

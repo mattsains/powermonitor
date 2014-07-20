@@ -6,17 +6,47 @@
 {% block main %}
     <script src="{% static '/static/powermonitorweb/scripts/graphs.js' %}" ></script>
     <div class="group">
-        <div id="heading"><h3>Graphs</h3></div>
+        <div class="heading"><h3>Graphs</h3></div>
         <div>
             Select the period you wish to view:
             {{ graph_period_form.as_p }}
         </div>
         <div id="graphdiv">
             {% if graph != 'null' %}
-            <img src="{{ STATIC_URL }}powermonitorweb/images/graphs/{{ graph }}" alt="" width="80%" height="80%"/>
+            <img src="{{ STATIC_URL }}powermonitorweb/images/graphs/{{ graph }}" alt=""/>
             {% else %}
             <strong>No graph found. There may not be any data to graph. Try another period to display</strong>
             {% endif %}
+        </div>
+    </div>
+    <div class="group">
+        <div class="heading"><h3>Metrics</h3></div>
+        <div id="metrics_div">
+            <div id="current_usage" class="metrics">
+                <h4>Current Usage:</h4>
+                <p>
+                    {{ current_usage }}
+                </p>
+            </div>
+            <div id="average_usage" class="metrics">
+                <h4>Average Usage Per Hour:</h4>
+                <p>
+                    {{ average_usage }}
+                </p>
+            </div>
+            <div id="eskom_status" class="metrics">
+                <h4>Country Power Rating:</h4>
+                <p>
+                    {{ eskom_status }}
+                </p>
+            </div>
+            <div id="savings" class="metrics">
+                <h4>Your Savings:</h4>
+                <p>
+                    {{ savings }}
+                </p>
+            </div>
+            <div id="clearfloat"></div>
         </div>
     </div>
 {% endblock %}

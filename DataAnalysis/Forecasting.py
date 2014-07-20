@@ -16,15 +16,14 @@ class PowerForecasting:
         resampled_frame = data_frame.resample(freq, how='mean', closed='right')
         model = tsa.AR(resampled_frame, freq=freq)
         result = model.fit(maxlag=5, method='mle', transparams=True, disp=-1)
-        # TODO: work out reasonable values for time intervals
-        # for now I am just going to include 1hr from the actual data, and predict 1hr of usage
+        # Currently the forecast requires 12 hours of readings with no NaN or inf values
+        # So far it seems reasonably accurate to predict the usage for the next hour, but we can play with this
         end = to_datetime(datetime_as_string(resampled_frame.index.values[len(resampled_frame)-1]))  # end of frame
-        start_pred = str(end - relativedelta(hours=1))
-        end_pred = str(end + relativedelta(hours=1))
-        pred = result.predict(start=start_pred, end=end_pred)
-        return pred
+        start_pred = str(end - relativedelta(hours=12))  # we can play around with this number a bit
+        end_pred = str(end + relativedelta(hours=1))  # you can try increasing this if you want to
+        return result.predict(start=start_pred, end=end_pred)
 
-    def predict_usage(self, data_frame, ptype='hour', smooth=False):
+    def predict_usage(self, data_frame, smooth=False):
         """
         Predict usage based on data in the given DataFrame.
         At the moment no other values will be taken in. Everything will be calculated from here.

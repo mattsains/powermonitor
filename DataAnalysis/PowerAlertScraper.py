@@ -107,7 +107,7 @@ class PowerAlertScraper:
         else:
             return None
 
-    def get_alert_status(self):
+    def check_alert_status(self):
         """
         Get the status of the national power grid
         :return: 'critical', 'warning', or 'stable'
@@ -115,10 +115,12 @@ class PowerAlertScraper:
         # TODO: This possibly needs a bit more thought. Are there other criteria we should use?
         stats = self.check_for_change()
         builder = ReportBuilder()
-        if stats['colour'] or stats['status']:  # if either of these are True
+        if stats['colour'] and stats['status']:  # if both of these are True
             if self.get_alert_colour() == 'red' and self.get_usage_status() == 'up':
-                builder.send_power_alert()
+                builder.build_power_alert_report(power_alert_status='warning')
+                return 'warning'
             elif self.get_alert_colour() == 'black' and self.get_usage_status() == 'up':
+                builder.build_power_alert_report(power_alert_status='critical')
                 return 'critical'
             else:   # TODO: Should the user be notified if the colour is red but usage is down?
                 return 'stable'
