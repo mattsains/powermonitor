@@ -441,7 +441,7 @@ def graphs(request):
             plot_title = 'Last %d %s' % (length, period_type.capitalize())
             plt().plot_single_frame(data_frame=frame, title=plot_title, y_label='Usage (kW)',
                                     x_label='Time', file_name=filename + new_graph_name)
-        return (new_graph_name, frame)
+        return new_graph_name, frame
 
     if request.is_ajax():   # The user has selected a different graph
         datadict = request.POST
@@ -493,8 +493,12 @@ def graphs(request):
                 frame = dfc().collect_period(period_type='hour',
                                              period_start=str(datetime.now().replace(microsecond=0) -
                                              relativedelta(hours=1)), period_length=1)
-                current_usage = frame.tail(1)['reading']
-                average_usage = frame.mean(axis=0)['reading']
+                try:
+                    current_usage = frame.tail(1)['reading']
+                    average_usage = frame.mean(axis=0)['reading']
+                except:
+                    current_usage = 0
+                    average_usage = 0
                 eskom_status = scraper().get_alert_colour()
             except:
                 pass
@@ -509,8 +513,12 @@ def graphs(request):
         graph_period_form = SelectGraphPeriodForm(initial={'period': '12hour'})
         graph_data = generate_graph(period_type='hour', length=12)  # by default display the last 12 hours
         graph_name = graph_data[0]
-        current_usage = graph_data[1].tail(1).iloc[0]['reading']
-        average_usage = graph_data[1].mean(axis=0)['reading']
+        try:
+            current_usage = graph_data[1].tail(1).iloc[0]['reading']
+            average_usage = graph_data[1].mean(axis=0)['reading']
+        except:
+            current_usage = 0
+            average_usage = 0
         eskom_colour = scraper.instance().get_alert_colour()
         eskom_status = scraper.instance().get_usage_status()
         status_image = '%s_%s.svg' % (eskom_colour, eskom_status)
