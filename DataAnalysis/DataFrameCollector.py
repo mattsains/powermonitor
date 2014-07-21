@@ -58,8 +58,8 @@ class DataFrameCollector():
         except:
             raise LookupError('There was an error retrieving your data. Check the values passed to this method.')
 
-        db = DbConnection.instance()
-        db.connect()    # make sure the database connection is open
+        db = DbConnection()
+        # db.connect()    # make sure the database connection is open
         # Damn you MariaDB! Why you no work same as MySQL?! This is a little cleaner though
         sql = "SELECT * FROM powermonitor.powermonitorweb_readings WHERE time >= %s and time <= %s;"
         params = (self.__start.strftime(self.__format), self.__end.strftime(self.__format))

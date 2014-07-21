@@ -20,8 +20,6 @@ class Plotter:
         min_periods: This is the number of values you need in order for this plot to be useful
 
         NOTE:
-        This emwa is a form a resampling.
-        It places more weight on recent observations
         The 1 minute frequency is the accepted min for frequency, even though if this is done over a few weeks
         would possibly want freq to be a few hours, will refactor for that case. This is v1.0
 

@@ -8,7 +8,7 @@ import base64
 import logging
 from Decorators import Singleton
 
-@Singleton
+
 class DbConnection:
     """Class to connect to the database and execute queries"""
     def __init__(self, auto_commit=1):
