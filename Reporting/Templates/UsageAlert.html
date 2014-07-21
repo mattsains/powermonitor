@@ -1,0 +1,16 @@
+{% include '_header.html' }
+    <div id="header">
+        <h1>{{ title }}</h1>
+    </div>
+    <div id="section">
+        <p>Hello {{ name }},</p>
+        <p>Usage Warning!</p>
+        <p>You're currently using {{ power_peak }}kW of electricity.</p>
+        <p>This is unusually higher than your average of {{ power_average }}kW around this time.</p>
+        
+        <p>Here's a graph of your usage history:</p>
+        <a href="reporting_url">
+            <img src="{{ image_url }}" alt="Electricity usage graph" />
+        </a>
+    </div>
+{% include '_footer.html' }

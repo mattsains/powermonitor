@@ -12,8 +12,9 @@ import atexit
 import base64
 from DataAnalysis.Exceptions.EventError import \
     EventNotFoundError, EventExistsError, EventWontRunError, SchedulerNotFoundError
+from Decorators import Singleton
 
-
+@Singleton  # only one scheduler should be instantiated at any given time
 class EventScheduler():
     """Class to scheduler regular events in a similar manner to cron."""
     __mysql_url = 'mysql+pymysql://powermonitor:%s@localhost/powermonitor' \
@@ -48,9 +49,9 @@ class EventScheduler():
     def start_scheduler(self):
         self.__sched.start()
 
-    def add_cron_event(self, a_func, a_name, a_year=None, a_month=None, a_week=None, a_day=None,
-                       a_day_of_week=None, a_hour=None, a_minute=None, a_second=None, a_start_date=None, a_args=None,
-                       a_kwargs=None):
+    def add_cron_event(self, func, name, year=None, month=None, week=None, day=None,
+                       day_of_week=None, hour=None, minute=None, second=None, start_date=None, *args,
+                       **kwargs):
         """Add a cron like event to the schedule. Each job must be given a name in case it needs to be removed.
         The following expressions can be used in each field:
         Expression  Field   Description
@@ -66,33 +67,33 @@ class EventScheduler():
         If you want to add **options to the event, use kwargs (keyword arguments dictionary)"""
         if self.__sched is not None:
             event_exists = False
-            if self.__find_event(a_name) is not None:
+            if self.__find_event(name) is not None:
                 event_exists = True
             if not event_exists:
-                self.__sched.add_cron_job(func=a_func, name=a_name, year=a_year, month=a_month, day=a_day, week=a_week,
-                                          day_of_week=a_day_of_week, hour=a_hour, minute=a_minute, second=a_second,
-                                          start_date=a_start_date, args=a_args, kwargs=a_kwargs,
+                self.__sched.add_cron_job(func=func, name=name, year=year, month=month, day=day, week=week,
+                                          day_of_week=day_of_week, hour=hour, minute=minute, second=second,
+                                          start_date=start_date, args=args, kwargs=kwargs,
                                           misfire_grace_time=self.__GRACE_PERIOD)
                 logging.info('New cron event added')
             else:
                 '''Every event needs a unique name so we can keep track of the little bastards. And please use
                 descriptive names so that they can be properly identified in the job schedule.'''
-                raise EventExistsError('A job with name %s already exists' % a_name)
                 logging.warning('add_cron_event: Event already exists')
+                raise EventExistsError('A job with name %s already exists' % name)
         else:
             raise SchedulerNotFoundError('add_cron_event: Scheduler does not exist. It may have not started.')
 
-    def __find_event(self, a_event_name):
+    def __find_event(self, event_name):
         if self.__sched is not None:
             events = self.__sched.get_jobs()
             for event in events:
-                if event.name is a_event_name:
+                if event.name == event_name:
                     return event
                 else:
                     return None
         else:
-            raise SchedulerNotFoundError('Scheduler does not exist. It may have not started.')
             logging.warning('__find_event: Scheduler does not exist. It may have not started.')
+            raise SchedulerNotFoundError('Scheduler does not exist. It may have not started.')
 
     def add_onceoff_event(self, a_func, a_name, a_date, a_args=None):
         """Add a once off event to the schedule. The job is executed once at the specified date and time.
@@ -111,21 +112,21 @@ class EventScheduler():
                 raise EventWontRunError('The event will not run: Event time has expired.')
             logging.info('New once off event added')
         else:
-            raise SchedulerNotFoundError('Scheduler does not exist. It may have not started.')
             logging.warning('add_onceoff_event: Scheduler does not exist. It may have not started.')
+            raise SchedulerNotFoundError('Scheduler does not exist. It may have not started.')
 
     def remove_event(self, event_name):
         """Remove the event 'event_name' from the schedule."""
         if self.__sched is not None:
             removed = False
-            event = self.__find_event(event_name)
+            event = self.__find_event(event_name=event_name)
             if event is not None:   # If the event exists, remove it
                 self.__sched.unschedule_job(event)
                 removed = True
             if not removed:
                 '''Raise an error so that it can be handled correctly'''
-                raise EventNotFoundError('Event not found for removal: %s' % event_name)
                 logging.warning('remove_event: Event not found for removal.')
+                raise EventNotFoundError('Event not found for removal: %s' % event_name)
         else:
             raise SchedulerNotFoundError('remove_event: Scheduler does not exist. It may have not started.')
 

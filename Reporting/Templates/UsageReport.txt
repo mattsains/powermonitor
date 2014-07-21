@@ -1,0 +1,10 @@
+{{ title }}
+--------------------
+
+Hello {{ name }},
+Here's a {{ report_period }} power usage report.
+
+Between {{ report_begin }} and {{ report_end }}, you used {{ power_sum }}kWh.
+That's an average of {{ power_average }}kW
+
+Go to {{ reporting_url }} for more statistics.

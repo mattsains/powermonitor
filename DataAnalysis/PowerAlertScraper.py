@@ -3,9 +3,11 @@ PowerAlertScraper: Connect to www.poweralert.co.za, and collect data to use for 
 """
 import DataAnalysis.WebScraper
 import re
+from Decorators import Singleton
+from Reporting.ReportBuilder import ReportBuilder
 
-
-class PowerAlertScraper():
+@Singleton
+class PowerAlertScraper:
     """Class to scrape power alerts from Eskom's power alert website.
     http://www.poweralert.co.za/poweralert5/index.php"""
     def __init__(self):
@@ -15,6 +17,7 @@ class PowerAlertScraper():
         self.__usage_string = None
         self.__scraper = DataAnalysis.WebScraper.Scraper()
         self.__scraper.open_page('http://www.poweralert.co.za/poweralert5/index.php')
+        self.__current_readings = {'level': 0, 'colour': 'green', 'status': 'down'}
 
     def renew_tags(self):
         """
@@ -31,6 +34,28 @@ class PowerAlertScraper():
             self.__usage = img  # A for loop had to be used because img.find_all is an iterable
         if self.__usage is not None:  # Remove <> so re doesn't complain
             self.__usage_string = self.__remove_angle_brackets(self.__usage)
+
+    def check_for_change(self):
+        """
+        Check to see if there has been a change in any of the values
+        :return: Dictionary containing the changed state of the level, colour, and status from poweralert
+        """
+        self.renew_tags()   # renew the tags to check if there was any change
+        poweralert = {'level': False, 'colour': False, 'status': False}
+        # Check if there was a change in the power level
+        if self.get_alert_level() != self.__current_readings['level']:
+            poweralert['level'] = True
+            self.__current_readings['level'] = self.get_alert_level()
+        # Check if there was a change in the colour (green, yellow/orange, red, black)
+        if self.get_alert_colour() != self.__current_readings['colour']:
+            poweralert['colour'] = True
+            self.__current_readings['colour'] = self.get_alert_colour()
+        # Check if there was a change in the current status (up, down, or stable)
+        if self.get_usage_status() != self.__current_readings['status']:
+            poweralert['status'] = True
+            self.__current_readings['status'] = self.get_usage_status()
+        # yield the status of each of the values (True for change, False for no change)
+        return poweralert
 
     @staticmethod
     def __remove_angle_brackets(tag):
@@ -81,3 +106,23 @@ class PowerAlertScraper():
             return match.group()    # And hopefully only one returned here too!
         else:
             return None
+
+    def check_alert_status(self):
+        """
+        Get the status of the national power grid
+        :return: 'critical', 'warning', or 'stable'
+        """
+        # TODO: This possibly needs a bit more thought. Are there other criteria we should use?
+        stats = self.check_for_change()
+        builder = ReportBuilder()
+        if stats['colour'] and stats['status']:  # if both of these are True
+            if self.get_alert_colour() == 'red' and self.get_usage_status() == 'up':
+                builder.build_power_alert_report(power_alert_status='warning')
+                return 'warning'
+            elif self.get_alert_colour() == 'black' and self.get_usage_status() == 'up':
+                builder.build_power_alert_report(power_alert_status='critical')
+                return 'critical'
+            else:   # TODO: Should the user be notified if the colour is red but usage is down?
+                return 'stable'
+        else:
+            return 'stable'

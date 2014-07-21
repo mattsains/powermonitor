@@ -8,8 +8,8 @@ urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'ecoberry.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
-
-    url(r'^powermonitorweb/', include('powermonitorweb.urls')),
+    url(r'^$', include ('powermonitorweb.urls', namespace='powermonitorweb')),
+    url(r'^powermonitorweb/', include('powermonitorweb.urls', namespace='powermonitorweb')),
     url(r'^admin/', include(admin.site.urls)),
 )
 

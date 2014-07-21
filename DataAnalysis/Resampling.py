@@ -2,14 +2,17 @@ __author__ = 'Vincent'
 # This class will resample the data depending on different needs
 import pandas as pd
 import numpy as np
-class Resampling():
+
+
+class Resampling:
     """Resampler."""
 
     def __init__(self):
         """Stuff that must be initialized when this class is created"""
 
-
-    def downsampleDateFrame(self,dataFrameIn,freq="1min",closedVal = "left",labelVal="left",kindVal ="timestamp",howVal = None):
+    @staticmethod
+    def downsample_data_frame(data_frame, freq="1min", closed_side="left", label="left", data_type="timestamp",
+                              method=None):
         """Specify the dateFrame that you want to resample to allow graphs to be not overfilled.
         freq: "1min","1H", "1M", "1S" or any multiples there of
         closed: this shows which side to include in the down sampling. ie, "left", "right"
@@ -26,30 +29,31 @@ class Resampling():
         Returns a pandas DataFrame object with name which is the timestamp, it will have
         a reading column, this DataFrame will be resampled the way you need it to be"""
 
-        #this is the resample method
+        # this is the resample method
         # Ask kevin about checking type to dataFrame
         # if (type(dateFrameIn) == pd.DateFrame):
 
-        if (dataFrameIn.__len__() == 0):
+        if not data_frame:
             raise ValueError('Invalid DateFrame, Please pass DateFrame with actually data')
-        if (not(closedVal.__eq__("left")) or (closedVal.__eq__("right"))):
+        if not (closed_side == "left" and closed_side == "right"):
             raise ValueError("The closed side is incorrect, either it's left or right")
-        if (not(labelVal.__eq__("left")) or (labelVal.__eq__("right"))):
+        if not (label == "left" and label == "right"):
             raise ValueError("The label is incorrect, either it's left or right")
-        if (not(kindVal.__eq__("timestamp")) or (kindVal.__eq__("period"))):
-            if (not(kindVal == None)):
+        if not (data_type == "timestamp" and data_type == "period"):
+            if not data_type:
                 raise ValueError("The kind of DateFrame is incorrect, please input the correct type")
 
-        toReturn = None
         try:
-            toReturn = dataFrameIn.resample(freq,how= howVal,closed= closedVal,label= labelVal,kind= kindVal)
+            return_frame = data_frame.resample(freq, how=method, closed=closed_side, label=label, kind=data_type)
         except:
-            raise ValueError("The frequency inputted isn't one that Pandas can identify, please input correct frequency")
-
-        return toReturn
+            raise ValueError(
+                "The frequency inputted isn't one that Pandas can identify, please input correct frequency")
+        return return_frame
 
         #dateFrameIn.resample('1min',how='mean',axis = 0,closed ='right',label = 'left',kind ='timestamp')
-    def getmaxminforgraphing(self,dateFrameIn,column='reading'):
+
+    @staticmethod
+    def get_max_value_in_frame(data_frame, column="reading"):
         """
         This will take a Pandas DateFrame
         column: You can choose what column you want to find max and min value
@@ -57,70 +61,70 @@ class Resampling():
         :return: no specific return, this will be done via parameters max, min
         """
 
-        if (dateFrameIn is None):
+        if not data_frame:
             raise ValueError('Invalid DateFrame, Please pass DateFrame with actually data')
         try:
-            columnArray = dateFrameIn.ix[:,column] #check column
-            #print(maxCollumn)
-            max = 0
-            if (len(columnArray) == 0):
+            columns = data_frame.ix[:, column]  # check column
+            # print(maxCollumn)
+            maximum = 0
+            if len(columns) == 0:
                 raise ValueError("There isn't any data to calculate a min and max")
 
-            for x in range(0, len(columnArray)):
-                if (max < columnArray[x]):
-                    max = columnArray[x]
+            for x in range(len(columns)):
+                if maximum < columns[x]:
+                    maximum = columns[x]
 
-            min = max
-            for x in range(0, len(columnArray)):
-                if (min > columnArray[x]):
-                    min = columnArray[x]
-            return (min, max)  # return the min and max values
+            minimum = maximum
+            for x in range(len(columns)):
+                if minimum > columns[x]:
+                    minimum = columns[x]
+            return minimum, maximum  # return the min and max values
             ## return int array
         except:
-            raise ValueError("The column %s specified doesn't exist in this Pandas DateFrame",column)
+            raise ValueError("The column %s specified doesn't exist in this Pandas DateFrame", column)
 
-    def getmoreaccuratestd(self,dateFrameIn,column="reading"):
+    @staticmethod
+    def get_accurate_std_dev(data_frame, column="reading"):
         """
         This will take a Pandas DateFrame
         :return: This will return a Standard Deviation of the Pandas DateFrame with higher accuracy
         """
-        if (dateFrameIn == None):
+        if not data_frame:
             raise ValueError('Invalid DateFrame, Please pass DateFrame with actually data')
-        columnArray = None
         try:
-            columnArray = dateFrameIn.ix[:,column]
+            columns = data_frame.ix[:, column]
         except:
-            raise ValueError("The column %s doesn't exist in the provided DateFrame",column)
+            raise ValueError("The column %s doesn't exist in the provided DateFrame", column)
 
-        npaColumnArray = np.array(columnArray)
-        stdworked = npaColumnArray.std()
-        if (stdworked == 0):
+        numpy_columns = np.array(columns)
+        std_dev = numpy_columns.std()
+        if std_dev == 0:
             raise ValueError("Please input a DateFrame with actual data in")
+        return std_dev
 
-        return stdworked
-
-    def getDateFrameStd(self,dateFrameIn,column="reading"):
+    @staticmethod
+    def get_frame_std_dev(data_frame, column="reading"):
         """
         This will take a Pandas DateFrame this dataFrame should be resampled
         :return: This will return a Standard Deviation of the Pandas DateFrame
         """
-        if not dateFrameIn:
+        if not data_frame:
             raise ValueError('Invalid DateFrame, Please pass DateFrame with actually data')
-        stdworked = 0
-        if (len(column) <= 0):
+        if len(column) <= 0:
             raise ValueError("Invalid column value to find std on")
 
         try:
-            stdworked = dateFrameIn.std(column)
+            std_dev = data_frame.std(column)
         except:
-            raise ValueError("The column %s doesn't exist in the provided DateFrame",column)
+            raise ValueError("The column %s doesn't exist in the provided DateFrame", column)
 
-        if (stdworked == 0):
+        if std_dev == 0:
             raise ValueError("Please input a DateFrame with actual data in")
 
-        return stdworked
+        return std_dev
 
-    def getListOfOutliers(self,dateFrameIn,freq="1min",closedVal = "left",labelVal="left",kindVal ="timestamp",column="reading"):
+    def get_outliers(self, data_frame, freq="1min", closed_side="left", label="left", data_type="timestamp",
+                     column="reading"):
         """
         This will take a Pandas DateFrame this dataFrame should be resampled
         freq,closedVal,LabelVal,kindVal,howVal: are for the resampling and will be handled by the method
@@ -130,40 +134,36 @@ class Resampling():
         without any concern
         :return: This will return list of DateTime that will be all the outliers
         """
-        if not dateFrameIn:
+        if not data_frame:
             raise ValueError('Invalid DateFrame, Please pass DateFrame with actually data')
-        DateFrameMean = None
         try:
-            DateFrameMean = self.downsampleDateFrame(dateFrameIn,freq,closedVal,labelVal,kindVal,howVal="mean")
-        except:
-            raise ValueError("One of the parameters is incorrect")
-        DateFrameOriginal = None
-
-        try:
-            DateFrameOriginal = self.downsampleDateFrame(dateFrameIn,freq,closedVal,labelVal,kindVal)
+            frame_mean = self.downsample_data_frame(data_frame, freq, closed_side, label, data_type, method="mean")
         except:
             raise ValueError("One of the parameters is incorrect")
 
-        stdworked = 0
+        try:
+            original_frame = self.downsample_data_frame(data_frame, freq, closed_side, label, data_type)
+        except:
+            raise ValueError("One of the parameters is incorrect")
 
         try:
-            stdworked = self.getmoreaccuratestd(dateFrameIn,column)
+            std_dev = self.get_accurate_std_dev(data_frame, column)
         except:
             raise ValueError("The column doesn't exist")
 
-        toBeOutlier = 3*stdworked
+        outlier = 3 * std_dev
 
         # Two arrays to get the outliers, the arrays allow us to compare values directly
         # No try is used because if it failed before on column, would fail again
 
-        ArrOfMean = DateFrameMean.ix[:,column]
-        arrTrueValue = DateFrameOriginal.ix[:,column]
-        dateTimeList = []
+        means = frame_mean.ix[:, column]
+        true_values = original_frame.ix[:, column]
+        date_time_list = []
 
-        for x in range(0, len(ArrOfMean)-1):
-            difference = arrTrueValue[x] - ArrOfMean[x]
-            if (difference >= toBeOutlier):
-                dateTimeList.append(str(dateFrameIn.ix[x]))
+        for x in range(len(means)):
+            difference = true_values[x] - means[x]
+            if difference >= outlier:
+                date_time_list.append(str(data_frame.ix[x]))
 
-        return dateTimeList
+        return date_time_list
 

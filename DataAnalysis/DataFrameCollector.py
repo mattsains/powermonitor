@@ -3,10 +3,11 @@ DataCollector: Extract data from the database in specified periods for data anal
 
 Requires: pandas (http://pandas.pydata.org/)
 """
-from Database.DBConnect import DbConnection as db
+from Database.DBConnect import DbConnection
 import pandas as pd
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from Database.DBConnect import DbConnection
 import logging
 
 
@@ -18,7 +19,6 @@ class DataFrameCollector():
         self.__start = None
         self.__end = None
         self.__format = '%Y-%m-%d %H:%M:%S'
-        logging.INFO
 
     def collect_period(self, period_type='hour', period_start=None, period_length=None, period_end=None):
         """Specify the period that you want to collect the data for.
@@ -33,12 +33,12 @@ class DataFrameCollector():
         Returns a pandas DataFrame object with timestamp and reading columns"""
         if period_start is not None:
             try:
-                period_start = datetime.strptime(period_start, '%Y-%m-%d %H:%M:%S')
+                period_start = datetime.strptime(period_start, self.__format)
             except:
                 raise ValueError('Invalid date format: date must be in format YYYY-MM-DD HH:MM:SS')
         if period_end is not None:
             try:
-                period_end = datetime.strptime(period_end, '%Y-%m-%d %H:%M:%S')
+                period_end = datetime.strptime(period_end, self.__format)
             except:
                 raise ValueError('Invalid date format: date must be in format YYYY-MM-DD HH:MM:SS')
 
@@ -53,18 +53,23 @@ class DataFrameCollector():
                 self.__do_month(period_start, period_length, period_end)
             elif period_type == 'year':
                 self.__do_year(period_start, period_length, period_end)
+            else:
+                raise Exception  # invalid flag passed
         except:
             raise LookupError('There was an error retrieving your data. Check the values passed to this method.')
 
-        sql = "select timestamp, reading from readings where timestamp >= '%s' and timestamp <= '%s';" % \
-              (self.__start.strftime(self.__format), self.__end.strftime(self.__format))
-        result = db().execute_query(sql)
-        db().disconnect()   # close the database connection.
-        if result.rowcount != 0:
+        db = DbConnection.instance()
+        db.connect()    # make sure the database connection is open
+        # Damn you MariaDB! Why you no work same as MySQL?! This is a little cleaner though
+        sql = "SELECT * FROM powermonitor.powermonitorweb_readings WHERE time >= %s and time <= %s;"
+        params = (self.__start.strftime(self.__format), self.__end.strftime(self.__format))
+        result = db.execute_query(statement=sql, data=params)
+        db.disconnect()
+        if result and result.rowcount != 0:
             '''Create the DataFrame object from the data collected from the database'''
-            data_frame = pd.DataFrame(list(result), columns=('timestamp', 'reading'))
+            data_frame = pd.DataFrame(list(result), columns=('time', 'reading'))
             '''Set the index type to DatetimeIndex to allow us to resample the data'''
-            data_frame.set_index(pd.DatetimeIndex(data_frame['timestamp']), inplace=True)
+            data_frame.set_index(pd.DatetimeIndex(data_frame['time']), inplace=True)
             return data_frame
         else:
             return None
@@ -73,15 +78,16 @@ class DataFrameCollector():
     It's probably better to try and refactor these methods. They were written like they currently are just to get this
     module working.
     '''
+
     def __do_hour(self, period_start, period_length, period_end):
-        if period_start is None:    # If there is no start period, default to 1 hour back
+        if period_start is None:  # If there is no start period, default to 1 hour back
             period_start = datetime.now() - relativedelta(hours=1)
         self.__start = period_start  # Set the start time for collect_period to get data from
 
         if period_end is None:
-            if period_length is None:   # If no end and period length was set, collect data up to the current time
+            if period_length is None:  # If no end and period length was set, collect data up to the current time
                 period_end = datetime.now()
-            elif period_length is not None:  # If a period length was specified, set the end time accordingly
+            else:
                 period_end = self.__start + relativedelta(hours=period_length)
         self.__end = period_end  # Set the end time for collect_period to get data from
 
@@ -93,7 +99,7 @@ class DataFrameCollector():
         if period_end is None:
             if period_length is None:
                 period_end = datetime.now()
-            elif period_length is not None:
+            else:
                 period_end = self.__start + relativedelta(days=period_length)
         self.__end = period_end
 
@@ -105,7 +111,7 @@ class DataFrameCollector():
         if period_end is None:
             if period_length is None:
                 period_end = datetime.now()
-            elif period_length is not None:
+            else:
                 period_end = self.__start + relativedelta(weeks=period_length)
         self.__end = period_end
 
@@ -117,7 +123,7 @@ class DataFrameCollector():
         if period_end is None:
             if period_length is None:
                 period_end = datetime.now()
-            elif period_length is not None:
+            else:
                 period_end = self.__start + relativedelta(months=period_length)
         self.__end = period_end
 
@@ -129,6 +135,6 @@ class DataFrameCollector():
         if period_end is None:
             if period_length is None:
                 period_end = datetime.now()
-            elif period_length is not None:
+            else:
                 period_end = self.__start + relativedelta(years=period_length)
         self.__end = period_end

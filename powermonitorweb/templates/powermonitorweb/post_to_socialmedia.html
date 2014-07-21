@@ -1,0 +1,39 @@
+{% extends 'powermonitorweb/base.html' %}
+{% block title %}Post To Social Media{% endblock %}
+
+{% block header %}Post Statistics to Your Favourite Social Media Sites{% endblock %}
+{% block main %}
+    {% if failed %}
+    <strong>Post failed. Make sure you selected a site, and at least one report.</strong>
+    {% else %}
+    {% if posted %}
+    <strong>Your statistics have been posted!</strong>
+    {% else %}
+    <form id="post_to_socialmedia_form" method="post" action="/powermonitorweb/post_to_socialmedia/" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="group">
+                <div class="heading"><h3>Select Account</h3></div>
+                <select name="account_select" size="5" multiple required>
+                    {% for account in user_accounts %}
+                    <option value="{{ account.account_type }}">{{ account.account_type }}</option>
+                    {% endfor %}
+                </select>
+        </div>
+        <div class="group">
+                <div class="heading"><h3>Select Reports</h3></div>
+                <p>Current Usage <input type="checkbox" name="posts" value="current_usage" /></p>
+                <p>Average Usage <input type="checkbox" name="posts" value="average_usage" /></p>
+                <p>Savings <input type="checkbox" name="posts" value="savings" /></p>
+                <p>Graph <input type="checkbox" name="posts" value="graph" /></p>
+                <select name="period_select" required>
+                    <option value="day">Day</option>
+                    <option value="week">Week</option>
+                    <option value="month">Month</option>
+                    <option value="year">Year</option>
+                </select><br />
+                <input type="submit" name="submit" value="Submit" />
+        </div>
+    </form>
+    {% endif %}
+    {% endif %}
+{% endblock %}

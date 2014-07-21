@@ -1,180 +1,153 @@
+<<<<<<< HEAD
 from statsmodels.discrete.discrete_model import L1BinaryResults
 
 __author__ = 'Vincent'
 import pandas as pd
-import numpy as np
+#import numpy as np
 import matplotlib.pyplot as plt
 from io import StringIO
-class Plotter():
+
+
+class Plotter:
     """Plotter"""
 
     def __init__(self):
         """Stuff that must be initialized when this class is created"""
 
-    def expoweightedresampling(self,dateFrameIn,amountOfWeight = 1,freqVal='1min',min_periodsVal=10):
-        """Specify the dateFrame that you want to plot
+    @staticmethod
+    def ewma_resampling(data_frame, weight=1, freq='1min', min_periods=10):
+        """Specify the dataFrame that you want to plot
         :rtype : object
-        freqVal: "1min","1H", "1M", "1S" or any multiples there of
-        amountOfWeight: This is how much does the observation affect the exponentially weighted mean
-        min_periodsVal: This is the number of values you need in order for this plot to be useful
+        freq: "1min","1H", "1M", "1S" or any multiples thereof
+        weight: This is how much does the observation affect the exponentially weighted mean
+        min_periods: This is the number of values you need in order for this plot to be useful
 
-        NOTE:
-        This emwa is a form a resampling, so you could actually use this to resample data.
-        The great thing is that it places extra weight on observations with a recent time stamp
-        The 1 minute frequency is the accepted min for frequency, even though if this is done over a few weeks
-        would possibly want freq to be a few hours, will refactor for that case. This is v1.0
-
-        Return: This will return a dateFrame resampled under the Exponential weight moving average principal
-        """
-        if (len(dateFrameIn) == 0):
-            raise ValueError('Invalid DateFrame, Please pass DateFrame with actually data')
-        if (amountOfWeight<= 0):
-            raise ValueError("The amount of weight is incorrect, should be a float > 0")
-        if (min_periodsVal<= 0):
-            raise ValueError("The min number of periods isn't valid")
-        toReturn = None
-        try:
-            toReturn = pd.ewma(dateFrameIn,amountOfWeight,freq=freqVal,min_periods=min_periodsVal)
-        except:
-            raise ValueError("The frequency %d isn't valid for Pandas",freqVal)
-        return toReturn
-
-        # still need to decide if maybe i should refactor this into two functions
-        # one that returns the fig as a file from the plot
-        # one that down samples the data using EWMA
-
-    def plotDataBetweenTwoDateFrames(self,dateFrameOriginal,dateFrameWeighted,LegendLabelOriginal="Current reading",
-                                     LegendLabelWeighted="weighted plot",Title="YourTitle",YLabel="Y",XLabel="X",
-                                     fileName="plotted.svg"):
-        """Specify the dateFrame that you want to plot, a weighted vs actual readings currently
-        Title: The title for the plot : "THE BEST PLOT EVER"
-        YLabel: The label for the y axis : reading(kWh)
-        XLabel: The label for the x axis : Time Stamp
-        fileName: file name you want to save as
-
-        Return: return the figure or a stringIO of the figure
-        """
-        FileToReturn = None
-        canSave = False
-        splitted = fileName.split(".")
-        buffer = StringIO()
-        if (len(LegendLabelOriginal) <= 0):
-                LegendLabelOriginal="current readings"
-        if (len(LegendLabelWeighted) <= 0):
-                LegendLabelWeighted="weighted readings"
-
-        if ((splitted[1] == "svg") or (splitted[1] == "png") or (splitted[1] == "jpg") ):
-            canSave = True # will add more
-            #fig = plt.figure() # not needed # the below needs to still be tested, just going on logic
-            dateFrameOriginal.reading.plot(label =LegendLabelOriginal,color='g')
-            dateFrameWeighted.plot(label = LegendLabelWeighted,color ='Y',marker ='o')
-
-            if ((len(Title) > 0) and (len(YLabel)>0) and (len(XLabel) > 0)):
-                plt.legend()
-                plt.ylabel(YLabel)
-                plt.xlabel(XLabel)
-                plt.title(Title)
-                FileToReturn = plt.savefig(fileName) #1
-                # or
-                plt.savefig(buffer) #2
-        # Apparently this is a good alternative, the above is just a logical flow
-
-
-
-        plot_data = buffer.getvalue()
-        return FileToReturn
-        # thus could either return file to return or
-        return plot_data
-
-
-
-    def turnDateFrameIntoGraph(self,dateFrameIn,amountOfWeight = 1,freqVal='1min',min_periodsVal=10,
-                               Title="YourTitle",YLabel="Y",XLabel="X",fileName="plotted.svg",typeWeight = "EWMA"):
-        """Specify the dateFrame that you want to plotted against its EMWA
-        you require the parameters to shape the plot.
-        The parameters are explained in the self.expoweightedresampling and self.plotDataBetweenTwoDateFrames
-        fileName: This will be what you want to save the file as < not sure if I should keep this
-        or hard code the fileName to keep consistency
-        Return: This will attempt to return the file that stores the figured for the plot
-        """
-        dateFrameWeighted = None
-        LegendToSend =""
-        ## check length of typeWeight
-        if (typeWeight == "EWMA"):
-            dateFrameWeighted = self.expoweightedresampling(dateFrameIn,amountOfWeight,freqVal,min_periodsVal)
-            LegendToSend= "Exponential weighted moving average plot"
-        else:
-            dateFrameWeighted = self.equalWeightMovingAverage(dateFrameIn,freqVal,min_periodsVal)
-            LegendToSend= "Equal weighted moving average plot"
-
-        return self.plotDataBetweenTwoDateFrames(dateFrameIn,dateFrameWeighted,LegendLabelWeighted=LegendToSend,
-                                                 Title=Title,YLabel=YLabel,XLabel=XLabel,FileName =fileName)
-
-    def equalWeightMovingAverage(self,dateFrameIn,freqVal='1min',min_periodsVal=10):
-        """Specify the dateFrame that you want to plot
-        :rtype : object
-        freqVal: "1min","1H", "1M", "1S" or any multiples there of
-        min_periodsVal: This is the number of values you need in order for this plot to be useful
         NOTE:
         The 1 minute frequency is the accepted min for frequency, even though if this is done over a few weeks
         would possibly want freq to be a few hours, will refactor for that case. This is v1.0
 
-        Return: This will return a dateFrame resampled under the equal weight moving average principal
+        Return: This will return a dataFrame resampled under the Exponential weight moving average principal
         """
+        if data_frame is None:
+            raise ValueError("Invalid dataFrame, pass a DataFrame with actual data")
+        if weight <= 0:
+            raise ValueError("The weight is invalid, should be a float > 0")
+        if min_periods <= 0:
+            raise ValueError("The min number of periods is invalid, should be a float >0")
 
-        if (dateFrameIn == None):
-            raise ValueError('Invalid DateFrame, Please pass DateFrame with actually data')
-        if (min_periodsVal<= 0):
-            raise ValueError("The min number of periods isn't valid")
-        toReturn = None
-        try:
-            toReturn = pd.rolling_mean(dateFrameIn.reading,min_periodsVal,freqVal)
-        except:
-            raise ValueError("The frequency %d isn't valid for Pandas",freqVal)
-        return toReturn
+        # review comments: don't replace a potentially meaningful exception with one that only guesses what the problem is
+        return pd.ewma(data_frame.reading, com=2, freq=freq)
 
-    def singlePlotOfFrame(self,dateFrameIn,Title="YourTitle",lengendLabel="plot 1",YLabel="Y",XLabel="X",
-                                     fileName="plotted.svg"):
-        """Specify the dateFrame that you want to plot, single dateFrame
-        Title: The title for the plot : "THE BEST PLOT EVER"
-        YLabel: The label for the y axis : reading(kWh)
+    @staticmethod
+    def plot_two_data_frames(unweighted_data_frame, weighted_data_frame, y_label=None, x_label=None,
+                             unweighted_legend=None, weighted_legend=None, title=None, file_name=None):
+        """Specify the dataFrame that you want to plot, a weighted vs actual readings currently
+        Title: A string title for the plot
         XLabel: The label for the x axis : Time Stamp
+        YLabel: The label for the y axis : reading(kWh)
         fileName: file name you want to save as
 
-        Return: return the figure or a stringIO of the figure
+        Return: return the figure or a stringIO of the figure if no filename is given
         """
-        FileToReturn = None
-        canSave = False
-        splitted = fileName.split(".")
-        buffer = StringIO()
-        if ((splitted[1] == "svg") or (splitted[1] == "png") or (splitted[1] == "jpg") ):
-            canSave = True # will add more
-            #fig = plt.figure() # not needed # the below needs to still be tested, just going on logic
-            if (len(lengendLabel) <= 0):
-                lengendLabel="plot 1"
+        # Review comments: How does this end up in the plt object? Don't have docs to check
+        unweighted_data_frame.reading.plot(label=unweighted_legend, color='g', linewidth=0.5)
+        weighted_data_frame.plot(label=weighted_legend, color='Y', marker='o', linewidth=0.5)
 
-            dateFrameIn.reading.plot(label=lengendLabel,color='g') # should probably check if the plotting actually needs reading or not
-            if (len(Title) <= 0):
-                Title = "A plot"
-            if ((len(YLabel)<=0)):
-                YLabel = "Y"
-            if (len(XLabel) <= 0):
-                XLabel="X"
+        if title:
+            plt.title(title)
+        if y_label:
+            plt.ylabel(y_label)
+        if x_label:
+            plt.xlabel(x_label)
 
-
+        if unweighted_legend or weighted_legend:  # What is the purpose of this?
             plt.legend()
-            plt.ylabel(YLabel)
-            plt.xlabel(XLabel)
-            plt.title(Title)
-            FileToReturn = plt.savefig()
-            # or
-            plt.savefig(buffer)
 
-        # Apparently this is a good alternative, the above is just a logical flow
+        if not file_name:
+            file_buffer = StringIO()
+            plt.savefig(file_buffer)
+            return file_buffer.getvalue()
+        else:
+            file_name_split = file_name.split(".")
+            if (file_name_split[-1] == "svg") or (file_name_split[-1] == "png") or (file_name_split[-1] == "jpg"):
+                return plt.savefig(file_name)
+            else:
+                return None
 
+    def plot_data_frame_vs_ewma(self, data_frame, weight=1, freq='1min', min_periods=10, title=None, y_label=None, x_label=None,
+                        file_name=None, weight_type='ewma'):
+        """Specify the dataFrame that you want to plotted against its EMWA
+        you require the parameters to shape the plot.
+        The parameters are explained in the self.expoweightedresampling and self.plotDataBetweenTwodataFrames
+        file_name: This will be what you want to save the file as < not sure if I should keep this
+        or hard code the fileName to keep consistency
+        Return: This will attempt to return the file that stores the figure for the plot
+        """
+        # # check length of typeWeight
+        if weight_type == 'ewma':
+            weighted_data_frame = self.ewma_resampling(data_frame, weight, freq)
+            #print weighted_data_frame
+            legend = "Weighted Average plot"
+        else:
+            weighted_data_frame = self.equal_weight_moving_average(data_frame, freq, min_periods)
+            legend = "Rolling Average plot"
 
+        return self.plot_two_data_frames(unweighted_data_frame=data_frame, weighted_data_frame=weighted_data_frame,
+                                         weighted_legend=legend, title=title,y_label=y_label, x_label=x_label,
+                                         file_name=file_name)
 
-        plot_data = buffer.getvalue()
-        return FileToReturn
-        # thus could either return file to return or
-        return plot_data
+    @staticmethod
+    def equal_weight_moving_average(data_frame, freq='1min', min_periods=10):
+        """ Resamples data using a rolling mean
+        :rtype : object
+        freq: "1min","1H", "1M", "1S" or any multiples there of
+        min_periods: This is the number of values you need in order for this plot to be useful
+        NOTE:
+        The 1 minute frequency is the accepted min for frequency, even though if this is done over a few weeks
+        would possibly want freq to be a few hours, will refactor for that case. This is v1.0
+
+        Return: This will return a dataFrame resampled under the equal weight moving average principal
+        """
+
+        if not data_frame:
+            raise ValueError('Invalid dataFrame, Please pass dataFrame with actual data')
+        if min_periods < 1:
+            raise ValueError("The min number of periods is invalid")
+        # Review comments: same as before
+        result = pd.rolling_mean(data_frame.reading, min_periods, freq)
+        return result
+
+    @staticmethod
+    def plot_single_frame(data_frame, title=None, legend=None, y_label=None, x_label=None, file_name=None,
+                          prediction=False):
+        """Specify the dataFrame that you want to plot, single dataFrame
+        title: The string title for the plot
+        y_label: The label for the y axis
+        x_label: The label for the x axis
+        file_name: file name you want to save as or None for a stringIO
+        prediction: Make this true if plotting a prediction plot
+        Return: return the figure or a stringIO of the figure
+        """
+        # Review comments: How does this end up in the plt object? Don't have docs to check
+        if not prediction:
+            data_frame.reading.plot(label=legend, color='g')
+        else:
+            data_frame.plot(label=legend, color='b')    # This is to handle plotting forecast data
+        if title:
+            plt.title(title)
+        if y_label:
+            plt.ylabel(y_label)
+        if x_label:
+            plt.xlabel(x_label)
+        if legend:
+            plt.legend()
+        if not file_name:   # if file_name is None
+            file_buffer = StringIO()
+            plt.savefig(file_buffer)
+            return file_buffer.getvalue()
+        else:
+            file_name_split = file_name.split(".")
+            if (file_name_split[-1] == "svg") or (file_name_split[-1] == "png") or (file_name_split[-1] == "jpg"):
+                return plt.savefig(file_name)
+            else:
+                return None

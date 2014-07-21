@@ -1,0 +1,70 @@
+{% extends 'powermonitorweb/base.html' %}
+{% load staticfiles %}
+{% block title %}Graphs{% endblock %}
+
+{% block header %}Usage Graphs{% endblock %}
+{% block main %}
+    <script src="{% static '/static/powermonitorweb/scripts/graphs.js' %}" ></script>
+    <div class="group">
+        <div class="heading"><h3>Graphs</h3></div>
+        <div>
+            Select the period you wish to view:
+            {{ graph_period_form.as_p }}
+        </div>
+        <div id="graphdiv">
+            {% if graph != 'null' %}
+            <img src="{{ STATIC_URL }}powermonitorweb/images/graphs/{{ graph }}" alt=""/>
+            {% else %}
+            <strong>No graph found. There may not be any data to graph. Try another period to display</strong>
+            {% endif %}
+        </div>
+    </div>
+    <div class="group">
+        <div class="heading"><h3>Metrics</h3></div>
+        <div id="metrics_div">
+            <div id="current_usage" class="metrics">
+                <h4>Current Usage:</h4>
+                <p>
+                    {% if current_usage != None %}
+                    {{ current_usage }}
+                    {% else %}
+                    No data available.
+                    {% endif %}
+                </p>
+            </div>
+            <div id="average_usage" class="metrics">
+                <h4>Average Usage Per Hour:</h4>
+                <p>
+                    {% if average_usage != None %}
+                    {{ average_usage }}
+                    {% else %}
+                    No data available.
+                    {% endif %}
+                </p>
+            </div>
+            <div id="eskom_status" class="metrics">
+                <h4>Country Power Rating:</h4>
+                    {% if eskom_status != None %}
+                    <div id="eskom_image">
+                        <img src="{{ STATIC_URL }}powermonitorweb/images/{{ eskom_status }}" alt="" width="50%" />
+                    </div>
+                    {% else %}
+                    <p>
+                        No data available.
+                    </p>
+                    {% endif %}
+            </div>
+            <div id="savings" class="metrics">
+                <h4>Your Savings:</h4>
+                <p>
+                    {% if savings != None %}
+                    {{ savings }}
+                    {% else %}
+                    No data available.
+                    {% endif %}
+                </p>
+            </div>
+            <div id="clearfloat"></div>
+        </div>
+    </div>
+{% endblock %}

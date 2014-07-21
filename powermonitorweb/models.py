@@ -1,5 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
+from powermonitorweb.fields import UnixTimestampField
+
+
+class Readings(models.Model):
+    """
+    Stores electricity readings from the power monitoring circuit
+    """
+    time = UnixTimestampField(auto_created=True, primary_key=True, null=False)
+    reading = models.FloatField()
 
 
 class Alert(models.Model):
@@ -34,6 +43,27 @@ class AlertTip(models.Model):
         return self.tip_description
 
 
+class Report(models.Model):
+    """
+    User reports. These are custom reports the user sets, and are different from the alerts
+    """
+    users = models.ManyToManyField(User, through='UserReports')
+    report_type = models.CharField(max_length=128)
+
+    def __unicode__(self):
+        return self.report_type
+
+
+class UserReports(models.Model):
+    user_id = models.ForeignKey(User)
+    report_id = models.ForeignKey(Report)
+    occurrence_type = models.CharField(max_length=128)
+    datetime = models.DateTimeField()
+    report_daily = models.BooleanField()
+    report_weekly = models.BooleanField()
+    report_monthly = models.BooleanField()
+
+
 class SocialMediaAccount(models.Model):
     """
     Social media account info for each user
@@ -41,8 +71,12 @@ class SocialMediaAccount(models.Model):
     users = models.ManyToManyField(User)
     account_type = models.CharField(max_length=255)
     account_username = models.CharField(max_length=255)
-    # Still need to find a way to salt and hash the passwords. Assuming we need to store them
-    account_password = models.CharField(max_length=255)
+    account_token = models.CharField(max_length=255)
+    post_daily = models.BooleanField()
+    post_weekly = models.BooleanField()
+    post_monthly = models.BooleanField()
+    post_yearly = models.BooleanField()
+    is_enabled = models.BooleanField()
 
     def __unicode__(self):
         return self.account_type
@@ -89,8 +123,9 @@ class PostPaid(models.Model):
     unit_cost = models.FloatField()
 
 
-class IsSetup(models.Model):
+class Configuration(models.Model):
     """
-    A simple boolean that stores whether the household has been setup or not.
+    A class storing miscellaneous properties about the household
     """
-    is_setup = models.BooleanField(null=False)
+    field = models.CharField(max_length=255, primary_key=True)
+    value = models.IntegerField(default=0)
