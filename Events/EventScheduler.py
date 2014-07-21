@@ -21,7 +21,7 @@ class EventScheduler():
                   % str(base64.b64decode(bytes('cDB3M3JtMG4xdDBy')))
     '''This determines the number of seconds after the designated run time that the job is still allowed to be run.
     If jobs are not being run, try increasing this in increments of 1.'''
-    __GRACE_PERIOD = 604800  # Amazing grace! Time in seconds before the job is considered misfired. Currently a week
+    __GRACE_PERIOD = 31536000  # Amazing grace! Time in seconds before the job is considered misfired. Currently a year
     __COALESCE = True   # Force the job to only run once instead of retrying multiple times
     '''If there is a problem with thread concurrency, play around with these values. You'd think with all these threads
     in the pool that the filter would get clogged up!'''

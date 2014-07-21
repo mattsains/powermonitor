@@ -479,17 +479,24 @@ div.metrics {
 	float: left;
 	width: 22.5%;
 	padding: 5px 5px;
-	margin: 15px 5px;
+	margin: 5px 5px;
 	background-color: #fff;
     border: solid black 1px;
     border-radius: 5px;
     display: block;
     overflow: auto;
+	height: 100px;
+}
+
+div.metrics h4 {
+	font-size: 16px;
+	font-style: bold;
+	padding: 0;
+	margin: 0;
 }
 
 div#eskom_image {
-	margin-left: auto;
-	margin-right: auto;
+	text-align: center;
 }
 
 div#clearfloat { clear: both; }
