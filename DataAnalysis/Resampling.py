@@ -134,6 +134,11 @@ class Resampling:
         without any concern
         :return: This will return list of DateTime that will be all the outliers
         """
+
+        # additions changes this to get the ewma, then also remove the last element for std
+        # compare current to what is expect, check the std, then return boolean
+        # this get_outliers could be used to plot onto the plotting to show when you were using too much electricity
+
         if data_frame is None:
             raise ValueError('Invalid DateFrame, Please pass DateFrame with actually data')
         try:
