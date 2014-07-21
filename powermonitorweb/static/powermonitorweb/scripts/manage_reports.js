@@ -40,12 +40,12 @@ $(document).ready(function(){
         hideButtons();
         if (enabled)
         {
-            $("input#disable").show();
-            $("input#save").show();
+            $("input#disable_report").show();
+            $("input#save_report").show();
         }
         else
-            $("input#enable").show();
-    });
+            $("input#enable_report").show();
+    }).change();
 
     function hideButtons()
     {

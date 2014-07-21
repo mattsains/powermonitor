@@ -16,7 +16,7 @@ class PowerForecasting:
         resampled_frame = data_frame.resample(freq, how='mean', closed='right')
         model = tsa.AR(resampled_frame, freq=freq)
         result = model.fit(maxlag=5, method='mle', transparams=True, disp=-1)
-        # Currently the forecast requires 12 hours of readings with no NaN or inf values
+        # Currently the forecast requires 6 hours of readings with no NaN or inf values
         # So far it seems reasonably accurate to predict the usage for the next hour, but we can play with this
         end = to_datetime(datetime_as_string(resampled_frame.index.values[len(resampled_frame)-1]))  # end of frame
         start_pred = str(end - relativedelta(hours=5))  # we can play around with this number a bit
@@ -34,7 +34,7 @@ class PowerForecasting:
         """
         if not smooth:
             prediction_frame = self._ar_prediction(data_frame, '5T')
-            return prediction_frame[len(prediction_frame)/1.5:]
+            return prediction_frame[int(len(prediction_frame)/1.5):]  # silly! you can't slice a frame with a fraction
         else:
             prediction_frame = ewma(self._ar_prediction(data_frame.reading, '5T'), com=2)
-            return prediction_frame[len(prediction_frame)/1.5:]
+            return prediction_frame[int(len(prediction_frame)/1.5):]

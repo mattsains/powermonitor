@@ -463,6 +463,7 @@ def graphs(request):
         elif datadict.get('period') == 'predict':
             # Generating a prediction graph works a little differently
             try:
+                # For now pass a 12hr frame to be on the safe side. The forecasting cuts quite a bit off
                 pre_predction_frame = dfc().collect_period(period_type='hour',
                                                            period_start=str(datetime.now().replace(microsecond=0) -
                                                                             relativedelta(hours=12)),
@@ -472,7 +473,7 @@ def graphs(request):
                     graph_name = 'prediction_graph.svg'
                     plt().plot_single_frame(data_frame=prediction_frame, title='Predicted Usage', y_label='Usage (kW)',
                                             x_label='Time', file_name=filename + graph_name, prediction=True)
-                    graph_data=(graph_name, prediction_frame)
+                    graph_data = (graph_name, prediction_frame)
             except:
                 graph_data = 'null'
         if graph_data != 'null':
@@ -502,6 +503,7 @@ def graphs(request):
                          "<p>If a power outage has occurred, you may need to wait 12hours before predictions can be " \
                          "calculated</p>"
         JSONdata = '{"graph": "%s"}' % graph_html  # return the name of the new graph to display
+        print JSONdata
         return HttpResponse(JSONdata)
     else:
         graph_period_form = SelectGraphPeriodForm(initial={'period': '12hour'})
