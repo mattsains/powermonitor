@@ -19,7 +19,7 @@ class ReportBuilder():
         self._mailer = Mailer()
         self._plotter = Plotter()
 
-    def build_power_alert_report(self, user, power_alert_status):
+    def build_power_alert_report(self, power_alert_status):
         """Send an Eskom power alert to a user"""
         # needs: title name power_alert_status power_peak reporting_url image_url tips[]
         for user in User.objects.all():

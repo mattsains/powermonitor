@@ -156,3 +156,16 @@ class ManageUsersForm(forms.Form):
         fields = (
             'username', 'first_name', 'last_name', 'email', 'password'
         )
+
+period_list = [
+    ('1hour', 'Last Hour'),
+    ('12hour', 'Last 12 Hours'),
+    ('day', 'Last Day'),
+    ('week', 'Last Week'),
+    ('1month', 'Last Month'),
+    ('6month', 'Last 6 Months'),
+    ('year', 'Last Year'),
+    ('predict', '1 Hour Prediction')
+    ]
+class SelectGraphPeriodForm(forms.Form):
+    period = forms.ChoiceField(widget=forms.Select, choices=period_list)
