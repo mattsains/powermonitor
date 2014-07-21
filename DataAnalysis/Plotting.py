@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-from statsmodels.discrete.discrete_model import L1BinaryResults
-
 __author__ = 'Vincent'
 import pandas as pd
 #import numpy as np

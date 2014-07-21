@@ -32,23 +32,23 @@ class HistogramPlot():
         dfIN = dataFrameIn
         dfWeighted = dataFrameExtra
 
-        dfIN = rs.Resampling().downsampleDateFrame(dataFrameIn=dfIN,freq=freqVal,howVal="sum")
+        dfIN = rs.Resampling().downsample_data_frame(data_frame=dfIN, freq=freqVal, method="sum")
         #this will be fixed, was thinking 10 x freq to down sample further, i want to keep consistency
-        dfIN = rs.Resampling().downsampleDateFrame(dataFrameIn=dfIN,freq="10min",howVal="mean")
+        dfIN = rs.Resampling().downsample_data_frame(data_frame=dfIN,freq="10min",method="mean")
 
 
         #dfWeighted = pd.DataFrame(dfWeighted,columns=("reading",))
-        dfWeighted = rs.Resampling().downsampleDateFrame(dataFrameIn=dfWeighted,freq=freqVal,howVal="sum")
+        dfWeighted = rs.Resampling().downsample_data_frame(data_frame=dfWeighted,freq=freqVal,method="sum")
 
 
         ## check the weight in order to decide on the weighting system used
         if (typeWeight == "EWMA"):
-            dfWeighted = pl.Plotter().expoweightedresampling(dateFrameIn=dfWeighted,amountOfWeight=amountOfWeight,
-                                                             freqVal="10min",min_periodsVal=min_periodsVal)
+            dfWeighted = pl.Plotter().ewma_resampling(data_frame=dfWeighted,weight =amountOfWeight,
+                                                             freq="10min",min_periods=min_periodsVal)
             LegendToSend= "Exponential weighted moving average plot"
         else:
-            dateFrameWeighted = pl.Plotter().equalWeightMovingAverage(dateFrameIn=dfWeighted,
-                                                                      freqVal="10min",min_periodsVal=min_periodsVal)
+            dateFrameWeighted = pl.Plotter().equal_weight_moving_average(data_frame=dfWeighted,
+                                                                      freq="10min",min_periods=min_periodsVal)
             LegendToSend= "Equal weighted moving average plot"
 
         return self.histPlotDouble(dataFrameIn,dateFrameWeighted,LegendLabelWeighted=LegendToSend,Title=Title,YLabel=YLabel,
@@ -87,8 +87,8 @@ class HistogramPlot():
 
         print(dataFrameWeighted)
         dataFrameWeighted = pd.DataFrame(dataFrameWeighted,columns=("reading",))
-        mino,maxo = rs.Resampling().getmaxminforgraphing(dataFrameOriginal)
-        minw,maxw = rs.Resampling().getmaxminforgraphing(dataFrameWeighted)  # the issue is indexing in a weighted df
+        mino,maxo = rs.Resampling().get_max_value_in_frame(dataFrameOriginal)
+        minw,maxw = rs.Resampling().get_max_value_in_frame(dataFrameWeighted)  # the issue is indexing in a weighted df
 
 
         maxv = max(maxw,maxo) +5
