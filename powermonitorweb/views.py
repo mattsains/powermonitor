@@ -481,8 +481,8 @@ def graphs(request):
             # It seemed easier to generate the html tag here, then just use JS to plonk it in the div
             try:
                 graph_name = graph_data[0]
-                current_usage = graph_data[1].tail(1).iloc[0]['reading']
-                average_usage = graph_data[1].mean(axis=0)['reading']
+                current_usage = '%.2f' % graph_data[1].tail(1).iloc[0]['reading']
+                average_usage = '%.2f' % graph_data[1].mean(axis=0)['reading']
             except:
                 graph_name = graph_data[0]
             eskom_status = scraper.instance().get_alert_colour()
@@ -494,8 +494,8 @@ def graphs(request):
                                              period_start=str(datetime.now().replace(microsecond=0) -
                                              relativedelta(hours=1)), period_length=1)
                 try:
-                    current_usage = frame.tail(1)['reading']
-                    average_usage = frame.mean(axis=0)['reading']
+                    current_usage = '%.2f' % frame.tail(1)['reading']
+                    average_usage = '%.2f' % frame.mean(axis=0)['reading']
                 except:
                     current_usage = 0
                     average_usage = 0
@@ -506,16 +506,19 @@ def graphs(request):
                          "Try selecting another period.</strong>" \
                          "<p>If a power outage has occurred, you may need to wait 12hours before predictions can be " \
                          "calculated</p>"
-        JSONdata = '{"graph": "%s"}' % graph_html  # return the name of the new graph to display
+        # return the name of the new graph to display
+        JSONdata = '{"graph": "%s", "current_usage": "%s", "average_usage": "%s", "eskom_status": "%s"}' % \
+                   (graph_html, current_usage, average_usage, eskom_status)
         print JSONdata
         return HttpResponse(JSONdata)
     else:
+        # otherwise the page was loaded, so show a default graph. currently defaults to 12hr graph
         graph_period_form = SelectGraphPeriodForm(initial={'period': '12hour'})
         graph_data = generate_graph(period_type='hour', length=12)  # by default display the last 12 hours
         graph_name = graph_data[0]
         try:
-            current_usage = graph_data[1].tail(1).iloc[0]['reading']
-            average_usage = graph_data[1].mean(axis=0)['reading']
+            current_usage = '%.2f' % graph_data[1].tail(1).iloc[0]['reading']
+            average_usage = '%.2f' % graph_data[1].mean(axis=0)['reading']
         except:
             current_usage = 0
             average_usage = 0
