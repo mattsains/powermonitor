@@ -9,7 +9,7 @@ class Resampling:
 
     def __init__(self):
         """Stuff that must be initialized when this class is created"""
-
+    
     @staticmethod
     def downsample_data_frame(data_frame, freq="1min", closed_side="left", label="left", data_type="timestamp",
                               method=None):
@@ -33,13 +33,14 @@ class Resampling:
         # Ask kevin about checking type to dataFrame
         # if (type(dateFrameIn) == pd.DateFrame):
 
-        if not data_frame:
+        print data_frame
+        if data_frame is None:
             raise ValueError('Invalid DateFrame, Please pass DateFrame with actually data')
-        if not (closed_side == "left" and closed_side == "right"):
+        if not (closed_side == "left" or closed_side == "right"):
             raise ValueError("The closed side is incorrect, either it's left or right")
-        if not (label == "left" and label == "right"):
+        if not (label == "left" or label == "right"):
             raise ValueError("The label is incorrect, either it's left or right")
-        if not (data_type == "timestamp" and data_type == "period"):
+        if not (data_type == "timestamp" or data_type == "period"):
             if not data_type:
                 raise ValueError("The kind of DateFrame is incorrect, please input the correct type")
 
@@ -50,7 +51,6 @@ class Resampling:
                 "The frequency inputted isn't one that Pandas can identify, please input correct frequency")
         return return_frame
 
-        #dateFrameIn.resample('1min',how='mean',axis = 0,closed ='right',label = 'left',kind ='timestamp')
 
     @staticmethod
     def get_max_value_in_frame(data_frame, column="reading"):
@@ -61,7 +61,7 @@ class Resampling:
         :return: no specific return, this will be done via parameters max, min
         """
 
-        if not data_frame:
+        if data_frame is None:
             raise ValueError('Invalid DateFrame, Please pass DateFrame with actually data')
         try:
             columns = data_frame.ix[:, column]  # check column
@@ -89,7 +89,7 @@ class Resampling:
         This will take a Pandas DateFrame
         :return: This will return a Standard Deviation of the Pandas DateFrame with higher accuracy
         """
-        if not data_frame:
+        if data_frame is None:
             raise ValueError('Invalid DateFrame, Please pass DateFrame with actually data')
         try:
             columns = data_frame.ix[:, column]
@@ -108,7 +108,7 @@ class Resampling:
         This will take a Pandas DateFrame this dataFrame should be resampled
         :return: This will return a Standard Deviation of the Pandas DateFrame
         """
-        if not data_frame:
+        if data_frame is None:
             raise ValueError('Invalid DateFrame, Please pass DateFrame with actually data')
         if len(column) <= 0:
             raise ValueError("Invalid column value to find std on")
@@ -134,7 +134,7 @@ class Resampling:
         without any concern
         :return: This will return list of DateTime that will be all the outliers
         """
-        if not data_frame:
+        if data_frame is None:
             raise ValueError('Invalid DateFrame, Please pass DateFrame with actually data')
         try:
             frame_mean = self.downsample_data_frame(data_frame, freq, closed_side, label, data_type, method="mean")

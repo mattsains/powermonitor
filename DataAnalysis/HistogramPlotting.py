@@ -9,7 +9,10 @@ import io
 from PIL import Image
 class HistogramPlot():
     """ The is the class for histrogram type of plots """
-
+    EWMAHeading = "Predicted usage - EWMA"
+    EQHeading = "Predicted usage - Equal"
+    coloredFirst = '#99FF33'
+    coloredSecond = '#6699CC'
     def __init__(self):
         """Stuff that must be initialized when this class is created"""
 
@@ -45,13 +48,14 @@ class HistogramPlot():
         if (typeWeight == "EWMA"):
             dfWeighted = pl.Plotter().ewma_resampling(data_frame=dfWeighted,weight =amountOfWeight,
                                                              freq="10min",min_periods=min_periodsVal)
-            LegendToSend= "Exponential weighted moving average plot"
+            LegendToSend= self.EWMAHeading
         else:
-            dateFrameWeighted = pl.Plotter().equal_weight_moving_average(data_frame=dfWeighted,
+            dfWeighted = pl.Plotter().equal_weight_moving_average(data_frame=dfWeighted,
                                                                       freq="10min",min_periods=min_periodsVal)
-            LegendToSend= "Equal weighted moving average plot"
+            LegendToSend= self.EQHeading
 
-        return self.histPlotDouble(dataFrameIn,dateFrameWeighted,LegendLabelWeighted=LegendToSend,Title=Title,YLabel=YLabel,
+        return self.histPlotDouble(dataFrameOriginal=dfIN,dataFrameWeighted=dfWeighted,
+                            LegendLabelWeighted=LegendToSend,Title=Title,YLabel=YLabel,
                              XLabel=XLabel,fileType=fileType)
 
 
@@ -85,23 +89,21 @@ class HistogramPlot():
         if (not(fileType.__eq__("bmp") or fileType.__eq__("png") or fileType.__eq__("jpg"))):
             fileType = "png"
 
-        print(dataFrameWeighted)
+        #print(dataFrameOriginal)
         dataFrameWeighted = pd.DataFrame(dataFrameWeighted,columns=("reading",))
         mino,maxo = rs.Resampling().get_max_value_in_frame(dataFrameOriginal)
         minw,maxw = rs.Resampling().get_max_value_in_frame(dataFrameWeighted)  # the issue is indexing in a weighted df
 
-
         maxv = max(maxw,maxo) +5
         minv = min(minw,mino) -1
 
-        coloredFirst = '#ecedfa'
-        coloredSecond = '#999999'
+
         if (maxw>maxo):
-            dataFrameOriginal.reading.plot(label=LegendLabelOriginal,kind = "bar",color= coloredFirst)
-            dataFrameWeighted.plot(label=LegendLabelWeighted,kind = "bar",color= coloredSecond,stacked=True)
+            ori = dataFrameOriginal.reading.plot(label=LegendLabelOriginal,legend=LegendLabelOriginal,kind = "bar",color= self.coloredFirst)
+            wei = dataFrameWeighted.reading.plot(label=LegendLabelWeighted,legend=LegendLabelWeighted,kind = "bar",color= self.coloredSecond,stacked=True)
         else:
-            dataFrameWeighted.plot(label=LegendLabelWeighted,kind = "bar",color= coloredFirst)
-            dataFrameOriginal.reading.plot(label=LegendLabelOriginal,kind = "bar",color= coloredSecond,stacked=True)
+            wei = dataFrameWeighted.reading.plot(label=LegendLabelWeighted,legend=LegendLabelWeighted,kind = "bar",color= self.coloredFirst)
+            ori = dataFrameOriginal.reading.plot(label=LegendLabelOriginal,legend=LegendLabelOriginal,kind = "bar",color= self.coloredSecond,stacked=True)
 
 
         plt.legend()
