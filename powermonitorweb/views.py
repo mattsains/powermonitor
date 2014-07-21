@@ -463,6 +463,7 @@ def graphs(request):
         elif datadict.get('period') == 'predict':
             # Generating a prediction graph works a little differently
             try:
+                # For now pass a 12hr frame to be on the safe side. The forecasting cuts quite a bit off
                 pre_predction_frame = dfc().collect_period(period_type='hour',
                                                            period_start=str(datetime.now().replace(microsecond=0) -
                                                                             relativedelta(hours=12)),
@@ -471,15 +472,19 @@ def graphs(request):
                     prediction_frame = pf().predict_usage(data_frame=pre_predction_frame, smooth=True)
                     graph_name = 'prediction_graph.svg'
                     plt().plot_single_frame(data_frame=prediction_frame, title='Predicted Usage', y_label='Usage (kW)',
-                                            x_label='Time', file_name=filename + graph_name)
+                                            x_label='Time', file_name=filename + graph_name, prediction=True)
+                    graph_data = (graph_name, prediction_frame)
             except:
                 graph_data = 'null'
         if graph_data != 'null':
             # A graph was produced!
             # It seemed easier to generate the html tag here, then just use JS to plonk it in the div
-            graph_name = graph_data[0]
-            current_usage = graph_data[1].tail(1).iloc[0]['reading']
-            average_usage = graph_data[1].mean(axis=0)['reading']
+            try:
+                graph_name = graph_data[0]
+                current_usage = graph_data[1].tail(1).iloc[0]['reading']
+                average_usage = graph_data[1].mean(axis=0)['reading']
+            except:
+                graph_name = graph_data[0]
             eskom_status = scraper.instance().get_alert_colour()
             graph_html = "<img src='/static/powermonitorweb/images/graphs/%s' />" % graph_name
         else:
@@ -495,9 +500,10 @@ def graphs(request):
                 pass
             graph_html = "<strong>No graph found. There may be insufficient data to generate a graph.<br />" \
                          "Try selecting another period.</strong>" \
-                         "<p>If a power outage has occurred, you may need to wait 12hours before predictions can be" \
+                         "<p>If a power outage has occurred, you may need to wait 12hours before predictions can be " \
                          "calculated</p>"
         JSONdata = '{"graph": "%s"}' % graph_html  # return the name of the new graph to display
+        print JSONdata
         return HttpResponse(JSONdata)
     else:
         graph_period_form = SelectGraphPeriodForm(initial={'period': '12hour'})
@@ -508,7 +514,6 @@ def graphs(request):
         eskom_colour = scraper.instance().get_alert_colour()
         eskom_status = scraper.instance().get_usage_status()
         status_image = '%s_%s.svg' % (eskom_colour, eskom_status)
-
 
     return render_to_response(
         'powermonitorweb/graphs.html',

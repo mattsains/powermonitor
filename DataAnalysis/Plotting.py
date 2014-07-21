@@ -117,17 +117,21 @@ class Plotter:
         return result
 
     @staticmethod
-    def plot_single_frame(data_frame, title=None, legend=None, y_label=None, x_label=None, file_name=None):
+    def plot_single_frame(data_frame, title=None, legend=None, y_label=None, x_label=None, file_name=None,
+                          prediction=False):
         """Specify the dataFrame that you want to plot, single dataFrame
         title: The string title for the plot
         y_label: The label for the y axis
         x_label: The label for the x axis
         file_name: file name you want to save as or None for a stringIO
+        prediction: Make this true if plotting a prediction plot
         Return: return the figure or a stringIO of the figure
         """
         # Review comments: How does this end up in the plt object? Don't have docs to check
-        data_frame.reading.plot(label=legend, color='g')
-
+        if not prediction:
+            data_frame.reading.plot(label=legend, color='g')
+        else:
+            data_frame.plot(label=legend, color='b')    # This is to handle plotting forecast data
         if title:
             plt.title(title)
         if y_label:

@@ -100,7 +100,9 @@ ecoberry.ajax.createFieldFiller = function(/* names, of, fields */)
 			    $("#id_" + args[i] + " option").filter(function() {
 				//may want to use $.trim in here
 				return $(this).text() == json.fields[args[i]];
-			    }).prop("selected", true);			
+			    }).prop("selected", true);	
+				//trigger possible onchange events for dropdown
+				$("#id_" + args[i]).change();
 			}
 		    else			                         //anything else  
 			$("#id_" + args[i]).val(json.fields[args[i]]);			
