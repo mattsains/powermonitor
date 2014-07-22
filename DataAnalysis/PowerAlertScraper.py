@@ -4,7 +4,8 @@ PowerAlertScraper: Connect to www.poweralert.co.za, and collect data to use for 
 import DataAnalysis.WebScraper
 import re
 from Decorators import Singleton
-from Reporting.ReportBuilder import ReportBuilder
+# from Reporting.ReportBuilder import ReportBuilder # TODO: Fix issues in ReportBuilder
+
 
 @Singleton
 class PowerAlertScraper:
@@ -114,13 +115,13 @@ class PowerAlertScraper:
         """
         # TODO: This possibly needs a bit more thought. Are there other criteria we should use?
         stats = self.check_for_change()
-        builder = ReportBuilder()
+        # builder = ReportBuilder()
         if stats['colour'] and stats['status']:  # if both of these are True
             if self.get_alert_colour() == 'red' and self.get_usage_status() == 'up':
-                builder.build_power_alert_report(power_alert_status='warning')
+                # builder.build_power_alert_report(power_alert_status='warning')
                 return 'warning'
             elif self.get_alert_colour() == 'black' and self.get_usage_status() == 'up':
-                builder.build_power_alert_report(power_alert_status='critical')
+                # builder.build_power_alert_report(power_alert_status='critical')
                 return 'critical'
             else:   # TODO: Should the user be notified if the colour is red but usage is down?
                 return 'stable'

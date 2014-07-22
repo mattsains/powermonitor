@@ -95,16 +95,16 @@ class EventScheduler():
             logging.warning('__find_event: Scheduler does not exist. It may have not started.')
             raise SchedulerNotFoundError('Scheduler does not exist. It may have not started.')
 
-    def add_onceoff_event(self, a_func, a_name, a_date, a_args=None):
+    def add_onceoff_event(self, func, name, date, args=None):
         """Add a once off event to the schedule. The job is executed once at the specified date and time.
         Date/time format: YYYY-MM-DD HH:MM:SS"""
         if self.__sched is not None:
             try:
-                if a_args is None:  # If there are no arguments to be passed to the function
-                    self.__sched.add_date_job(func=a_func, name=a_name, date=a_date,
+                if args is None:  # If there are no arguments to be passed to the function
+                    self.__sched.add_date_job(func=func, name=name, date=date,
                                               misfire_grace_time=self.__GRACE_PERIOD)
                 else:   # If there are arguments to be passed to the function
-                    self.__sched.add_date_job(func=a_func, name=a_name, date=a_date, arge=a_args,
+                    self.__sched.add_date_job(func=func, name=name, date=date, arge=args,
                                               misfire_grace_time=self.__GRACE_PERIOD)
             except ValueError:
                 '''If the event is in the past, it will not run. This program is not capable of manipulating
@@ -130,12 +130,24 @@ class EventScheduler():
         else:
             raise SchedulerNotFoundError('remove_event: Scheduler does not exist. It may have not started.')
 
-    def get_events(self):
+    def get_jobs(self):
         """Get the list of events currently in the job store."""
         if self.__sched is not None:
             return self.__sched.get_jobs()
         else:
             raise SchedulerNotFoundError('get_events: Scheduler does not exist. It may have not started.')
+
+    def get_job_names(self):
+        """
+        Get the names of all the jobs in the job store
+        :return: list
+        """
+        jobs = self.get_jobs()
+        job_list = []
+        if jobs:
+            for job in jobs:
+                job_list.append(job.name)
+        return job_list
 
     def get_scheduler(self):
         """Returns the Scheduler object. Rather add functionality to this class than call this method."""

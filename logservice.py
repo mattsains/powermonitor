@@ -5,7 +5,7 @@ from Database.DBConnect import DbConnection
 from time import sleep
 
 pw=PowerMonitor()
-database=DbConnection.instance()
+database=DbConnection()
 
 
 database.execute_non_query("INSERT INTO powermonitorweb_readings(reading) VALUES -1")
