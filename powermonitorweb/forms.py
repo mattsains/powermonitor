@@ -129,6 +129,7 @@ class ReportDetailsForm(forms.ModelForm):
         super(ReportDetailsForm, self).__init__(*args, **kwargs)
         self.fields['occurrence_type'] = forms.ChoiceField(widget=forms.Select,
                                                            choices=[('1', 'recurring'), ('0', 'once-off')])
+                                                           #NB that these match the database exactly. lame. may change.
         self.fields['datetime'] = forms.SplitDateTimeField(widget=forms.DateTimeInput())
         self.fields['report_daily'] = forms.ChoiceField(widget=forms.CheckboxInput())
         self.fields['report_weekly'] = forms.ChoiceField(widget=forms.CheckboxInput())

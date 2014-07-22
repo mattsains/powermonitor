@@ -13,6 +13,7 @@ from powermonitorweb.forms import UserForm, SelectGraphPeriodForm
 from powermonitorweb.forms import HouseholdSetupUserForm, SocialMediaAccountForm, ReportTypeForm, ReportDetailsForm, \
     ManageUsersForm, UserListForm, ProfileForm
 from powermonitorweb.models import Report, ElectricityType, User, UserReports
+from powermonitorweb.utils import createmessage
 # requirements for graphing
 from DataAnalysis.Forecasting import PowerForecasting as pf
 from DataAnalysis.Plotting import Plotter as plt
@@ -203,15 +204,38 @@ def manage_reports(request):
         datadict = request.POST
         if datadict.get('identifier') == 'id_report_type_change':
             #User has clicked on a different user, so update the form
-            try:
-                myreport = user_reports.filter(report_id=datadict.get('report_type'))
-            except Exception:
-                myreport = None
-
-            JSONdata = serializers.serialize('json', myreport, fields=('occurrence_type', 'datetime', 'report_daily',
+            myreport = user_reports.filter(report_id=datadict.get('report_type'))
+            if len(myreport) == 1:
+                JSONdata = serializers.serialize('json', myreport, fields=('occurrence_type', 'datetime', 'report_daily',
                                                                        'report_weekly', 'report_monthly'))
+            else:
+                # send blank fields to override values as a reset mechanism
+                JSONdata = '{ "fields":{"occurrence_type" : "", "datetime" : "", "report_daily": "",' \
+                           '"report_weekly": "", "report_monthly": ""}}'
             print (JSONdata)
-            print("end")
+        elif datadict.get('identifier') == 'enable_report_click':
+            #TODO: check validitiy of form somehow
+            validity = True
+            if validity:
+                new_report = UserReports()
+                print(datadict)
+                new_report.report_id = datadict.get('report_type')
+                new_report.datetime = datadict.get('datetime')
+                new_report.occurrence_type = datadict.get('occurrence_type')
+                new_report.report_daily = datadict.get('report_daily')
+                new_report.report_weekly = datadict.get('report_weekly')
+                new_report.report_monthly = datadict.get('report_monthly')
+                new_report.user_id = user.id
+                new_report.save()
+                JSONdata = createmessage(True, 'Report Enabled', 'Successfully enabled [report name]')
+            else:
+                JSONdata = createmessage(False, 'Error', 'The report could not be enabled')
+
+        elif datadict.get('identifier') == 'disable_report_click':
+
+            print("placate python till code exists")
+        elif datadict.get('identifier') == 'save_report_click':
+            print("placate python till code exists")
         else:
             JSONdata = '[{}]'
 

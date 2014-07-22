@@ -115,6 +115,12 @@ ecoberry.ajax.createFieldFiller = function(/* names, of, fields */)
     };
 };
 
+ecoberry.ajax.messageAsAlert = function(messageJSON)
+{
+    alert(messageJSON.heading + " " + messageJSON.message);    
+    return messageJSON.success;
+};
+
 /* Code for the base page follows */
 /* ============================== */
 $(document).ready(function() {    
@@ -175,7 +181,7 @@ $(document).ready(function() {
 		$(this).find('ul').css('visibility', 'hidden');
 	}
 	/*END dropdown submenu code*/
-	
+
 	/* START manage users in page menu */
 	/* show and hide manage users/add user forms */
 	$("#manage_users").click(function() {

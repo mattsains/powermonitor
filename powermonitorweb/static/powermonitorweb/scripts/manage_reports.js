@@ -2,7 +2,8 @@ $(document).ready(function(){
     //Some aliases for our functions
     var createPOSTFunction = ecoberry.ajax.createPOSTFunction;
     var createFieldFiller = ecoberry.ajax.createFieldFiller;
-
+    var messageAsAlert = ecoberry.ajax.messageAsAlert;
+    
     /*Change the details in the fields to match the selected entry */
     $("#id_report_type").change(
 	createPOSTFunction("/powermonitorweb/manage_reports/", "#id_report_type", "id_report_type_change",
@@ -11,17 +12,22 @@ $(document).ready(function(){
     /* save changes to an enabled entry */
     $("#save_report").click(
 	createPOSTFunction("/powermonitorweb/manage_reports/", "#manage_reports_form", "save_report_click",
-			  function(){alert("TEST!");}));
+			  function(response) { if (messageAsAlert(response))
+					       {
+						   var $reports = $("#id_report_type");
+						   var $newlyenabled = $reports.find(":selected").detach().attr("data-enabled", "true");
+						   $reports.insertBefore($newlyenabled, $reports);
+					       }}));
 
     /* enable a disabled entry */
     $("#enable_report").click(
-	createPOSTFunction("/powermonistorweb/manage_reports/", "#id_report_type", "enable_report_click",
-			  function(){alert("TEST2!");}));
+	createPOSTFunction("/powermonitorweb/manage_reports/", "#manage_reports_form", "enable_report_click",
+			  messageAsAlert));
 
     /* disable an enabled entry */
     $("#disable_report").click(
-	createPOSTFunction("/powermonistorweb/manage_reports/", "#id_report_type", "disiable_report_click",
-			   function(){alert("TEST3!");}));
+	createPOSTFunction("/powermonitorweb/manage_reports/", "#id_report_type", "disable_report_click",
+			   messageAsAlert));
     
     hideButtons();
 
