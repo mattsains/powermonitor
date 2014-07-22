@@ -2,6 +2,7 @@ __author__ = 'Vincent'
 # This class will resample the data depending on different needs
 import pandas as pd
 import numpy as np
+import Plotting as plt
 
 
 class Resampling:
@@ -134,10 +135,15 @@ class Resampling:
         without any concern
         :return: This will return list of DateTime that will be all the outliers
         """
+
+        # additions changes this to get the ewma, then also remove the last element for std
+        # compare current to what is expect, check the std, then return boolean
+        # this get_outliers could be used to plot onto the plotting to show when you were using too much electricity
+
         if data_frame is None:
             raise ValueError('Invalid DateFrame, Please pass DateFrame with actually data')
         try:
-            frame_mean = self.downsample_data_frame(data_frame, freq, closed_side, label, data_type, method="mean")
+            frame_mean = plt.Plotter().ewma_resampling(data_frame=data_frame, freq=freq,min_periods=1)
         except:
             raise ValueError("One of the parameters is incorrect")
 
@@ -146,6 +152,8 @@ class Resampling:
         except:
             raise ValueError("One of the parameters is incorrect")
 
+        #removing the last item
+        #frame_mean.remove
         try:
             std_dev = self.get_accurate_std_dev(data_frame, column)
         except:
@@ -162,8 +170,64 @@ class Resampling:
 
         for x in range(len(means)):
             difference = true_values[x] - means[x]
+            difference = abs(difference)
             if difference >= outlier:
                 date_time_list.append(str(data_frame.ix[x]))
 
         return date_time_list
 
+    def check_current_outlier(self, data_frame, freq="1min", closed_side="left", label="left", data_type="timestamp",
+                     column="reading"):
+        """
+        This will take a Pandas DateFrame this dataFrame should be resampled
+        freq,closedVal,LabelVal,kindVal
+        howVal: are for the resampling and will be handled by the method
+        downsampleDateFrame, this will raise a valueError
+        column: This is the column you want to see the current outlier on, generally will be the "reading" column
+        Reason for duplicating the default values is for less error checking and can call the downSampleDataFrame method
+        without any concern
+        :return: A boolean that will decide if the current usage is a outlier or not!
+        """
+
+        # additions changes this to get the ewma, then also remove the last element for std
+        # compare current to what is expect, check the std, then return boolean
+        # this get_outliers could be used to plot onto the plotting to show when you were using too much electricity
+
+        if data_frame is None:
+            raise ValueError('Invalid DateFrame, Please pass DateFrame with actually data')
+        try:
+            frame_mean = plt.Plotter().ewma_resampling(data_frame=data_frame, freq=freq,min_periods=1)
+        except:
+            raise ValueError("One of the parameters is incorrect")
+
+        try:
+            original_frame = self.downsample_data_frame(data_frame, freq, closed_side, label, data_type)
+        except:
+            raise ValueError("One of the parameters is incorrect")
+
+        #removing the last item
+        #frame_mean.remove
+        frame_mean = pd.DataFrame(frame_mean,columns=("reading",))
+        without_last_mean = frame_mean._ix[:-1]
+
+        try:
+            std_dev = self.get_accurate_std_dev(without_last_mean, column)
+        except:
+            raise ValueError("The column doesn't exist")
+
+        outlier = 3 * std_dev
+
+        # Two arrays to get the outliers, the arrays allow us to compare values directly
+        # No try is used because if it failed before on column, would fail again
+
+        means = frame_mean.ix[:, column]
+        true_values = original_frame.ix[:, column]
+
+        meanVal = means[len(means)-1]
+        trueVal = true_values[len(true_values)-1]
+        diff = trueVal-meanVal
+        diff = abs(diff)
+        if (diff >= outlier):
+            return True
+        else:
+            return False

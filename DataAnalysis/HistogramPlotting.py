@@ -16,7 +16,7 @@ class HistogramPlot():
     def __init__(self):
         """Stuff that must be initialized when this class is created"""
 
-    def doHistogramPlotting(self,dataFrameIn,dataFrameExtra,amountOfWeight = 1,freqVal='1min',min_periodsVal=1,
+    def doHistogramPlotting(self,dataFrameIn,dataFrameExtra,freqVal='1min',min_periodsVal=1,
                                Title="YourTitle",YLabel="Y",XLabel="Timestamp",fileType="png",typeWeight = "EWMA"):
         """Specify the dateFrame that you want to plotted against its EMWA or rolling_mean using a histogram plot
         you require the parameters to shape the plot.
@@ -46,7 +46,7 @@ class HistogramPlot():
 
         ## check the weight in order to decide on the weighting system used
         if (typeWeight == "EWMA"):
-            dfWeighted = pl.Plotter().ewma_resampling(data_frame=dfWeighted,weight =amountOfWeight,
+            dfWeighted = pl.Plotter().ewma_resampling(data_frame=dfWeighted,
                                                              freq="10min",min_periods=min_periodsVal)
             LegendToSend= self.EWMAHeading
         else:
