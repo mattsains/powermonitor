@@ -5,7 +5,6 @@ import logging
 import jobtriggers as jt
 from Events.EventScheduler import EventScheduler as ES
 from DataAnalysis.Exceptions.EventError import EventExistsError
-from DataAnalysis import test_data_analysis2
 
 # Add any jobs that you to run at specific intervals or on specific dates
 # This script will check if the event is in the jobstore, and if it doesn't exist, it will create and start it
@@ -18,13 +17,7 @@ startup_list = [
      'type': 'cron',
      'schedule': {
          'year': None, 'month': None, 'week': None, 'day': None, 'day_of_week': None, 'hour': None, 'minute': '*/30',
-         'second': None}},
-    {'name': 'DataAnalysis.insert',
-     'method': test_data_analysis2.insert,
-     'type': 'cron',
-     'schedule': {
-         'year': None, 'month': None, 'week': None, 'day': None, 'day_of_week': None, 'hour': None, 'minute': None,
-         'second': '*/5'}}
+         'second': None}}
 ]
 
 # call the instance of the scheduler
