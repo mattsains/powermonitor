@@ -12,7 +12,7 @@ class Plotter:
         """Stuff that must be initialized when this class is created"""
 
     @staticmethod
-    def ewma_resampling(data_frame, weight=2, freq='1min', min_periods=10):
+    def ewma_resampling(data_frame, freq='1min', min_periods=10):
         """Specify the dataFrame that you want to plot
         :rtype : object
         freq: "1min","1H", "1M", "1S" or any multiples thereof
@@ -27,11 +27,9 @@ class Plotter:
         """
         if data_frame is None:
             raise ValueError("Invalid dataFrame, pass a DataFrame with actual data")
-        if weight <= 0:
-            raise ValueError("The weight is invalid, should be a float > 0")
         if min_periods <= 0:
             raise ValueError("The min number of periods is invalid, should be a float >0")
-
+        weight = (len(data_frame)-1)/2
         # review comments: don't replace a potentially meaningful exception with one that only guesses what the problem is
         return pd.ewma(data_frame.reading, com=weight, freq=freq)
 
