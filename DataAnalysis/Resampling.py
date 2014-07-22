@@ -208,10 +208,10 @@ class Resampling:
         #removing the last item
         #frame_mean.remove
         frame_mean = pd.DataFrame(frame_mean,columns=("reading",))
-        frame_mean = frame_mean._ix[:-1]
+        without_last_mean = frame_mean._ix[:-1]
 
         try:
-            std_dev = self.get_accurate_std_dev(frame_mean, column)
+            std_dev = self.get_accurate_std_dev(without_last_mean, column)
         except:
             raise ValueError("The column doesn't exist")
 
