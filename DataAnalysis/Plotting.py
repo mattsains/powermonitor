@@ -7,7 +7,9 @@ from io import StringIO
 
 class Plotter:
     """Plotter"""
-
+    GraphColorGreen = "#66FF00"
+    GraphColorBlue = "#3366CC"
+    GraphFun = "#6F0"
     def __init__(self):
         """Stuff that must be initialized when this class is created"""
 
@@ -33,8 +35,8 @@ class Plotter:
         # review comments: don't replace a potentially meaningful exception with one that only guesses what the problem is
         return pd.ewma(data_frame.reading, com=weight, freq=freq)
 
-    @staticmethod
-    def plot_two_data_frames(unweighted_data_frame, weighted_data_frame, y_label=None, x_label=None,
+
+    def plot_two_data_frames(self,unweighted_data_frame, weighted_data_frame, y_label=None, x_label=None,
                              unweighted_legend=None, weighted_legend=None, title=None, file_name=None):
         """Specify the dataFrame that you want to plot, a weighted vs actual readings currently
         Title: A string title for the plot
@@ -45,8 +47,8 @@ class Plotter:
         Return: return the figure or a stringIO of the figure if no filename is given
         """
         # Review comments: How does this end up in the plt object? Don't have docs to check
-        unweighted_data_frame.reading.plot(label=unweighted_legend, color='g', linewidth=0.5)
-        weighted_data_frame.plot(label=weighted_legend, color='Y', marker='o', linewidth=0.5)
+        unweighted_data_frame.reading.plot(label=unweighted_legend, color=self.GraphColorGreen, linewidth=0.5)
+        weighted_data_frame.plot(label=weighted_legend, color=self.GraphColorBlue, marker='o', linewidth=0.5)
 
         if title:
             plt.title(title)
@@ -112,8 +114,8 @@ class Plotter:
         result = pd.rolling_mean(data_frame.reading, min_periods, freq)
         return result
 
-    @staticmethod
-    def plot_single_frame(data_frame, title=None, legend=None, y_label=None, x_label=None, file_name=None,
+
+    def plot_single_frame(self,data_frame, title=None, legend=None, y_label=None, x_label=None, file_name=None,
                           prediction=False):
         """Specify the dataFrame that you want to plot, single dataFrame
         title: The string title for the plot
@@ -125,7 +127,7 @@ class Plotter:
         """
         # Review comments: How does this end up in the plt object? Don't have docs to check
         if not prediction:
-            data_frame.reading.plot(label=legend, color='g')
+            data_frame.reading.plot(label=legend, color=self.GraphColorGreen)
         else:
             data_frame.plot(label=legend, color='b')    # This is to handle plotting forecast data
         if title:
