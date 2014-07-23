@@ -1,7 +1,7 @@
 import json
 
 
-def createmessage(self, success, heading, message, code=0):
+def createmessage(success, heading, message, code=0):
     """
     :param success: boolean value, did the request succeed?
     :param heading: string, heading of error
@@ -13,4 +13,7 @@ def createmessage(self, success, heading, message, code=0):
     #maybe the code property could affect a graphic or something if we don't use simple alerts
 
     return json.dumps(content)
+
+
+
 

@@ -115,10 +115,11 @@ ecoberry.ajax.createFieldFiller = function(/* names, of, fields */)
     };
 };
 
-ecoberry.ajax.messageAsAlert = function(messageJSON)
+ecoberry.ajax.messageAsAlert = function(messageAsJSON)
 {
-    alert(messageJSON.heading + " " + messageJSON.message);    
-    return messageJSON.success;
+    var json = $.parseJSON(messageAsJSON)
+    alert(json.heading + "\n\n " + json.message);    
+    return json.success;
 };
 
 /* Code for the base page follows */

@@ -230,12 +230,36 @@ def manage_reports(request):
                 JSONdata = createmessage(True, 'Report Enabled', 'Successfully enabled [report name]')
             else:
                 JSONdata = createmessage(False, 'Error', 'The report could not be enabled')
-
         elif datadict.get('identifier') == 'disable_report_click':
-
-            print("placate python till code exists")
+            report_to_delete = user_reports.filter(report_id=datadict.get('report_type'))
+            print(report_to_delete.report_id)
+            report_to_delete.delete()
+            JSONdata = createmessage(True, 'Report Disabled', 'The report was disabled')
         elif datadict.get('identifier') == 'save_report_click':
-            print("placate python till code exists")
+            print("trying to save")
+            report_to_change = user_reports.get(report_id=datadict.get('report_type'))
+            # update changed fields.
+            if report_to_change.report_id_id != datadict.get('report_type'):
+                report_to_change.report_id_id = datadict.get('report_type')
+            if report_to_change.datetime != datadict.get('datetime'):
+                report_to_change.datetime = datadict.get('datetime')
+            if report_to_change.occurrence_type != datadict.get('occurrence_type'):
+                report_to_change.occurrence_type = datadict.get('occurrence_type')
+            if report_to_change.report_daily != datadict.get('report_daily'):
+                report_to_change.report_daily = datadict.get('report_daily')
+            if report_to_change.report_weekly != datadict.get('report_weekly'):
+                report_to_change.report_weekly = datadict.get('report_weekly')
+            if report_to_change.report_monthly != datadict.get('report_monthly'):
+                report_to_change.report_monthly = datadict.get('report_monthly')
+            print("3")
+            # save to db
+            try:
+                report_to_change.save()
+            except:
+                print("lol")
+            print("4")
+            JSONdata = createmessage(True, 'Report Changes Saved', 'All changes to this report have been saved')
+            print("5")
         else:
             JSONdata = '[{}]'
 

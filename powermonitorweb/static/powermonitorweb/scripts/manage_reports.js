@@ -15,7 +15,8 @@ $(document).ready(function(){
 			  function(response) { if (messageAsAlert(response))
 					       {
 						   var $reports = $("#id_report_type");
-						   var $newlyenabled = $reports.find(":selected").detach().attr("data-enabled", "true");
+						   var $newlyenabled = $reports.find(":selected").detach()
+						   $newlyenabled.attr("data-enabled", "true");
 						   $reports.insertBefore($newlyenabled, $reports);
 					       }}));
 
