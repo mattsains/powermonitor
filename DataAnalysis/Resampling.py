@@ -115,14 +115,14 @@ class Resampling:
             raise ValueError("Invalid column value to find std on")
 
         try:
-            std_dev = data_frame.std(column)
+            std_dev = data_frame.std(0)
         except:
             raise ValueError("The column %s doesn't exist in the provided DateFrame", column)
-
-        if std_dev == 0:
+        val = std_dev[0]
+        if (val == 0):
             raise ValueError("Please input a DateFrame with actual data in")
 
-        return std_dev
+        return val
 
     def get_outliers(self, data_frame, freq="1min", closed_side="left", label="left", data_type="timestamp",
                      column="reading"):
@@ -208,7 +208,7 @@ class Resampling:
         #removing the last item
         #frame_mean.remove
         frame_mean = pd.DataFrame(frame_mean,columns=("reading",))
-        without_last_mean = frame_mean._ix[:-1]
+        without_last_mean = frame_mean.ix[:-1]
 
         try:
             std_dev = self.get_accurate_std_dev(without_last_mean, column)
