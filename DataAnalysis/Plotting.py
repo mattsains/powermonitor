@@ -1,6 +1,4 @@
-#TODO: uncomment - this breaks things for me even though i installed scipy idk what's up here
 # from scipy.special.tests.test_data import data
-
 
 __author__ = 'Vincent'
 import pandas as pd
