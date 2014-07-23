@@ -294,11 +294,13 @@ def manage_users(request):
                                              fields=('id', 'username'))
         elif datadict.get('identifier') == 'reset_password_click':
             # User has clicked "Reset Password"
-            form = PasswordResetForm({'email': str(datadict.get('email'))})
+            password_reset_form = PasswordResetForm({'email': str(datadict.get('email'))})
             try:
-                if form.is_valid():
-                    saved = form.save(email_template_name='powermonitorweb/reset_password_email.html', request=request)
+                if password_reset_form.is_valid():
+                    saved = password_reset_form.save(email_template_name='powermonitorweb/reset_password_email.html',
+                                                     request=request)
             except Exception as e:
+                print e
                 saved = 'false'
             if saved is None:
                 saved = 'true'
@@ -444,9 +446,10 @@ def generate_prediction_graph(file_path):
         pass
     return graph_name
 
-# THIS METHOD IS NOT A VIEW!!!
 scraper = PAS()
 
+
+# THIS METHOD IS NOT A VIEW!!!
 def get_current_statistics():
     current_usage = None
     average_usage = None

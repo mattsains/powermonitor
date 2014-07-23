@@ -8,7 +8,7 @@ urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'ecoberry.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
-    url(r'^$', include ('powermonitorweb.urls', namespace='powermonitorweb')),
+    url(r'^$', include ('powermonitorweb.urls')), # This must not have a namespace, otherwise it breaks the password reset
     url(r'^powermonitorweb/', include('powermonitorweb.urls', namespace='powermonitorweb')),
     url(r'^admin/', include(admin.site.urls)),
 )

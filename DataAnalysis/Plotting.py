@@ -1,4 +1,4 @@
-from scipy.special.tests.test_data import data
+# from scipy.special.tests.test_data import data
 
 __author__ = 'Vincent'
 import pandas as pd
