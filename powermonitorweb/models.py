@@ -129,3 +129,8 @@ class Configuration(models.Model):
     """
     field = models.CharField(max_length=255, primary_key=True)
     value = models.IntegerField(default=0)
+
+
+class EskomStats(models.Model):
+    field = models.CharField(max_length=255, primary_key=True)
+    value = models.CharField(max_length=255)
