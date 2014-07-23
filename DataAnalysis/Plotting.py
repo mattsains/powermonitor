@@ -1,14 +1,20 @@
+from scipy.special.tests.test_data import data
+
 __author__ = 'Vincent'
 import pandas as pd
 #import numpy as np
 import matplotlib.pyplot as plt
 from io import StringIO
-
+import Resampling as rs
 
 class Plotter:
     """Plotter"""
     GraphColorGreen = "#66FF00"
     GraphColorBlue = "#3366CC"
+    AlertRed ="#FF0000"
+    AlertOrange="#FF6600"
+    AlertGreen="#339900"
+
     GraphFun = "#6F0"
     def __init__(self):
         """Stuff that must be initialized when this class is created"""
@@ -138,6 +144,71 @@ class Plotter:
             plt.xlabel(x_label)
         if legend:
             plt.legend()
+        if not file_name:   # if file_name is None
+            file_buffer = StringIO()
+            plt.savefig(file_buffer)
+            return file_buffer.getvalue()
+        else:
+            file_name_split = file_name.split(".")
+            if (file_name_split[-1] == "svg") or (file_name_split[-1] == "png") or (file_name_split[-1] == "jpg"):
+                return plt.savefig(file_name)
+            else:
+                return None
+
+    def plot_single_frame_unusual(self,data_frame,freq="1min", title=None, legend=None, y_label=None, x_label=None, file_name=None,
+                          prediction=False):
+        """Specify the dataFrame that you want to plot, single dataFrame
+        title: The string title for the plot
+        y_label: The label for the y axis
+        x_label: The label for the x axis
+        file_name: file name you want to save as or None for a stringIO
+        prediction: Make this true if plotting a prediction plot
+        Return: return the figure or a stringIO of the figure
+        """
+        # Review comments: How does this end up in the plt object? Don't have docs to check
+
+        if data_frame is None:
+            raise ValueError('Invalid DateFrame, Please pass DateFrame with actually data')
+
+        try:
+            data_frame = rs.Resampling().downsample_data_frame(data_frame, freq)
+            data_frameWeighted = self.ewma_resampling(data_frame=data_frame, freq=freq,min_periods=1)
+        except:
+            raise ValueError("One of the parameters is incorrect")
+
+
+        data_frame.reading.plot(label=legend, color=self.GraphColorGreen)
+            # This is to handle plotting forecast data
+        if title:
+            plt.title(title)
+        if y_label:
+            plt.ylabel(y_label)
+        if x_label:
+            plt.xlabel(x_label)
+        if legend:
+            plt.legend()
+
+
+        std = rs.Resampling().get_frame_std_dev(data_frame=data_frame)
+        toRed = std*3
+        toOrange = std*1.75
+
+        means = data_frameWeighted.ix[:, "reading"]
+        true_values = data_frame.ix[:, "reading"]
+
+        for x in range(len(means)):
+            difference = true_values[x] - means[x]
+            difference = abs(difference)
+            if (difference < toOrange):
+                plottedColor = self.AlertGreen
+            elif (difference>=toRed):
+                plottedColor = self.AlertRed
+            else:
+                plottedColor = self.AlertOrange
+
+            currentPlot = data_frame._ix[x]
+            currentPlot.reading.plot(color=plottedColor,marker='o',markerfacecolor=plottedColor)
+
         if not file_name:   # if file_name is None
             file_buffer = StringIO()
             plt.savefig(file_buffer)
