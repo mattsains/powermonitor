@@ -4,6 +4,7 @@ PowerAlertScraper: Connect to www.poweralert.co.za, and collect data to use for 
 import DataAnalysis.WebScraper
 import re
 from Decorators import Singleton
+from Database.DBConnect import DbConnection as db
 # from Reporting.ReportBuilder import ReportBuilder # TODO: Fix issues in ReportBuilder
 
 
@@ -11,6 +12,11 @@ from Decorators import Singleton
 class PowerAlertScraper:
     """Class to scrape power alerts from Eskom's power alert website.
     http://www.poweralert.co.za/poweralert5/index.php"""
+
+    sql_select = "SELECT * FROM powermonitor.powermonitorweb_eskomstats where field=%s;"
+    sql_insert = "INSERT INTO powermonitor.powermonitorweb_eskomstats(field, value) values(%s, %s);"
+    sql_update = "UPDATE powermonitor.powermonitorweb_eskomstats SET value=%s where field=%s;"
+
     def __init__(self):
         self.__alert = None
         self.__alert_string = None
@@ -19,6 +25,8 @@ class PowerAlertScraper:
         self.__scraper = DataAnalysis.WebScraper.Scraper()
         self.__scraper.open_page('http://www.poweralert.co.za/poweralert5/index.php')
         self.__current_readings = {'level': 0, 'colour': 'green', 'status': 'down'}
+        self.__db = db()
+        # self.renew_tags()
 
     def renew_tags(self):
         """
@@ -35,6 +43,51 @@ class PowerAlertScraper:
             self.__usage = img  # A for loop had to be used because img.find_all is an iterable
         if self.__usage is not None:  # Remove <> so re doesn't complain
             self.__usage_string = self.__remove_angle_brackets(self.__usage)
+        self.write_stats_to_database()
+
+    def write_stats_to_database(self):
+        """
+        Write the stats scraped from poweralert to the database so they can be accessed elsewhere
+        """
+
+        # check the colour from eskom
+        result = self.__db.execute_query(statement=self.sql_select, data=('eskom_colour',))
+        if result.rowcount == 0:
+            try:
+                self.__db.execute_non_query(statement=self.sql_insert, data=('eskom_colour', self.get_alert_colour()))
+            except:
+                pass  # TODO: add some proper error handling
+        else:
+            try:
+                self.__db.execute_non_query(statement=self.sql_update, data=(self.get_alert_colour(), 'eskom_colour'))
+            except:
+                pass
+
+        # check the status from eskom
+        result = self.__db.execute_query(statement=self.sql_select, data=('eskom_status',))
+        if result.rowcount == 0:
+            try:
+                self.__db.execute_non_query(statement=self.sql_insert, data=('eskom_status', self.get_usage_status()))
+            except:
+                pass
+        else:
+            try:
+                self.__db.execute_non_query(statement=self.sql_update, data=(self.get_usage_status(), 'eskom_status'))
+            except:
+                pass
+
+        # check the level from eskom
+        result = self.__db.execute_query(statement=self.sql_select, data=('eskom_level',))
+        if result.rowcount == 0:
+            try:
+                self.__db.execute_non_query(statement=self.sql_insert, data=('eskom_level', self.get_alert_level()))
+            except:
+                pass
+        else:
+            try:
+                self.__db.execute_non_query(statement=self.sql_update, data=(self.get_alert_level(), 'eskom_level'))
+            except:
+                pass
 
     def check_for_change(self):
         """
@@ -127,3 +180,30 @@ class PowerAlertScraper:
                 return 'stable'
         else:
             return 'stable'
+
+    def get_stats(self):
+        """
+        Get the stats from the database
+        :return: dictionary of stats
+        """
+        stats = {}
+        sql = 'SELECT value FROM powermonitor.powermonitorweb_eskomstats WHERE field=%s;'
+        result = self.__db.execute_query(statement=sql, data=('eskom_colour',))
+        if result.rowcount == 1:
+            stats['eskom_colour'] = list(result)[0][0]
+        else:
+            stats['eskom_color'] = 'none'
+
+        result = self.__db.execute_query(statement=sql, data=('eskom_status',))
+        if result.rowcount == 1:
+            stats['eskom_usage'] = list(result)[0][0]
+        else:
+            stats['eskom_usage'] = 'none'
+
+        result = self.__db.execute_query(statement=sql, data=('eskom_level',))
+        if result.rowcount == 1:
+            stats['eskom_level'] = list(result)[0][0]
+        else:
+            stats['eskom_level'] = '0'
+
+        return stats

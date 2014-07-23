@@ -18,7 +18,7 @@ from powermonitorweb.utils import createmessage
 from DataAnalysis.Forecasting import PowerForecasting as pf
 from DataAnalysis.Plotting import Plotter as plt
 from DataAnalysis.DataFrameCollector import DataFrameCollector as dfc
-from DataAnalysis.PowerAlertScraper import PowerAlertScraper as scraper
+from DataAnalysis.PowerAlertScraper import PowerAlertScraper as PAS
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import os
@@ -426,27 +426,9 @@ def profile(request):
         )
 
 
-@login_required()
-def graphs(request):
-    """
-    Generates a new graph when a user requests it. I think we should stick away from live graphs for now to keep some of
-    the strain off the CPU. We don't know yet how the whole system will perform when everything is running.
-    :param request:
-    :return:
-    """
-    context = RequestContext(request)
-    scraper.instance().renew_tags()
-    filename = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'powermonitorweb\\static\\powermonitorweb\\'
-                                                                        'images\\graphs\\')
-    graph_name = 'null'
-    graph_data = None
-    current_usage = None
-    average_usage = None
-    savings = None
-    eskom_status = None
-
-    def generate_graph(period_type, length):
-        new_graph_name = graph_name
+# THIS METHOD IS NOT A VIEW!!!
+def generate_usage_graph(period_type, length, file_path):
+        graph_name = 'null'
         if period_type == 'hour':
             delta = relativedelta(hours=length)
         elif period_type == 'day':
@@ -461,104 +443,123 @@ def graphs(request):
                                      period_start=str(datetime.now().replace(microsecond=0) - delta),
                                      period_length=length)
         if frame is not None:
-            new_graph_name = 'last_%d%s.svg' % (length, period_type)
+            graph_name = 'last_%d%s.svg' % (length, period_type)
             plot_title = 'Last %d %s' % (length, period_type.capitalize())
             plt().plot_single_frame(data_frame=frame, title=plot_title, y_label='Usage (kW)',
-                                    x_label='Time', file_name=filename + new_graph_name)
-        return new_graph_name, frame
+                                    x_label='Time', file_name=file_path + graph_name)
+        return graph_name
+
+
+# THIS METHOD IS NOT A VIEW!!!
+def generate_prediction_graph(file_path):
+    graph_name = 'null'
+    try:
+        # For now pass a 12hr frame to be on the safe side. The forecasting cuts quite a bit off
+        pre_predction_frame = dfc().collect_period(period_type='hour',
+                                                   period_start=str(datetime.now().replace(microsecond=0) -
+                                                                    relativedelta(hours=12)),
+                                                   period_length=12)
+        if pre_predction_frame is not None:
+            prediction_frame = pf().predict_usage(data_frame=pre_predction_frame, smooth=True)
+            plt().plot_single_frame(data_frame=prediction_frame, title='Predicted Usage', y_label='Usage (kW)',
+                                    x_label='Time', file_name=file_path + graph_name, prediction=True)
+            graph_name = 'prediction_graph.svg'
+    except:
+        pass
+    return graph_name
+
+# THIS METHOD IS NOT A VIEW!!!
+scraper = PAS()
+
+def get_current_statistics():
+    current_usage = None
+    average_usage = None
+    savings = None
+
+    try:
+        frame = dfc().collect_period(period_type='hour', period_start=str(
+            datetime.now().replace(microsecond=0) - relativedelta(hours=1)), period_length=1)
+        current_usage = frame.tail(1).iloc[0]['reading']
+        average_usage = frame.mean(axis=0)['reading']
+    except:
+        pass
+    stats = scraper.get_stats()
+    eskom_colour = stats['eskom_colour']
+    eskom_usage = stats['eskom_usage']
+
+    if current_usage is None:
+        current_usage = float(0)
+    if average_usage is None:
+        average_usage = float(0)
+
+    return {'current_usage': '%.2f' % current_usage, 'average_usage': '%.2f' % average_usage, 'savings': savings,
+            'eskom_status': '%s_%s' % (eskom_colour, eskom_usage)}
+
+
+@login_required()
+def graphs(request):
+    """
+    Generates a new graph when a user requests it. I think we should stick away from live graphs for now to keep some of
+    the strain off the CPU. We don't know yet how the whole system will perform when everything is running.
+    :param request:
+    :return:
+    """
+    context = RequestContext(request)
+    file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'powermonitorweb\\static\\powermonitorweb\\'
+                                                                        'images\\graphs\\')
+    graph_name = 'null'
 
     if request.is_ajax():   # The user has selected a different graph
         datadict = request.POST
         # generate a new graph based on the user's selection
         if datadict.get('period') == '1hour':
-            graph_data = generate_graph(period_type='hour', length=1)
+            graph_name = generate_usage_graph(period_type='hour', length=1, file_path=file_path)
         elif datadict.get('period') == '12hour':
-            graph_data = generate_graph(period_type='hour', length=12)
+            graph_name = generate_usage_graph(period_type='hour', length=12, file_path=file_path)
         elif datadict.get('period') == 'day':
-            graph_data = generate_graph(period_type='day', length=1)
+            graph_name = generate_usage_graph(period_type='day', length=1, file_path=file_path)
         elif datadict.get('period') == 'week':
-            graph_data = generate_graph(period_type='week', length=1)
+            graph_name = generate_usage_graph(period_type='week', length=1, file_path=file_path)
         elif datadict.get('period') == '1month':
-            graph_data = generate_graph(period_type='month', length=1)
+            graph_name = generate_usage_graph(period_type='month', length=1, file_path=file_path)
         elif datadict.get('period') == '6month':
-            graph_data = generate_graph(period_type='month', length=6)
+            graph_name = generate_usage_graph(period_type='month', length=6, file_path=file_path)
         elif datadict.get('period') == 'year':
-            graph_data = generate_graph(period_type='year', length=1)
+            graph_name = generate_usage_graph(period_type='year', length=1, file_path=file_path)
         elif datadict.get('period') == 'predict':
             # Generating a prediction graph works a little differently
-            try:
-                # For now pass a 12hr frame to be on the safe side. The forecasting cuts quite a bit off
-                pre_predction_frame = dfc().collect_period(period_type='hour',
-                                                           period_start=str(datetime.now().replace(microsecond=0) -
-                                                                            relativedelta(hours=12)),
-                                                           period_length=12)
-                if pre_predction_frame is not None:
-                    prediction_frame = pf().predict_usage(data_frame=pre_predction_frame, smooth=True)
-                    graph_name = 'prediction_graph.svg'
-                    plt().plot_single_frame(data_frame=prediction_frame, title='Predicted Usage', y_label='Usage (kW)',
-                                            x_label='Time', file_name=filename + graph_name, prediction=True)
-                    graph_data = (graph_name, prediction_frame)
-            except:
-                graph_data = 'null'
-        if graph_data != 'null':
+            graph_name = generate_prediction_graph(file_path=file_path)
+        if graph_name != 'null':
             # A graph was produced!
             # It seemed easier to generate the html tag here, then just use JS to plonk it in the div
-            try:
-                graph_name = graph_data[0]
-                current_usage = '%.2f' % graph_data[1].tail(1).iloc[0]['reading']
-                average_usage = '%.2f' % graph_data[1].mean(axis=0)['reading']
-            except:
-                graph_name = graph_data[0]
-            eskom_status = scraper.instance().get_alert_colour()
             graph_html = "<img src='/static/powermonitorweb/images/graphs/%s' />" % graph_name
         else:
-            # Generic error message tag if no graph was produced
-            try:
-                frame = dfc().collect_period(period_type='hour',
-                                             period_start=str(datetime.now().replace(microsecond=0) -
-                                             relativedelta(hours=1)), period_length=1)
-                try:
-                    current_usage = '%.2f' % frame.tail(1)['reading']
-                    average_usage = '%.2f' % frame.mean(axis=0)['reading']
-                except:
-                    current_usage = 0
-                    average_usage = 0
-                eskom_status = scraper().get_alert_colour()
-            except:
-                pass
             graph_html = "<strong>No graph found. There may be insufficient data to generate a graph.<br />" \
                          "Try selecting another period.</strong>" \
                          "<p>If a power outage has occurred, you may need to wait 12hours before predictions can be " \
                          "calculated</p>"
+        current_stats = get_current_statistics()
         # return the name of the new graph to display
-        JSONdata = '{"graph": "%s", "current_usage": "%s", "average_usage": "%s", "eskom_status": "%s"}' % \
-                   (graph_html, current_usage, average_usage, eskom_status)
+        JSONdata = '{"graph": "%s", "current_usage": "%s", "average_usage": "%s", "eskom_status": "%s", ' \
+                   '"savings": "%s"}' % (graph_html, current_stats['current_usage'], current_stats['average_usage'],
+                    current_stats['eskom_status'], current_stats['savings'])
         print JSONdata
         return HttpResponse(JSONdata)
     else:
         # otherwise the page was loaded, so show a default graph. currently defaults to 12hr graph
         graph_period_form = SelectGraphPeriodForm(initial={'period': '12hour'})
-        graph_data = generate_graph(period_type='hour', length=12)  # by default display the last 12 hours
-        graph_name = graph_data[0]
-        try:
-            current_usage = '%.2f' % graph_data[1].tail(1).iloc[0]['reading']
-            average_usage = '%.2f' % graph_data[1].mean(axis=0)['reading']
-        except:
-            current_usage = 0
-            average_usage = 0
-        eskom_colour = scraper.instance().get_alert_colour()
-        eskom_status = scraper.instance().get_usage_status()
-        status_image = '%s_%s.svg' % (eskom_colour, eskom_status)
-
+        graph_name = generate_usage_graph(period_type='hour', length=12, file_path=file_path)
+        current_stats = get_current_statistics()
+        status_image = '%s.svg' % current_stats['eskom_status']
     return render_to_response(
         'powermonitorweb/graphs.html',
         {
             'graph': graph_name,
             'graph_period_form': graph_period_form,
-            'current_usage': current_usage,
-            'average_usage': average_usage,
+            'current_usage': current_stats['current_usage'],
+            'average_usage': current_stats['average_usage'],
             'eskom_status': status_image,
-            'savings': savings
+            'savings': current_stats['savings']
         },
         context
     )

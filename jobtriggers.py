@@ -2,5 +2,5 @@
 from DataAnalysis.PowerAlertScraper import PowerAlertScraper as PAS
 
 def power_alert_scraper__renew_tags():
-    scraper = PAS.instance()
+    scraper = PAS()
     scraper.renew_tags()

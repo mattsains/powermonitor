@@ -18,7 +18,7 @@
 int last_current;
 byte last_current_mode;
 int last_voltage;
-long int filter_watts;
+int filter_watts;
 //Intellent sensing variables
 byte current_mode; //0: high current; 1: low current
 int max_sense; //highest reading returned. This gets reset when modes are switched
