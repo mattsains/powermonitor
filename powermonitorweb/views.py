@@ -277,9 +277,9 @@ def manage_reports(request):
         return HttpResponse(JSONdata.replace('[', '').replace(']', ''))  # clean and send data
     elif request.method == 'POST':
         report_type_form = ReportTypeForm(data=request.POST, user=user)
-        report_details_form = ReportDetailsForm(user=user)
+        report_details_form = ReportDetailsForm(data=request.POST, user=user)
     else:
-        report_type_form = ReportTypeForm(data=request.POST, user=user)
+        report_type_form = ReportTypeForm(user=user)
         report_details_form = ReportDetailsForm(user=user)
 
     return render_to_response(
