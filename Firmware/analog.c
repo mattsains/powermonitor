@@ -18,7 +18,7 @@ void read_eeprom_calibration()
 {
    if (read_eeprom(0)==0xCA)
    {
-      filter_weight_inv=1.0/read_eeprom(1);
+      filter_weight_inv=(float)1/read_eeprom(1);
 
       offset=(read_eeprom(2)<<8)|read_eeprom(3);
    
@@ -27,7 +27,7 @@ void read_eeprom_calibration()
       
       voltage_delay=read_eeprom(8);
       
-      watt_scale=10000.0/(current_scale*voltage_scale);
+      watt_scale=10000/((float)current_scale*voltage_scale);
    }
 }
 //Handles initialization of analog to digital hardware, ADC interrupts, 
