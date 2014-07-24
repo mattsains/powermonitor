@@ -6,6 +6,7 @@ import re
 from Decorators import Singleton
 from Database.DBConnect import DbConnection as db
 # from Reporting.ReportBuilder import ReportBuilder # TODO: Fix issues in ReportBuilder
+import logging
 
 
 @Singleton
@@ -44,6 +45,7 @@ class PowerAlertScraper:
         if self.__usage is not None:  # Remove <> so re doesn't complain
             self.__usage_string = self.__remove_angle_brackets(self.__usage)
         self.write_stats_to_database()
+        self.check_for_change()
 
     def write_stats_to_database(self):
         """
@@ -56,12 +58,12 @@ class PowerAlertScraper:
             try:
                 self.__db.execute_non_query(statement=self.sql_insert, data=('eskom_colour', self.get_alert_colour()))
             except:
-                pass  # TODO: add some proper error handling
+                logging.warning('Unable to insert value into database: eskom_colour')
         else:
             try:
                 self.__db.execute_non_query(statement=self.sql_update, data=(self.get_alert_colour(), 'eskom_colour'))
             except:
-                pass
+                logging.warning('Unable to update value in database: eskom_colour')
 
         # check the status from eskom
         result = self.__db.execute_query(statement=self.sql_select, data=('eskom_status',))
@@ -69,12 +71,12 @@ class PowerAlertScraper:
             try:
                 self.__db.execute_non_query(statement=self.sql_insert, data=('eskom_status', self.get_usage_status()))
             except:
-                pass
+                logging.warning('Unable to insert value into database: eskom_status')
         else:
             try:
                 self.__db.execute_non_query(statement=self.sql_update, data=(self.get_usage_status(), 'eskom_status'))
             except:
-                pass
+                logging.warning('Unable to update value in database: eskom_status')
 
         # check the level from eskom
         result = self.__db.execute_query(statement=self.sql_select, data=('eskom_level',))
@@ -82,19 +84,18 @@ class PowerAlertScraper:
             try:
                 self.__db.execute_non_query(statement=self.sql_insert, data=('eskom_level', self.get_alert_level()))
             except:
-                pass
+                logging.warning('Unable to insert value into database: eskom_level')
         else:
             try:
                 self.__db.execute_non_query(statement=self.sql_update, data=(self.get_alert_level(), 'eskom_level'))
             except:
-                pass
+                logging.warning('Unable to update value in database: eskom_level')
 
     def check_for_change(self):
         """
         Check to see if there has been a change in any of the values
         :return: Dictionary containing the changed state of the level, colour, and status from poweralert
         """
-        self.renew_tags()   # renew the tags to check if there was any change
         poweralert = {'level': False, 'colour': False, 'status': False}
         # Check if there was a change in the power level
         if self.get_alert_level() != self.__current_readings['level']:

@@ -347,8 +347,7 @@ def manage_users(request):
                 if password_reset_form.is_valid():
                     saved = password_reset_form.save(email_template_name='powermonitorweb/reset_password_email.html',
                                                      request=request)
-            except Exception as e:
-                print e
+            except:
                 saved = 'false'
             if saved is None:
                 saved = 'true'
