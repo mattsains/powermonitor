@@ -153,11 +153,12 @@ ISR(ADC_vect)
    }
    else
    {
+      voltage_range_reset++;
       //Time to reset the voltage range
       if (voltage_range_reset==255)
       {
-	 //reset the no voltage indicator because we have a full buffer of measurements to base this on
-	 no_voltage=((100.0*(max_voltage-min_voltage))/voltage_scale) < 200;
+         //reset the no voltage indicator because we have a full buffer of measurements to base this on
+         no_voltage=((100.0*(max_voltage-min_voltage))/voltage_scale) < 200;
          max_voltage=0;
          min_voltage=1023;
          voltage_range_reset=0;
