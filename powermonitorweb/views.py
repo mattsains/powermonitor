@@ -214,22 +214,33 @@ def manage_reports(request):
                            '"report_weekly": "", "report_monthly": ""}}'
             print (JSONdata)
         elif datadict.get('identifier') == 'enable_report_click':
-            #TODO: check validitiy of form somehow
-            validity = True
-            if validity:
-                new_report = UserReports()
-                print(datadict)
-                new_report.report_id = datadict.get('report_type')
-                new_report.datetime = datadict.get('datetime')
-                new_report.occurrence_type = datadict.get('occurrence_type')
-                new_report.report_daily = datadict.get('report_daily')
-                new_report.report_weekly = datadict.get('report_weekly')
-                new_report.report_monthly = datadict.get('report_monthly')
-                new_report.user_id = user.id
-                new_report.save()
+            #suck it PEP 8 this works better for editing multiple lines and looks cleaner
+            form_data = {
+            'occurrence_type': int(datadict.get('occurrence_type')),
+            'datetime'       : str(datadict.get('datetime')).replace('/', '-'),
+            'report_daily'   : not (datadict.get('report_daily') is None),
+            'report_weekly'  : not (datadict.get('report_weekly') is None),
+            'report_monthly' : not (datadict.get('report_monthly')is None)}
+
+            print form_data
+            try:
+                report_details_form = ReportDetailsForm(form_data, user=user)
+                print report_details_form.is_valid()
+                print report_details_form.errors + "test"
+            except Exception as e:
+                print '%s (%s)' % (e.message, type(e))
+
+            if report_details_form.is_valid():
+                try:
+                    report_details_form.save()
+                    print "saved"
+                except Exception as e:
+                    print e.message + str(type(e))
+
                 JSONdata = createmessage(True, 'Report Enabled', 'Successfully enabled [report name]')
             else:
                 JSONdata = createmessage(False, 'Error', 'The report could not be enabled')
+
         elif datadict.get('identifier') == 'disable_report_click':
             report_to_delete = user_reports.filter(report_id=datadict.get('report_type'))
             print(report_to_delete.report_id)
@@ -265,11 +276,11 @@ def manage_reports(request):
 
         return HttpResponse(JSONdata.replace('[', '').replace(']', ''))  # clean and send data
     elif request.method == 'POST':
-        report_type_form = ReportTypeForm(data=request.POST, user=request.user)
-        report_details_form = ReportDetailsForm(data=request.POST, user=request.user)
+        report_type_form = ReportTypeForm(data=request.POST, user=user)
+        report_details_form = ReportDetailsForm(user=user)
     else:
-        report_type_form = ReportTypeForm(user=request.user)
-        report_details_form = ReportDetailsForm(user=request.user)
+        report_type_form = ReportTypeForm(data=request.POST, user=user)
+        report_details_form = ReportDetailsForm(user=user)
 
     return render_to_response(
         'powermonitorweb/manage_reports.html',

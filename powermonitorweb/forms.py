@@ -62,7 +62,7 @@ class SocialMediaAccountForm(forms.ModelForm):
         fields = (
             'account_type',  # a select list of accounts for the user
             'account_username',  # the username for the social media account
-            'account_token', # the authentication token given by the social media service
+            'account_token',  # the authentication token given by the social media service
             'post_daily',  # automatically post daily reports?
             'post_weekly',  # automatically post weekly reports?
             'post_monthly',  # automatically post monthly reports?
@@ -116,6 +116,7 @@ class ReportTypeForm(forms.ModelForm):
 
 class ReportDetailsForm(forms.ModelForm):
     class Meta:
+
         model = UserReports
         fields = (
             'occurrence_type',
@@ -125,15 +126,11 @@ class ReportDetailsForm(forms.ModelForm):
             'report_monthly')
 
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user')
         super(ReportDetailsForm, self).__init__(*args, **kwargs)
+
+        #generated fields work for everything else but this needs to be custom
         self.fields['occurrence_type'] = forms.ChoiceField(widget=forms.Select,
                                                            choices=[('1', 'recurring'), ('0', 'once-off')])
-                                                           #NB that these match the database exactly. lame. may change.
-        self.fields['datetime'] = forms.SplitDateTimeField(widget=forms.DateTimeInput())
-        self.fields['report_daily'] = forms.ChoiceField(widget=forms.CheckboxInput())
-        self.fields['report_weekly'] = forms.ChoiceField(widget=forms.CheckboxInput())
-        self.fields['report_monthly'] = forms.ChoiceField(widget=forms.CheckboxInput())
 
 
 class UserListForm(forms.Form):
@@ -166,7 +163,8 @@ period_list = [
     ('1month', 'Last Month'),
     ('6month', 'Last 6 Months'),
     ('year', 'Last Year'),
-    ('predict', '1 Hour Prediction')
-    ]
+    ('predict', '1 Hour Prediction')]
+
+
 class SelectGraphPeriodForm(forms.Form):
     period = forms.ChoiceField(widget=forms.Select, choices=period_list)
