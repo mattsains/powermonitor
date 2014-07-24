@@ -142,7 +142,7 @@ ISR(ADC_vect)
       else
          last_current=result;
       //test for over/undercurrent
-      if (last_current>max_sense)
+      if (result>max_sense)
          max_sense=result;
 
       //Advance or reset the low current mode fuse
