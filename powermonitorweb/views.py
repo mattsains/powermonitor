@@ -229,6 +229,7 @@ def manage_reports(request):
                 print report_details_form.errors + "test"
             except Exception as e:
                 print '%s (%s)' % (e.message, type(e))
+                report_details_form = ReportDetailsForm()
 
             if report_details_form.is_valid():
                 try:

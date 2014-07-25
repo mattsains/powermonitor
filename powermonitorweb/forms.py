@@ -126,6 +126,7 @@ class ReportDetailsForm(forms.ModelForm):
             'report_monthly')
 
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user')   # Not sure what you wanted to do with this. I added this to fix the errors I was getting
         super(ReportDetailsForm, self).__init__(*args, **kwargs)
 
         #generated fields work for everything else but this needs to be custom
