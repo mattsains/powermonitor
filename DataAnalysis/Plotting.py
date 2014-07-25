@@ -1,11 +1,10 @@
-# from scipy.special.tests.test_data import data
-
 __author__ = 'Vincent'
 import pandas as pd
 #import numpy as np
 import matplotlib.pyplot as plt
-from io import StringIO
+import io
 import Resampling as rs
+import PIL
 
 class Plotter:
     """Plotter"""
@@ -67,7 +66,7 @@ class Plotter:
             plt.legend()
 
         if not file_name:
-            file_buffer = StringIO()
+            file_buffer = io.BytesIO()
             plt.savefig(file_buffer)
             return file_buffer.getvalue()
         else:
@@ -145,7 +144,7 @@ class Plotter:
         if legend:
             plt.legend()
         if not file_name:   # if file_name is None
-            file_buffer = StringIO()
+            file_buffer = io.BytesIO()
             plt.savefig(file_buffer)
             return file_buffer.getvalue()
         else:
@@ -177,7 +176,7 @@ class Plotter:
             raise ValueError("One of the parameters is incorrect")
 
 
-        data_frame.reading.plot(label=legend, color=self.GraphColorGreen)
+        #data_frame.reading.plot(label=legend, color=self.GraphColorGreen,sharex=True,marker="o")
             # This is to handle plotting forecast data
         if title:
             plt.title(title)
@@ -187,16 +186,21 @@ class Plotter:
             plt.xlabel(x_label)
         if legend:
             plt.legend()
+        data_frameWeighted = pd.DataFrame(data_frameWeighted,columns=("reading",))
+        #data_frameWeighted.reading.plot()
 
-
-        std = rs.Resampling().get_frame_std_dev(data_frame=data_frame)
+        std = rs.Resampling().get_frame_std_dev(data_frame=data_frameWeighted)
         toRed = std*3
         toOrange = std*1.75
 
         means = data_frameWeighted.ix[:, "reading"]
         true_values = data_frame.ix[:, "reading"]
 
-        for x in range(len(means)):
+
+
+        #single.reading.plot(color=self.AlertOrange,marker='o',markerfacecolor=self.AlertOrange)
+        single = []
+        for x in range(len(true_values)):
             difference = true_values[x] - means[x]
             difference = abs(difference)
             if (difference < toOrange):
@@ -205,14 +209,26 @@ class Plotter:
                 plottedColor = self.AlertRed
             else:
                 plottedColor = self.AlertOrange
+            single.append(plottedColor)
 
-            currentPlot = data_frame._ix[x]
-            currentPlot.reading.plot(color=plottedColor,marker='o',markerfacecolor=plottedColor)
-
+        data_frame.reading.plot(kind='bar',label=legend,sharex=True,color=single)
+        #data_frame.reading.bar(label=legend,color= self.GraphColorGreen)
+        #data_frame.reading.plot(label=legend,color= self.GraphColorGreen)
+        #data_frame.reading.plot(label=legend)
+        #plt.show()
+        plt.ylabel("Usage(kwh)")
+        plt.xlabel("timestamp")
+        plt.title("unusual plot")
+        #print(data_frame["reading"])
+        #plt.scatter(data_frame.index,data_frame["reading"],marker="o")
+        #data_frame["reading",0].plot(style='.')
         if not file_name:   # if file_name is None
-            file_buffer = StringIO()
-            plt.savefig(file_buffer)
-            return file_buffer.getvalue()
+            buf = io.BytesIO()
+            plt.savefig(buf, format = "png",bbox_inches ="tight",dpi = 300,facecolor ="w",edgecolor="g")
+            buf.seek(0)
+            im = PIL.Image.open(buf)
+            # possibly should use save fig
+            return im
         else:
             file_name_split = file_name.split(".")
             if (file_name_split[-1] == "svg") or (file_name_split[-1] == "png") or (file_name_split[-1] == "jpg"):

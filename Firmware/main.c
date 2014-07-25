@@ -44,7 +44,7 @@ int main()
    //spin wait - otherwise the processor dies
    for(;;)
    {
-      statusLED1(current_mode);
+      statusLED1(current_mode==0);
       statusLED2(transaction!=0);
    }
 }
