@@ -542,8 +542,8 @@ def graphs(request):
     :return:
     """
     context = RequestContext(request)
-    file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'powermonitorweb\\static\\powermonitorweb\\'
-                                                                        'images\\graphs\\')
+    file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'powermonitorweb', 'static', 'powermonitorweb',
+                             'images', 'graphs')  # new unix friendly flavour!
     graph_name = 'null'
 
     if request.is_ajax():   # The user has selected a different graph
