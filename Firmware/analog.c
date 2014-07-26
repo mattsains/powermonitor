@@ -138,7 +138,7 @@ ISR(ADC_vect)
       last_current_mode=current_mode;
       //correct for current mode
       if (current_mode==0)
-         last_current=result<<2;
+         last_current=result*2;
       else
          last_current=result;
       //test for over/undercurrent
@@ -177,11 +177,13 @@ ISR(ADC_vect)
          last_voltage=buffer[buffer_pos%voltage_delay];
       } else
          last_voltage=result;
-
-      //Calculate watts  - formula depends on current mode because of unfortunate design
+      
+      int shifted_current;
       if (last_current_mode==0)
-         filter_watts=(int)(filter_watts + filter_weight_inv*((last_voltage-offset)*(last_current-(offset<<2))*watt_scale - filter_watts));
+         shifted_current=last_current-(offset*2);
       else
-         filter_watts=(int)(filter_watts + filter_weight_inv*((last_voltage-offset)*(last_current-offset)*watt_scale - filter_watts));
+         shifted_current=last_current-offset;
+      
+      filter_watts=(int)(filter_watts + filter_weight_inv*((int)(last_voltage-offset)*(shifted_current)*watt_scale - filter_watts));
    }
 }
