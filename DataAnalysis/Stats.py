@@ -17,22 +17,22 @@ class UsageStats:
     the dataframe that you have collected yourself elsewhere and pass it to get_frame_stats
     """
     def last_hour_stats(self):
-        return self.get_stats('hour', str(datetime.now() - relativedelta(hours=1)), 1)
+        return self.get_stats('hour', str(datetime.now().replace(microsecond=0) - relativedelta(hours=1)), 1)
 
     def last_12hour_stats(self):
-        return self.get_stats('hour', str(datetime.now() - relativedelta(hours=12)), 12)
+        return self.get_stats('hour', str(datetime.now().replace(microsecond=0) - relativedelta(hours=12)), 12)
 
     def last_day_stats(self):
-        return self.get_stats('day', str(datetime.now() - relativedelta(days=1)), 1)
+        return self.get_stats('day', str(datetime.now().replace(microsecond=0) - relativedelta(days=1)), 1)
 
     def last_week_stats(self):
-        return self.get_stats('week', str(datetime.now() - relativedelta(weeks=1)), 1)
+        return self.get_stats('week', str(datetime.now().replace(microsecond=0) - relativedelta(weeks=1)), 1)
 
     def last_month_stats(self):
-        return self.get_stats('month', str(datetime.now() - relativedelta(months=1)), 1)
+        return self.get_stats('month', str(datetime.now().replace(microsecond=0) - relativedelta(months=1)), 1)
 
     def last_year_stats(self):
-        return self.get_stats('year', str(datetime.now() - relativedelta(years=1)), 1)
+        return self.get_stats('year', str(datetime.now().replace(microsecond=0) - relativedelta(years=1)), 1)
 
     def get_stats(self, period_type, period_start, period_length):
         """
@@ -46,12 +46,13 @@ class UsageStats:
         try:
             data_frame = self._collector.collect_period(period_type=period_type, period_start=period_start,
                                                         period_length=period_length)
-            stats['average'] = data_frame.reading.mean()
-            stats['max'] = data_frame.max().reading
-            stats['max_time'] = data_frame.max().time   # The time at which the maximum occurred
-            stats['min'] = data_frame.min().reading
-            stats['min_time'] = data_frame.min().time   # The time at which the minimum occurred
-            stats['total_usage'] = data_frame.reading.sum()
+            stats['average'] = '%.2f' % data_frame.reading.mean()
+            stats['max'] = '%.2f' % data_frame.reading.max()
+            stats['max_time'] = data_frame.time.max()   # The time at which the maximum occurred
+            stats['min'] = '%.2f' % data_frame.reading.min()
+            stats['min_time'] = data_frame.time.min()   # The time at which the minimum occurred
+            stats['total_usage'] = '%.2f' % data_frame.reading.sum()
+            stats['end'] = '%.2f' % data_frame.tail(1).iloc[0]['reading']
             del data_frame  # dispose of the frame right now. We don't need it anymore
             return stats
         except:
@@ -67,12 +68,13 @@ class UsageStats:
         """
         stats = {}
         try:
-            stats['average'] = data_frame.reading.mean()
-            stats['max'] = data_frame.max().reading
-            stats['max_time'] = data_frame.max().time
-            stats['min'] = data_frame.min().reading
-            stats['min_time'] = data_frame.min().time
-            stats['total_usage'] = data_frame.reading.sum()
+            stats['average'] = '%.2f' % data_frame.reading.mean()
+            stats['max'] = '%.2f' % data_frame.reading.max()
+            stats['max_time'] = data_frame.time.max()   # The time at which the maximum occurred
+            stats['min'] = '%.2f' % data_frame.reading.min()
+            stats['min_time'] = data_frame.time.min()   # The time at which the minimum occurred
+            stats['total_usage'] = '%.2f' % data_frame.reading.sum()
+            stats['end'] = '%.2f' % data_frame.tail(1).iloc[0]['reading']
             del data_frame  # dispose of the frame right now. We don't need it anymore
             return stats
         except:

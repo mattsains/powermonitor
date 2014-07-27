@@ -21,6 +21,7 @@ from DataAnalysis.DataFrameCollector import DataFrameCollector as dfc
 from DataAnalysis.PowerAlertScraper import PowerAlertScraper as PAS
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+import ecoberry.settings
 import os
 
 @login_required()
@@ -229,6 +230,7 @@ def manage_reports(request):
                 print report_details_form.errors + "test"
             except Exception as e:
                 print '%s (%s)' % (e.message, type(e))
+                report_details_form = ReportDetailsForm()
 
             if report_details_form.is_valid():
                 try:
@@ -480,6 +482,10 @@ def generate_usage_graph(period_type, length, file_path):
                                      period_length=length)
         if frame is not None:
             graph_name = 'last_%d%s.svg' % (length, period_type)
+            try:  # try deleting the file
+                os.remove(file_path + graph_name)
+            except:
+                pass  # don't care if it can't find the file. a new one is being created anyway
             plot_title = 'Last %d %s' % (length, period_type.capitalize())
             plt().plot_single_frame(data_frame=frame, title=plot_title, y_label='Usage (kW)',
                                     x_label='Time', file_name=file_path + graph_name)
@@ -497,9 +503,13 @@ def generate_prediction_graph(file_path):
                                                    period_length=12)
         if pre_predction_frame is not None:
             prediction_frame = pf().predict_usage(data_frame=pre_predction_frame, smooth=True)
+            graph_name = 'prediction_graph.svg'
+            try:    # try delete the file. This should hopefully prevent any issues
+                os.remove(file_path + graph_name)
+            except:
+                pass  # if it doesn't exist it can't be deleted
             plt().plot_single_frame(data_frame=prediction_frame, title='Predicted Usage', y_label='Usage (kW)',
                                     x_label='Time', file_name=file_path + graph_name, prediction=True)
-            graph_name = 'prediction_graph.svg'
     except:
         pass
     return graph_name
@@ -543,7 +553,7 @@ def graphs(request):
     """
     context = RequestContext(request)
     file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'powermonitorweb', 'static', 'powermonitorweb',
-                             'images', 'graphs')  # new unix friendly flavour!
+                             'images', 'graphs', '')  # new unix friendly flavour! Forgot the trailing slash...
     graph_name = 'null'
 
     if request.is_ajax():   # The user has selected a different graph

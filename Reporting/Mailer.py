@@ -8,6 +8,7 @@ or
 - premailer (https://pypi.python.org/pypi/premailer)    Preferred
 """
 '''Django packages for HTML templating, and email compilation'''
+'''Because we are calling the settings for ecoberry, the templates are now looked for in powermonitorweb/templates'''
 from ecoberry import settings
 from django.template import loader, Context
 from django.core.mail import EmailMultiAlternatives
@@ -24,6 +25,8 @@ to inline_css('%s.html' % template_name))'''
 '''If using premailer, change inline_css(transform('%s.html' % template_name))
 to transform('%s.html' % template_name))'''
 from premailer import transform
+import logging
+from os.path import join
 
 
 class Mailer:
@@ -55,31 +58,61 @@ class Mailer:
         images: (Optional) A dictionary of images - the key is the Content-ID (use in html as src="cid:{key}") and the value is the filename of the image to send.
         """
         #settings.configure(TEMPLATE_DIRS=('./Templates/',))  # Indicate the location of the templates
-
+        print('creating email')
         '''If there is no sender, use the details specified in the class.'''
         if not sender:
             sender = self.__named(self.__email, self.__email_name)
 
-        context = Context(email_context)    # get the data to be inserted into the template
+        context = None
+        try:
+            context = Context(email_context)    # get the data to be inserted into the template
+        except Exception as e:
+            logging.warning('%s - %s' % e)
 
         '''Insert the data from 'context' into each of the templates'''
-        text_part = loader.get_template('%s.txt' % template_name).render(context)
+        text_part = None
+        try:
+            text_part = loader.get_template(join('email', '%s.txt' % template_name)).render(context)
+            print('email text: %s' % text_part)
+        except Exception as e:
+            logging.warning('%s - %s' % e)
+
         '''Inline the css from the HTML template.'''
-        get_html_part = loader.get_template('%s.html' % template_name).render(context)
-        html_part = transform(get_html_part)
-        subject_part = loader.get_template_from_string(subject).render(context)
+        get_html_part = None
+        try:
+            get_html_part = loader.get_template(join('email', '%s.html' % template_name)).render(context)
+        except Exception as e:
+            logging.warning('%s - %s' % e)
+
+        html_part = None
+        try:
+            html_part = transform(get_html_part)
+        except Exception as e:
+            logging.warning('%s - %s' % e)
+
+        subject_part = None
+        try:
+            subject_part = loader.get_template_from_string(subject).render(context)
+        except Exception as e:
+            logging.warning('%s - %s' % e)
 
         if type(recipients) is not list:
-            recipients = [recipients,]
+            recipients = list(recipients)
 
         '''Attach the html and text parts to the email.'''
-        msg = EmailMultiAlternatives(subject_part, text_part, sender, recipients)
-        msg.attach_alternative(html_part, "text/html")
+        if subject_part and text_part:
+            msg = EmailMultiAlternatives(subject_part, text_part, sender, recipients)
+            msg.attach_alternative(html_part, "text/html")
+        else:
+            logging.warning('Could not send email')
+            raise ValueError('subject and or text is None')
 
         '''Insert any images into the html section of the email, and attach them to the email.'''
         '''At the moment, images should be placed in the Reporting folder in order to be attached.'''
-        if images:
+        if images is not None:
+            print images
             for img_name, img_filename in images:
+                print img_name, img_filename
                 fp = open(settings.MEDIA_ROOT + img_filename, 'rb')  # Open the file in binary mode
                 msg_image = MIMEImage(fp.read())    # Create the MIMEImage to be attached to the email
                 fp.close()
@@ -93,6 +126,7 @@ class Mailer:
     def send_emails(self, messages=()):
         """Sends all emails in a single session. This ensures that the system does not need to connect to the smtp
         server many times when sending multiple emails, which should save on bandwidth and cpu cycles."""
+        print messages
         if len(messages) is not 0:
             if messages != self.__mail_list:
                 self.__mail_list = messages
