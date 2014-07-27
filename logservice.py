@@ -8,7 +8,7 @@ pw=PowerMonitor()
 database=DbConnection()
 
 
-database.execute_non_query("INSERT INTO powermonitorweb_readings(reading) VALUES -1")
+database.execute_non_query("INSERT INTO powermonitorweb_readings(reading) VALUES (-1)")
 
 while True:
     response=pw.handshake()
@@ -28,7 +28,7 @@ while True:
         average=sum(readings)/len(readings)
         if (average<0):
             average=0 #clamp invalid values
-        database.execute_non_query("INSERT INTO powermonitorweb_readings(reading) VALUES %s",(average,))
+        database.execute_non_query("INSERT INTO powermonitorweb_readings(reading) VALUES (%s)",(average,))
     #Something killed the sensor
     #Not sure what to do with this
     #depends if it's transient or chronic
