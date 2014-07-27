@@ -105,11 +105,8 @@ byte data_buffer_pos;
 byte data_buffer[9];
 
 //Handles the SPI data received interrupt
-ISR(SPI_STC_vect)
+ISR(SPI_STC_vect, ISR_NOBLOCK)
 {
-   //TODO: write the handler for receiving SPI data.
-   //This data can be read from or written to the SPDR register
-
    byte data_in=SPDR;
 
    if (transaction==0)

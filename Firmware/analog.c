@@ -1,5 +1,5 @@
 //This code handles the measuring of the two/three analog inputs we have
-
+//#define nofilter
 //stores the analog input currently being measured.
 //0: current; 1: voltage
 byte current_channel; 
@@ -41,9 +41,9 @@ void setup_adc()
       write_eeprom(1,200); //filter strength
       write_eeprom(2,0b10); //DC offset high
       write_eeprom(3,0); //DC offset low
-      //4300
-      write_eeprom(4,16); //current scaling factor high
-      write_eeprom(5,204); //current scaling factor low
+      //2770
+      write_eeprom(4,10); //current scaling factor high
+      write_eeprom(5,210); //current scaling factor low
       //145
       write_eeprom(6,0); //voltage scaling factor high
       write_eeprom(7,145); //voltage scaling factor low
@@ -104,23 +104,6 @@ ISR(ADC_vect)
    //Change to the next channel
    current_channel=current_channel==0?1:0;
    ADMUX=(ADMUX&~(0b111))|current_channel;
-
-   //Switch to low current sense if the "fuse" has triggered
-   if (recal_countdown==255)
-   {
-      multiplex(1);
-      current_mode=1;
-      max_sense=0;
-      recal_countdown=0;
-   }
-   //Switch to high current sense if needed
-   if (max_sense==1023)
-   {
-      multiplex(0);
-      current_mode=0;
-      max_sense=0;
-      recal_countdown=0;
-   }
    
    //Get the conversion result
    //You must read ADCL first and then ADCH, 
@@ -138,7 +121,7 @@ ISR(ADC_vect)
       last_current_mode=current_mode;
       //correct for current mode
       if (current_mode==0)
-         last_current=result<<2;
+         last_current=result*2;
       else
          last_current=result;
       //test for over/undercurrent
@@ -150,6 +133,23 @@ ISR(ADC_vect)
          recal_countdown++;
       else
          recal_countdown=0;
+
+      //Switch to low current sense if the "fuse" has triggered
+      if (recal_countdown==255)
+      {
+         multiplex(1);
+         current_mode=1;
+         max_sense=0;
+         recal_countdown=0;
+      }
+      //Switch to high current sense if needed
+      if (max_sense==1023)
+      {
+         multiplex(0);
+         current_mode=0;
+         max_sense=0;
+         recal_countdown=0;
+      }
    }
    else
    {
@@ -158,16 +158,16 @@ ISR(ADC_vect)
       if (voltage_range_reset==255)
       {
          //reset the no voltage indicator because we have a full buffer of measurements to base this on
-         no_voltage=((100.0*(max_voltage-min_voltage))/voltage_scale) < 200;
+         no_voltage=((float)100*(max_voltage-min_voltage)/voltage_scale) < 50;
          max_voltage=0;
          min_voltage=1023;
          voltage_range_reset=0;
       }
 
       //Keep track of the range of voltage readings for no-volt detection
-      if (result>max_voltage)
+      if (result > max_voltage)
          max_voltage=result;
-      if (result<min_voltage)
+      if (result < min_voltage)
          min_voltage=result;
 
       //Keep a ring buffer of voltages if voltage delay is on
@@ -177,11 +177,16 @@ ISR(ADC_vect)
          last_voltage=buffer[buffer_pos%voltage_delay];
       } else
          last_voltage=result;
-
-      //Calculate watts  - formula depends on current mode because of unfortunate design
+      
+      int shifted_current;
       if (last_current_mode==0)
-         filter_watts=(int)(filter_watts + filter_weight_inv*((last_voltage-offset)*(last_current-(offset<<2))*watt_scale - filter_watts));
+         shifted_current=last_current-(offset*2);
       else
-         filter_watts=(int)(filter_watts + filter_weight_inv*((last_voltage-offset)*(last_current-offset)*watt_scale - filter_watts));
+         shifted_current=last_current-offset;
+      #ifdef nofilter
+      filter_watts=(int)(watt_scale*(last_voltage-offset)*shifted_current);
+      #else
+      filter_watts=(int)(filter_watts + filter_weight_inv*(watt_scale*(last_voltage-offset)*shifted_current - filter_watts));
+      #endif
    }
 }
