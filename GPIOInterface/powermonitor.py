@@ -1,5 +1,6 @@
 import spidev
 import ctypes
+import time
 
 class PowerMonitor:
     def __init__(self):
@@ -15,6 +16,7 @@ class PowerMonitor:
         commandbyte += checksum
         response = []
         for packet in [commandbyte] + list(data) + receive_bytes * [0]:
+            time.sleep(0.01)
             response += self.spidev.xfer([packet])
 
         response = response[len(data) + 1:]

@@ -105,7 +105,7 @@ byte data_buffer_pos;
 byte data_buffer[9];
 
 //Handles the SPI data received interrupt
-ISR(SPI_STC_vect, ISR_NOBLOCK)
+ISR(SPI_STC_vect)
 {
    byte data_in=SPDR;
 

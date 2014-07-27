@@ -5,7 +5,7 @@
 byte current_channel; 
 
 //Calibration numbers
-unsigned int offset;
+int offset;
 // int voltage_scale defined in main.c
 float watt_scale;
 byte voltage_delay; //size of the voltage ring buffer
@@ -22,12 +22,12 @@ void read_eeprom_calibration()
 
       offset=(read_eeprom(2)<<8)|read_eeprom(3);
    
-      unsigned int current_scale=(read_eeprom(4)<<8)|read_eeprom(5);
+      current_scale=(read_eeprom(4)<<8)|read_eeprom(5);
       voltage_scale=(read_eeprom(6)<<8)|read_eeprom(7);
       
       voltage_delay=read_eeprom(8);
       
-      watt_scale=10000/((float)current_scale*voltage_scale);
+      watt_scale=10000.0/((float)current_scale*voltage_scale);
    }
 }
 //Handles initialization of analog to digital hardware, ADC interrupts, 
@@ -38,7 +38,7 @@ void setup_adc()
    if (read_eeprom(0)!=0xCA)//magic flag
    {
       //uncalibrated; set up sane defaults
-      write_eeprom(1,200); //filter strength
+      write_eeprom(1,100); //filter strength
       write_eeprom(2,0b10); //DC offset high
       write_eeprom(3,0); //DC offset low
       //2770
@@ -102,7 +102,7 @@ ISR(ADC_vect)
    byte this_channel=current_channel;
    
    //Change to the next channel
-   current_channel=current_channel==0?1:0;
+   current_channel=!current_channel;
    ADMUX=(ADMUX&~(0b111))|current_channel;
    
    //Get the conversion result
@@ -183,10 +183,9 @@ ISR(ADC_vect)
          shifted_current=last_current-(offset*2);
       else
          shifted_current=last_current-offset;
-      #ifdef nofilter
-      filter_watts=(int)(watt_scale*(last_voltage-offset)*shifted_current);
-      #else
-      filter_watts=(int)(filter_watts + filter_weight_inv*(watt_scale*(last_voltage-offset)*shifted_current - filter_watts));
-      #endif
+      
+      int shifted_voltage=last_voltage-offset;
+      
+      filter_watts=(int)(watt_scale*shifted_voltage*shifted_current);
    }
 }

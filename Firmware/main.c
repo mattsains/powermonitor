@@ -28,6 +28,7 @@ int max_voltage;
 int min_voltage=1024;
 byte no_voltage=1; //boolean status
 int voltage_scale;
+int current_scale;
 
 //Other code I wrote
 #include "io.c"
