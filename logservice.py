@@ -22,7 +22,7 @@ while True:
         
         readings=[]
         #Save to the database every minute
-        stop_time=time.time()+10
+        stop_time=time.time()+60
         while time.time() < stop_time:
             readings.append(pw.read_watts())
         average=sum(readings)/len(readings)
