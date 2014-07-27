@@ -3,6 +3,11 @@ ReportBuilder: Compile a report/alert to be emailed to the user into an HTML for
 
 Requires: 
 """
+try:    # this is needed if we call any powermonitorweb classes because django doesn't know about pymysql
+    import pymysql
+    pymysql.install_as_MySQLdb()
+except:
+    pass
 from Reporting.Mailer import Mailer
 import DataAnalysis.PowerAlertScraper
 from DataAnalysis.Plotting import Plotter
@@ -29,9 +34,10 @@ class ReportBuilder():
         """Send an Eskom power alert to a user"""
         # needs: title name power_alert_status power_peak reporting_url image_url tips[]
         frame = self._collector.collect_period(period_type='hour',
-                                               period_start=str(datetime.now() - relativedelta(hours=1)),
+                                               period_start='2014-07-15 19:30:00', #TODO: Change this back to str(datetime.now().replace(microseconds=0) - relativedelta(hours=1))
                                                period_length=1)
         stats = self._usage_stats.get_frame_stats(frame)
+        print stats
         self._plotter.plot_single_frame(data_frame=frame, title='Usage for last hour', y_label='Usage (kW',
                                         x_label='Time', file_name='last_hour.svg')
 
@@ -48,24 +54,27 @@ class ReportBuilder():
 
         email_context['power_peak'] = stats['max']
         email_context['power_peak_time'] = stats['max_time']
+        email_context['power_current'] = stats['end']
         # I'm guessing this is where it was intended to link to
         email_context['reporting_url'] = reverse('powermonitorweb:graphs')
 
-        email_context['image_url'] = 'cid:graph'
-        email_context['tips'] = AlertTip.objects.filter(
-            Alert='0')  # TODO: Still need to work out how to query the reporting tips
-        images.append('last_hour.svg')
+        email_context['graph_url'] = 'cid:graph'
+        email_context['tips'] = AlertTip.objects.filter(id=1)  # TODO: Still need to work out how to query the reporting tips
+        images.append(('last_hour.svg', 'graph'))
 
         # build a report for each user
+        mail_list = []
         for user in User.objects.all():
             if user.username != 'powermonitor':  # we don't want to email the sysadmin
                 try:
                     email_context['name'] = user.first_name
 
                     # Add email to the mail list. All mails will be sent once all reports have been built
-                    self._mailer.create_multipart_mail(template_name='PowerAlert', email_context=email_context,
-                                                       subject=email_context['title'], recipients=[user.email,],
-                                                       images=tuple(images))
+                    mail_list.append(self._mailer.create_multipart_mail(template_name='PowerAlert',
+                                                                        email_context=email_context,
+                                                                        subject=email_context['title'],
+                                                                        recipients=user.email,
+                                                                        images=tuple(images)))
                 except:
                     pass
         self._mailer.send_emails(self._mailer.get_mail_list())  # send all the emails at once

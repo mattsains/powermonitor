@@ -5,11 +5,12 @@
     <div id="section">
         <p>Hello {{ name }},</p>
         <p>Power Alert Issued</p>
-        <p>Eskom have issued a {{ power_alert_status }} power alert. You're currently using {{ power_peak }}kW of electricity.</p>
+        <p>Eskom have issued a {{ power_alert_status }} power alert. You're currently using {{ power_current }}kW of electricity.</p>
+        <p>Your peak usage over the last hour was {{ power_peak }}kW</p>
         
         <p>Here's a graph of your usage history:</p>
-        <a href="reporting_url">
-            <img src="{{ image_url }}" alt="Electricity usage graph" />
+        <a href="http://local-ip-address{{ reporting_url }}"> <!-- TODO: find out domain name/ip of pi -->
+            <img src="{{ graph_url }}" alt="Electricity usage graph" />
         </a>
         
         <p>Some things you can do to save electricity:</p>
