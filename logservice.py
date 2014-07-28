@@ -1,14 +1,14 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 from __future__ import division
 from GPIOInterface.powermonitor import PowerMonitor
 from Database.DBConnect import DbConnection
-from time import sleep
+import time
 
 pw=PowerMonitor()
 database=DbConnection()
 
 
-database.execute_non_query("INSERT INTO powermonitorweb_readings(reading) VALUES -1")
+database.execute_non_query("INSERT INTO powermonitorweb_readings(reading) VALUES (-1)")
 
 while True:
     response=pw.handshake()
@@ -21,12 +21,14 @@ while True:
             database.execute_non_query("UPDATE powermonitor_configuration SET value=1 WHERE field='over_current'")
         
         readings=[]
-        #Save to the database every minute, with readings 10 times a second
-        while len(readings)<600:
+        #Save to the database every minute
+        stop_time=time.time()+60
+        while time.time() < stop_time:
             readings.append(pw.read_watts())
-            sleep(100)
         average=sum(readings)/len(readings)
-        database.execute_non_query("INSERT INTO powermonitorweb_readings(reading) VALUES %s",(average,))
+        if (average<0):
+            average=0 #clamp invalid values
+        database.execute_non_query("INSERT INTO powermonitorweb_readings(reading) VALUES (%s)",(average,))
     #Something killed the sensor
     #Not sure what to do with this
     #depends if it's transient or chronic
