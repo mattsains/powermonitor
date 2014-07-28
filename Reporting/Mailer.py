@@ -34,7 +34,7 @@ class Mailer:
     __smtp_server = 'smtp.gmail.com'
     __smtp_port = 587
     __smtp_user = 'powermonitor.ecoberry'
-    __smtp_pass = str(base64.b64decode(bytes('cDB3M3JtMG4xdDByQDNjMGIzcnJ5')))
+    __smtp_pass = 'arthurdent'
     __email = 'powermonitor.ecoberry@gmail.com'
     __email_name = 'PowerMonitor'
     __mail_list = []
@@ -55,10 +55,10 @@ class Mailer:
         subject: Subject line of the email
         recipients: A list of addresses to send the email to
         sender: (Optional) The From: line in the email. Defaults to our Gmail account
-        images: (Optional) A dictionary of images - the key is the Content-ID (use in html as src="cid:{key}") and the value is the filename of the image to send.
+        images: (Optional) A dictionary of images - the key is the Content-ID (use in html as src="cid:{key}")
+                and the value is the filename of the image to send. The full file path must be given.
         """
         #settings.configure(TEMPLATE_DIRS=('./Templates/',))  # Indicate the location of the templates
-        print('creating email')
         '''If there is no sender, use the details specified in the class.'''
         if not sender:
             sender = self.__named(self.__email, self.__email_name)
@@ -109,12 +109,13 @@ class Mailer:
 
         '''Insert any images into the html section of the email, and attach them to the email.'''
         '''At the moment, images should be placed in the Reporting folder in order to be attached.'''
+        import re
+        pattern = re.compile('(?<=\.)[a-zA-Z]{3,4}$')
         if images is not None:
-            print images
             for img_name, img_filename in images:
-                print img_name, img_filename
-                fp = open(settings.MEDIA_ROOT + img_filename, 'rb')  # Open the file in binary mode
-                msg_image = MIMEImage(fp.read())    # Create the MIMEImage to be attached to the email
+                fp = open(img_filename, 'rb')  # Open the file in binary mode
+                match = re.search(pattern, img_filename)    # get the extension of the file
+                msg_image = MIMEImage(fp.read(), _subtype=match.group())    # Create the MIMEImage to be attached to the email
                 fp.close()
                 '''Add the image to the header so that the template can insert it into the correct
                 place in the html.'''
@@ -126,7 +127,6 @@ class Mailer:
     def send_emails(self, messages=()):
         """Sends all emails in a single session. This ensures that the system does not need to connect to the smtp
         server many times when sending multiple emails, which should save on bandwidth and cpu cycles."""
-        print messages
         if len(messages) is not 0:
             if messages != self.__mail_list:
                 self.__mail_list = messages
@@ -134,6 +134,7 @@ class Mailer:
                 self.__mail_list = tuple(self.__mail_list)
             server = smtp.EmailBackend(host=self.__smtp_server, port=self.__smtp_port, username=self.__email,
                                        password=self.__smtp_pass, use_tls=True)  # Set up a secure connection.
+            print server
             server.send_messages(self.__mail_list)  # Send all emails in one session.
             server.close()  #Close the session
         self.__mail_list = []

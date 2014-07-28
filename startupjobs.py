@@ -11,6 +11,8 @@ import time
 # This script will check if the event is in the jobstore, and if it doesn't exist, it will create and start it
 
 # The format is {name of job, method.in.powermonitor, event type, {schedule: values}}
+import sys
+sys.stdout('Starting Power Monitor scheduler...')
 
 startup_list = [
     {'name': 'PowerAlertScraper.renew_tags',
@@ -22,7 +24,13 @@ startup_list = [
 ]
 
 # call the instance of the scheduler
-scheduler = ES()
+scheduler = None
+try:
+    scheduler = ES()
+except Exception as e:
+    sys.stdout('Error starting scheduler.')
+    sys.stderr('Could not start scheduler. Message: %s - %s' % e)
+    sys.exit(1)
 jobs = scheduler.get_job_names()
 
 for event in startup_list:
@@ -64,3 +72,5 @@ for event in startup_list:
 # and this will ensure that the scheduler continues to run until the Pi dies.
 while True:
     time.sleep(99999)
+# This will only be reached if the while loop above breaks for some reason
+sys.stdout('Scheduler has stopped...')

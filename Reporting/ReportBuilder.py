@@ -8,6 +8,10 @@ try:    # this is needed if we call any powermonitorweb classes because django d
     pymysql.install_as_MySQLdb()
 except:
     pass
+import os
+# Aha! So this needs to be called because we are using django models outside of the django app.
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ecoberry.settings")
+from ecoberry import settings
 from Reporting.Mailer import Mailer
 import DataAnalysis.PowerAlertScraper
 from DataAnalysis.Plotting import Plotter
@@ -33,14 +37,18 @@ class ReportBuilder():
     def build_power_alert_report(self, power_alert_status):
         """Send an Eskom power alert to a user"""
         # needs: title name power_alert_status power_peak reporting_url image_url tips[]
-        frame = self._collector.collect_period(period_type='hour',
-                                               period_start='2014-07-15 19:30:00', #TODO: Change this back to str(datetime.now().replace(microseconds=0) - relativedelta(hours=1))
-                                               period_length=1)
-        stats = self._usage_stats.get_frame_stats(frame)
-        print stats
-        self._plotter.plot_single_frame(data_frame=frame, title='Usage for last hour', y_label='Usage (kW',
-                                        x_label='Time', file_name='last_hour.svg')
-
+        stats = None
+        file_path = os.path.join(settings.BASE_DIR,'powermonitorweb', 'media', 'graphs', '')
+        try:
+            frame = self._collector.collect_period(period_type='hour',
+                                                   period_start='2014-07-15 19:30:00', #TODO: Change this back to str(datetime.now().replace(microseconds=0) - relativedelta(hours=1))
+                                                   period_length=1)
+            stats = self._usage_stats.get_frame_stats(frame)
+            self._plotter.plot_single_frame(data_frame=frame, title='Usage for last hour', y_label='Usage (kW)',
+                                            x_label='Time', file_name=file_path + 'last_hour.png')
+            del frame
+        except:
+            raise StandardError('Could not collect data')
         email_context = {}
         images = []
 
@@ -60,7 +68,7 @@ class ReportBuilder():
 
         email_context['graph_url'] = 'cid:graph'
         email_context['tips'] = AlertTip.objects.filter(id=1)  # TODO: Still need to work out how to query the reporting tips
-        images.append(('last_hour.svg', 'graph'))
+        images.append(('graph', file_path + 'last_hour.png'))
 
         # build a report for each user
         mail_list = []
@@ -73,15 +81,29 @@ class ReportBuilder():
                     mail_list.append(self._mailer.create_multipart_mail(template_name='PowerAlert',
                                                                         email_context=email_context,
                                                                         subject=email_context['title'],
-                                                                        recipients=user.email,
+                                                                        recipients=[str(user.email),],
                                                                         images=tuple(images)))
                 except:
-                    pass
+                    raise StandardError('Could not create email for user %s' % user.first_name)
         self._mailer.send_emails(self._mailer.get_mail_list())  # send all the emails at once
 
     def send_usage_report(self, user, report_start, report_end):
         """Send a report of electricity consumption"""
         # needs: title name report_period report_begin report_end power_sum power_average image_url reporting_url
+        email_context = {}
+        images = []
+        stats = None
+        try:
+            frame = self._collector.collect_period(period_start=report_start, period_end=report_end)
+            self._plotter.plot_single_frame(data_frame=frame, title='Power Usage', y_label='Usage (kW)',
+                                            x_label='Time', file_name='usage_report.svg')
+            stats = self._usage_stats.get_frame_stats(data_frame=frame)
+            del frame
+        except:
+            raise StandardError('Could not collect data')
+
+
+
 
     def send_usage_alert(self, user, alert_event):  # TODO evaluate parameter choice here
         """Send an alert of electricity consumption"""

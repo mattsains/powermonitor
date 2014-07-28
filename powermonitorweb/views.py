@@ -21,14 +21,13 @@ from DataAnalysis.DataFrameCollector import DataFrameCollector as dfc
 from DataAnalysis.PowerAlertScraper import PowerAlertScraper as PAS
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-import ecoberry.settings
 import os
 
 @login_required()
 def index(request):
     context = RequestContext(request)
-    return render_to_response('powermonitorweb/index.html', {}, context)
-    #return HttpResponseRedirect('/powermonitorweb/graphs/')  # start at the graphs page
+    # return render_to_response('powermonitorweb/index.html', {}, context)
+    return HttpResponseRedirect('/powermonitorweb/graphs/')  # start at the graphs page
 
 
 def setup_household(request):

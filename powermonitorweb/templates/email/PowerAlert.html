@@ -1,4 +1,32 @@
-{% include '_header.html' }
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+    <title>{{ title }}</title>
+    <style type="text/css">
+        #header { background-color: Black; }
+        #header h1 { font: Arial; font-weight: bold; font-size: 15pt; color: #FFFFFF; }
+        p { font: Arial,Helvetica; size: 10pt; }
+        body { background-color: #FFFFFF; }
+        #pageContainer {
+            background-color: #EEEEEE;
+            padding:10px;
+            margin-left:auto;
+            margin-right:auto;
+            width:800px;
+        }
+        #footer {
+            background-color: Black;
+            color: White;
+            text-align: center;
+        }
+        #section a:link { text-decoration:none; }
+        #section a:visited { text-decoration:none; }
+        #section a:hover { color: #FF0000; }
+        #section a:active { text-decoration:none; }
+    </style>
+</head>
+<body>
+    <div id="pageContainer">
     <div id="header">
         <h1>{{ title }}</h1>
     </div>
@@ -20,4 +48,8 @@
         {% endfor %}
         </ul>
     </div>
-{% include '_footer.html' }
+        <div id="footer">
+            Copyright {{ owner }} 2014 &copy;
+        </div>
+    </div>
+</body>
