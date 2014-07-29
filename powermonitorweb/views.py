@@ -207,71 +207,71 @@ def manage_reports(request):
             myreport = user_reports.filter(report_id=datadict.get('report_type'))
             if len(myreport) == 1:
                 JSONdata = serializers.serialize('json', myreport, fields=('occurrence_type', 'datetime', 'report_daily',
-                                                                       'report_weekly', 'report_monthly'))
+                                                                           'report_weekly', 'report_monthly'))
+                JSONdata = JSONdata.replace('-', '/').replace('T', ' ')[:-8] + '"}}'
             else:
                 # send blank fields to override values as a reset mechanism
                 JSONdata = '{ "fields":{"occurrence_type" : "", "datetime" : "", "report_daily": "",' \
                            '"report_weekly": "", "report_monthly": ""}}'
             print (JSONdata)
         elif datadict.get('identifier') == 'enable_report_click':
-            #suck it PEP 8 this works better for editing multiple lines and looks cleaner
-            form_data = {
-            'occurrence_type': int(datadict.get('occurrence_type')),
-            'datetime'       : str(datadict.get('datetime')).replace('/', '-'),
-            'report_daily'   : not (datadict.get('report_daily') is None),
-            'report_weekly'  : not (datadict.get('report_weekly') is None),
-            'report_monthly' : not (datadict.get('report_monthly')is None)}
+            report_type = Report.objects.get(id=int(datadict.get('report_type')))
+            occurrence_type = int(datadict.get('occurrence_type'))
+            datetime = str(datadict.get('datetime')).replace('/', '-')
+            report_daily = not (datadict.get('report_daily') is None)
+            report_weekly = not (datadict.get('report_weekly') is None)
+            report_monthly = not (datadict.get('report_monthly')is None)
 
-            print form_data
-            try:
-                report_details_form = ReportDetailsForm(form_data, user=user)
-                print report_details_form.is_valid()
-                print report_details_form.errors + "test"
-            except Exception as e:
-                print '%s (%s)' % (e.message, type(e))
-                report_details_form = ReportDetailsForm()
+            report_details_model = UserReports(user_id=user,
+                                                   report_id=report_type,
+                                                   occurrence_type=occurrence_type,
+                                                   datetime=datetime,
+                                                   report_daily=report_daily,
+                                                   report_weekly=report_weekly,
+                                                   report_monthly=report_monthly)
 
-            if report_details_form.is_valid():
-                try:
-                    report_details_form.save()
-                    print "saved"
-                except Exception as e:
-                    print e.message + str(type(e))
-
+            report_details_model.save()
+            if (True): #TODO: validation should happen
                 JSONdata = createmessage(True, 'Report Enabled', 'Successfully enabled [report name]')
             else:
                 JSONdata = createmessage(False, 'Error', 'The report could not be enabled')
 
         elif datadict.get('identifier') == 'disable_report_click':
-            report_to_delete = user_reports.filter(report_id=datadict.get('report_type'))
-            print(report_to_delete.report_id)
+            report_to_delete = user_reports.filter(report_id=Report.objects.get(id=datadict.get('report_type')))
             report_to_delete.delete()
             JSONdata = createmessage(True, 'Report Disabled', 'The report was disabled')
+
         elif datadict.get('identifier') == 'save_report_click':
             print("trying to save")
-            report_to_change = user_reports.get(report_id=datadict.get('report_type'))
+
             # update changed fields.
-            if report_to_change.report_id_id != datadict.get('report_type'):
-                report_to_change.report_id_id = datadict.get('report_type')
-            if report_to_change.datetime != datadict.get('datetime'):
-                report_to_change.datetime = datadict.get('datetime')
-            if report_to_change.occurrence_type != datadict.get('occurrence_type'):
-                report_to_change.occurrence_type = datadict.get('occurrence_type')
-            if report_to_change.report_daily != datadict.get('report_daily'):
-                report_to_change.report_daily = datadict.get('report_daily')
-            if report_to_change.report_weekly != datadict.get('report_weekly'):
-                report_to_change.report_weekly = datadict.get('report_weekly')
-            if report_to_change.report_monthly != datadict.get('report_monthly'):
-                report_to_change.report_monthly = datadict.get('report_monthly')
-            print("3")
+            report_type = Report.objects.get(id=int(datadict.get('report_type')))
+            occurrence_type = int(datadict.get('occurrence_type'))
+            datetime = str(datadict.get('datetime')).replace('/', '-')
+            report_daily = not (datadict.get('report_daily') is None)
+            report_weekly = not (datadict.get('report_weekly') is None)
+            report_monthly = not (datadict.get('report_monthly')is None)
+
+            report_to_change = user_reports.get(report_id=report_type)
+
+            if report_to_change.datetime != datetime:
+                report_to_change.datetime = datetime
+            if report_to_change.occurrence_type != occurrence_type:
+                print occurrence_type
+                report_to_change.occurrence_type = occurrence_type
+            if report_to_change.report_daily != report_daily:
+                report_to_change.report_daily = report_daily
+            if report_to_change.report_weekly != report_weekly:
+                report_to_change.report_weekly = report_weekly
+            if report_to_change.report_monthly != report_monthly:
+                report_to_change.report_monthly = report_monthly
+
             # save to db
             try:
                 report_to_change.save()
             except:
                 print("lol")
-            print("4")
             JSONdata = createmessage(True, 'Report Changes Saved', 'All changes to this report have been saved')
-            print("5")
         else:
             JSONdata = '[{}]'
 
