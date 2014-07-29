@@ -120,7 +120,7 @@ class Plotter:
         return result
 
 
-    def plot_single_frame(self,data_frame, title=None, legend=None, y_label=None, x_label=None, file_name=None,
+    def plot_single_frame(self, data_frame, title=None, legend=None, y_label=None, x_label=None, file_name=None,
                           prediction=False,file_type="png"):
         """Specify the dataFrame that you want to plot, single dataFrame
         title: The string title for the plot
@@ -143,6 +143,9 @@ class Plotter:
             plt.xlabel(x_label)
         if legend:
             plt.legend()
+        
+        minval, maxval = self.get_plot_y_limits(data_frame)
+        plt.ylim([minval, maxval])
 
         if not file_name:   # if file_name is None
             if (not(file_type.__eq__("bmp") or file_type.__eq__("png") or file_type.__eq__("jpg"))):
@@ -159,6 +162,20 @@ class Plotter:
                 return plt.savefig(file_name)
             else:
                 return None
+
+
+    def get_plot_y_limits(self, data_frame):
+        frame_min = data_frame.reading.min()
+        frame_max = data_frame.reading.max()
+        diff = frame_max - frame_min
+        count = -1
+        while diff > 10:
+            diff /= 10
+            count += 1
+        frame_min -= pow(10, count-1)
+        frame_max += pow(10, count)
+        return 0, frame_max
+
 
     def plot_single_frame_unusual(self,data_frame,freq="1min", title=None, legend=None, y_label=None, x_label=None, file_name=None,
                           prediction=False,file_type="png"):
