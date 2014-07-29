@@ -61,7 +61,7 @@ class HistogramPlot():
 
     def histPlotDouble(self,dataFrameOriginal,dataFrameWeighted,LegendLabelOriginal="Current reading",
                                      LegendLabelWeighted="weighted plot",Title="YourTitle",YLabel="Y",XLabel="Timestamp",
-                                     fileType="png"):
+                                     fileType="png",file_name=None):
         """Specify the dataFrame that you want to plot, a weighted vs actual readings currently
 
         Title: The title for the plot : "THE BEST PLOT EVER"
@@ -86,8 +86,7 @@ class HistogramPlot():
         if (len(Title) == 0):
             Title = "The plot"
 
-        if (not(fileType.__eq__("bmp") or fileType.__eq__("png") or fileType.__eq__("jpg"))):
-            fileType = "png"
+
 
         #print(dataFrameOriginal)
         dataFrameWeighted = pd.DataFrame(dataFrameWeighted,columns=("reading",))
@@ -111,13 +110,23 @@ class HistogramPlot():
         plt.ylabel(YLabel)
         plt.xlabel(XLabel)
         plt.title(Title)
-        buf = io.BytesIO()
-        plt.savefig(buf, format = fileType,bbox_inches ="tight",dpi = 300,facecolor ="w",edgecolor="g")
-        buf.seek(0)
-        im = Image.open(buf)
 
-        # possibly should use save fig
-        return im
+        if not file_name:   # if file_name is None
+            if (not(fileType.__eq__("bmp") or fileType.__eq__("png") or fileType.__eq__("jpg"))):
+                fileType = "png"
+            buf = io.BytesIO()
+            plt.savefig(buf, format = fileType,bbox_inches ="tight",dpi = 300,facecolor ="w",edgecolor="g")
+            buf.seek(0)
+            im = Image.open(buf)
+            # possibly should use save fig
+            return im
+        else:
+            file_name_split = file_name.split(".")
+            if (file_name_split[-1] == "svg") or (file_name_split[-1] == "png") or (file_name_split[-1] == "jpg"):
+                return plt.savefig(file_name)
+            else:
+                return None
+
 
 
     def findXtickers(self,dataFrameIN):

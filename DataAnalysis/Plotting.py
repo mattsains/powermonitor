@@ -121,7 +121,7 @@ class Plotter:
 
 
     def plot_single_frame(self,data_frame, title=None, legend=None, y_label=None, x_label=None, file_name=None,
-                          prediction=False):
+                          prediction=False,file_type="png"):
         """Specify the dataFrame that you want to plot, single dataFrame
         title: The string title for the plot
         y_label: The label for the y axis
@@ -143,10 +143,16 @@ class Plotter:
             plt.xlabel(x_label)
         if legend:
             plt.legend()
+
         if not file_name:   # if file_name is None
-            file_buffer = io.BytesIO()
-            plt.savefig(file_buffer)
-            return file_buffer.getvalue()
+            if (not(file_type.__eq__("bmp") or file_type.__eq__("png") or file_type.__eq__("jpg"))):
+                file_type = "png"
+            buf = io.BytesIO()
+            plt.savefig(buf, format = file_type,bbox_inches ="tight",dpi = 300,facecolor ="w",edgecolor="g")
+            buf.seek(0)
+            im = PIL.Image.open(buf)
+            # possibly should use save fig
+            return im
         else:
             file_name_split = file_name.split(".")
             if (file_name_split[-1] == "svg") or (file_name_split[-1] == "png") or (file_name_split[-1] == "jpg"):
@@ -155,7 +161,7 @@ class Plotter:
                 return None
 
     def plot_single_frame_unusual(self,data_frame,freq="1min", title=None, legend=None, y_label=None, x_label=None, file_name=None,
-                          prediction=False):
+                          prediction=False,file_type="png"):
         """Specify the dataFrame that you want to plot, single dataFrame
         title: The string title for the plot
         y_label: The label for the y axis
@@ -211,7 +217,7 @@ class Plotter:
                 plottedColor = self.AlertOrange
             single.append(plottedColor)
 
-        data_frame.reading.plot(kind='bar',label=legend,sharex=True,color=single)
+        data_frame.reading.plot(kind='bar',label=legend,sharex=True,color=single,grid=False)
         #data_frame.reading.bar(label=legend,color= self.GraphColorGreen)
         #data_frame.reading.plot(label=legend,color= self.GraphColorGreen)
         #data_frame.reading.plot(label=legend)
@@ -223,8 +229,10 @@ class Plotter:
         #plt.scatter(data_frame.index,data_frame["reading"],marker="o")
         #data_frame["reading",0].plot(style='.')
         if not file_name:   # if file_name is None
+            if (not(file_type.__eq__("bmp") or file_type.__eq__("png") or file_type.__eq__("jpg"))):
+                file_type = "png"
             buf = io.BytesIO()
-            plt.savefig(buf, format = "png",bbox_inches ="tight",dpi = 300,facecolor ="w",edgecolor="g")
+            plt.savefig(buf, format = file_type,bbox_inches ="tight",dpi = 300,facecolor ="w",edgecolor="g")
             buf.seek(0)
             im = PIL.Image.open(buf)
             # possibly should use save fig
