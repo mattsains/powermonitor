@@ -118,13 +118,15 @@ ecoberry.ajax.createFieldFiller = function(/* names, of, fields */)
 ecoberry.ajax.messageAsAlert = function(messageAsJSON)
 {
     var json = $.parseJSON(messageAsJSON)
-    alert(json.heading + "\n\n " + json.message);    
+    alert(json.heading + "\n\n" + json.message);
     return json.success;
 };
 
 /* Code for the base page follows */
 /* ============================== */
-$(document).ready(function() {    
+$(document).ready(function() {
+    ecoberry.security.passCSRFtoken();
+
 	/*	Functions for add and removing items from a select listbox	*/
 	$("#add_to_chosen").click(function() {
         if ( $("#chosen_list option[value='"+$("#option_list option:selected").val()+"'").length == 0 ){
@@ -202,5 +204,5 @@ $(document).ready(function() {
 	}
 	/* END manage users in page menu */
 
-    ecoberry.security.passCSRFtoken();
+
 });
