@@ -1,0 +1,3 @@
+#Need this directory to function but don't want any of the files in it
+*
+!.gitignore
