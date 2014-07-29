@@ -507,7 +507,7 @@ def generate_prediction_graph(file_path):
                 os.remove(file_path + graph_name)
             except:
                 pass  # if it doesn't exist it can't be deleted
-            plt().plot_single_frame(data_frame=prediction_frame, title='Predicted Usage', y_label='Usage (kW)',
+            plt().plot_single_frame(data_frame=prediction_frame, title='Predicted Usage', y_label='Usage (W)',
                                     x_label='Time', file_name=file_path + graph_name, prediction=True)
     except:
         pass
