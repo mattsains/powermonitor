@@ -166,9 +166,10 @@ class Plotter:
         title: The string title for the plot
         y_label: The label for the y axis
         x_label: The label for the x axis
-        file_name: file name you want to save as or None for a stringIO
+        file_name: file name you want to save as or None for a byteIO
+        file_type: the file type you want your fig saved as using byteIO
         prediction: Make this true if plotting a prediction plot
-        Return: return the figure or a stringIO of the figure
+        Return: return the figure or a byteIO of the figure
         """
         # Review comments: How does this end up in the plt object? Don't have docs to check
 

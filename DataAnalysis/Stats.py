@@ -85,6 +85,12 @@ class UsageStats:
             logging.warning('Unable to load data frame')
         return None
     def get_total_savings(self,data_frame):
+        """
+        data_frame: The frame of data you want savings for!!
+
+        :param data_frame:
+        :return: The total amount of savings
+        """
         if data_frame is None:
             raise ValueError("Invalid dataFrame, pass a DataFrame with actual data")
         if (len(data_frame)<=1):
