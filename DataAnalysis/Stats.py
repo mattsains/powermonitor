@@ -3,6 +3,10 @@ from Database.DBConnect import DbConnection as DB
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import logging
+import Plotting as plt
+import pandas as pd
+from numpy import float64
+import Resampling as rs
 
 class UsageStats:
     """
@@ -80,3 +84,33 @@ class UsageStats:
         except:
             logging.warning('Unable to load data frame')
         return None
+    def get_total_savings(self,data_frame):
+        if data_frame is None:
+            raise ValueError("Invalid dataFrame, pass a DataFrame with actual data")
+        if (len(data_frame)<=1):
+            raise ValueError("The passed data frame doesn't have enough data to generate savings")
+        timeStart = (data_frame.ix[len(data_frame)-2].name)
+        timeNext = (data_frame.ix[len(data_frame)-1].name)
+
+        timeDiff = timeNext - timeStart
+        timeDiffSeconds = timeDiff.seconds
+        freq = ""
+        value = 0
+
+        if ((timeDiffSeconds//60) >= 1):
+            freq = "min"
+            value = timeDiffSeconds//60
+        elif ((timeDiffSeconds//60) == 0):
+            freq = "s"
+            value = timeDiffSeconds
+        elif ((timeDiffSeconds//(3600)) >= 1):
+            freq = "h"
+            value = timeDiffSeconds//3600
+
+        freq = str(value) + freq
+
+        data_frame_weighted = plt.Plotter().ewma_resampling(data_frame,freq)
+        data_frame_weighted = pd.DataFrame(data_frame_weighted,columns=("reading",))
+        totalSavings = float64(0)
+        diff_frame = data_frame.subtract(data_frame_weighted)
+        return diff_frame.reading.sum(axis=0)

@@ -111,7 +111,7 @@ class Plotter:
         Return: This will return a dataFrame resampled under the equal weight moving average principal
         """
 
-        if not data_frame:
+        if data_frame is None:
             raise ValueError('Invalid dataFrame, Please pass dataFrame with actual data')
         if min_periods < 1:
             raise ValueError("The min number of periods is invalid")

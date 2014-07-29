@@ -137,8 +137,8 @@ class HistogramPlot():
 
         Return: This will return an pd.timestamp array for you x-axis
         """
-        timestarted = (dataFrameIN.ix[0].name)
-        nextinline = (dataFrameIN.ix[1].name)
+        timestarted = (dataFrameIN.ix[1].name)
+        nextinline = (dataFrameIN.ix[2].name)
         timeeended =   (dataFrameIN.ix[dataFrameIN.__len__()-1].name)
         xtickers = []
 
