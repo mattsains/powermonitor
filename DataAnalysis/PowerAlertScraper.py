@@ -193,7 +193,7 @@ class PowerAlertScraper:
         if result.rowcount == 1:
             stats['eskom_colour'] = list(result)[0][0]
         else:
-            stats['eskom_color'] = 'none'
+            stats['eskom_colour'] = 'none'
 
         result = self.__db.execute_query(statement=sql, data=('eskom_status',))
         if result.rowcount == 1:
