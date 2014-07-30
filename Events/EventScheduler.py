@@ -17,7 +17,7 @@ from Decorators import Singleton
 @Singleton  # only one scheduler should be instantiated at any given time
 class EventScheduler():
     """Class to scheduler regular events in a similar manner to cron."""
-    __mysql_url = 'mysql+pymysql://powermonitor:%s@localhost/powermonitor' \
+    __mysql_url = 'mysql+pymysql://powermonitor:%s@10.0.0.2/powermonitor' \
                   % str(base64.b64decode(bytes('cDB3M3JtMG4xdDBy')))
     '''This determines the number of seconds after the designated run time that the job is still allowed to be run.
     If jobs are not being run, try increasing this in increments of 1.'''

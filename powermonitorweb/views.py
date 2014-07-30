@@ -79,40 +79,6 @@ def setup_household(request):
          'setup': setup},
         context)
 
-
-@login_required()
-def add_user(request):
-    """
-    Add User view.
-    Add a new user to the system. Only the homeowner is able to access this.
-    """
-    context = RequestContext(request)
-    if not request.user.is_authenticated() or not request.user.is_superuser:
-        return render_to_response('powermonitorweb/not_admin.html')
-    registered = False
-
-    if request.method == 'POST':
-        user_form = UserForm(data=request.POST)
-
-        if user_form.is_valid():
-            user = user_form.save()
-
-            user.set_password(user.password)
-            user.save()
-
-            registered = True
-        else:
-            print user_form.errors
-    else:
-        user_form = UserForm()
-
-    return render_to_response(
-        'powermonitorweb/add_user.html',
-        {'user_form': user_form, 'registered': registered},
-        context
-    )
-
-
 def user_login(request):
     context = RequestContext(request)
 
@@ -291,32 +257,6 @@ def manage_reports(request):
         },
         context
     )
-
-
-@login_required()
-def manage_accounts(request):
-    """
-    Manage social media accounts
-    """
-    context = RequestContext(request)
-
-    user = request.user
-    user_accounts = SocialMediaAccount.objects.all().select_related('users').filter(users=user.id)
-
-    if request.method == 'POST':
-        social_media_account_form = SocialMediaAccountForm(data=request.POST, user=request.user)
-    else:
-        social_media_account_form = SocialMediaAccountForm(user=request.user, initial={'account_type': '1'})
-
-    return render_to_response(
-        'powermonitorweb/manage_accounts.html',
-        {
-            'social_media_account_form': social_media_account_form,
-            'user_accounts': user_accounts
-        },
-        context
-    )
-
 
 @login_required()
 @user_passes_test(lambda u: u.is_superuser)  # Only the homeowner can access this view

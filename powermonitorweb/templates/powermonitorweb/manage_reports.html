@@ -11,31 +11,29 @@
     {% if posted %}
     <strong>Report settings saved!</strong>
     {% else %}
-    <div class="group">
-        <div class="heading"><h3>Manage Reports</h3></div>
-        <form id="manage_reports_form" method="post" action="/powermonitorweb/manage_reports/" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="listform">
-            <div class="floatleft">
-                <div class="listlayout">
-                    <h2>All Reports</h2>
-                   {{ report_type_form.report_type }}
+    <div class="panel panel-default">
+        <div class="panel-heading"><h3>Manage Reports</h3></div>
+        <form class="panel-body fillparenttarget" method="post" action="/powermonitorweb/manage_reports/" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="pull-left col-xs-6 fillparent">
+                <div class="panel panel-primary listlayout">
+                    <div class="panel-heading"><h2>All Reports</h2></div>
+                    <p class="panel-body">{{ report_type_form.report_type }}</p>
                 </div>
             </div>
-            <div class="floatright">
-                <div class="formlayout">
-                <h2>Selected Report</h2>
-                {{ report_details_form.as_p }}
-                    <br/>
-                    <input class="button" type="button" id="save_report" name="save" value="Save Changes" />
-                    <input class="button" type="button" id="enable_report" name="enable" value="Enable" />
-                    <input class="button" type="button" id="disable_report" name="disable" value="Disable" />
-
+            <div class="pull-left col-xs-6 fillparent">
+                <div class="panel panel-primary">
+                    <div class="panel-heading"><h2>Selected Report</h2></div>
+                    <div class="miniform panel-body">
+                        {{ report_details_form.as_p }}
+                        <br/>
+                        <input class="btn btn-primary" type="button" id="save_report" name="save" value="Save Changes" />
+                        <input class="btn btn-success" type="button" id="enable_report" name="enable" value="Enable" />
+                        <input class="btn btn-danger" type="button" id="disable_report" name="disable" value="Disable" />
+                    </div>
                 </div>
             </div>
-        </div>
-
-    </form>
+        </form>
     </div>
     {% endif %}
     {% endif %}

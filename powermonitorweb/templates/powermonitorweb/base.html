@@ -4,107 +4,95 @@
 <head lang="en">
     <meta charset="UTF-8">
     <script src="{% static '/static/powermonitorweb/jquery.js' %}"></script>
+    <script src="{% static '/static/powermonitorweb/bootstrap.js' %}"></script>
     <script src="{% static '/static/powermonitorweb/plugins/jquery.datetimepicker.js' %}" ></script> <!-- a jquery datetime picker -->
     <link rel="stylesheet" type="text/css" href="{% static '/static/powermonitorweb/plugins/jquery.datetimepicker.css' %}"/>
     <script type="text/javascript" src="{% static '/static/powermonitorweb/scripts.js' %}"></script>
     <link  rel="stylesheet" type="text/css" href="{% static '/static/powermonitorweb/mainstyle.css' %}"/><!-- not so use about the single quotes here -->
     <title>Power Monitor - {% block title %}Intelligent Power Monitoring{% endblock %}</title>   
-  </head>
-  <body>
-    <div id="main">
-      <div id="imageholder">
-	<h1>Power Monitor</h1>
-	<ul id="bar">
-          {% if user.is_superuser %}
-	  <li class="floatleft">
-        <a href="/powermonitorweb/manage_users/">
-	    <div class="floatleft">
-	    <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/users_icon.svg' %}" />
-	    </div>
-	    <div class="floatleft">
-	    User
-	    </div>
-	    </a>
-	  </li>
-        {% endif %}
-	  <li class="floatleft">
-          <a href="/powermonitorweb/graphs/">
-            <div class="floatleft">
-            <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/graphs_icon.svg' %}" />
+    </head>
+    <body>
+        <div id="content_wrapper">
+            <div id="main">
+                <div id="imageholder">
+                    <h1>Power Monitor</h1>
+                    <ul id="bar">
+                        {% if user.is_superuser %}
+                        <li class="pull-left">
+                            <a href="/powermonitorweb/manage_users/">
+                                <div class="pull-left">
+                                    <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/users_icon.svg' %}" />
+                                </div>
+                                <div class="pull-left">User</div>
+                            </a>
+                        </li>
+                        {% endif %}
+                        <li class="pull-left">
+                            <a href="/powermonitorweb/graphs/">
+                                <div class="pull-left">
+                                    <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/graphs_icon.svg' %}" />
+                                </div>
+                                <div class="pull-left">Graphs</div>
+                            </a>
+                        </li>
+                        <li class="pull-left">
+                            <div class="pull-left">
+                                <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/food_icon.svg' %}" />
+                            </div>
+                            <div class="pull-left">Food</div>
+                        </li>
+                        <li class="pull-left">
+                            <a href="#">
+                                <div class="pull-left">
+                                    <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/alerts_icon.svg' %}" />
+                                </div>
+                                <div class="pull-left">Events</div>
+                            </a>
+                        </li>
+                        <li class="pull-left">
+                            <a href="/powermonitorweb/manage_reports/">
+                                <div class="pull-left">
+                                    <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/reports_icon.svg' %}" />
+                                </div>
+                                <div class="pull-left">Reports</div>
+                            </a>
+                        </li>
+                        <li class="pull-left">
+                            <a href="/powermonitorweb/post_to_socialmedia/">
+                                <div class="pull-left">
+                                    <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/social_icon.svg' %}" />
+                                </div>
+                                <div class="pull-left">Social</div>
+                            </a>
+                        </li>
+                    </ul>
+                    <img id="lizard" alt="monitor lizard"  src="{% static '/static/powermonitorweb/images/MonitorLizard2.svg' %}" />
+                </div>
+                <div id="userdetails">
+                    <div class="pull-right marginfive">Welcome, <span id="username">{{user.first_name}}<span class="caret" /></span>
+                        <div id="usermenu">
+                            <ul>
+                                <li><a href="/powermonitorweb/profile/">Change Profile</a></li>
+                                <li><a href="/powermonitorweb/logout/">Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                {%block main %}
+                {% endblock %}
+                
+                
             </div>
-            <div class="floatleft">
-            Graphs
-            </div>
-          </a>
-	    </li>
-	  <li class="floatleft">
-	    <div class="floatleft">
-	      <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/food_icon.svg' %}" />
-	      </div>
-	    <div class="floatleft">
-	      Food
-	    </div>
-	  </li>
-	  <li class="floatleft">
-	    <div class="floatleft">
-	      <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/alerts_icon.svg' %}" />
-	      </div>
-	    <div class="floatleft">
-	      Events
-	    </div>
-	  </li>
-	  <li class="floatleft">
-	  <a href="/powermonitorweb/manage_reports/">
-	    <div class="floatleft">
-	      <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/reports_icon.svg' %}" />
-	      </div>
-	    <div class="floatleft">
-	       Reports
-	    </div>
-	  </a>
-	  </li>
-	  <li class="floatleft">
-	       <a href="/powermonitorweb/post_to_socialmedia/">
-	    <div class="floatleft">
-	      <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/social_icon.svg' %}" />
-	      </div>
-	    <div class="floatleft">
-	    Social
-	    </div>
-	    </a>
-	    </li>
-	</ul>
-	<img id="lizard" alt="monitor lizard"  src="{% static '/static/powermonitorweb/images/MonitorLizard2.svg' %}" />
-      </div>
-      <div id="userdetails">
-	<div class="floatright marginfive">Welcome <span id="username">{{user.username}}<img id="downarrow" alt=""  src="{% static '/static/powermonitorweb/images/downarrow.svg' %}" /></span>
-
-
-	  <div id="usermenu">
-	  <ul>
-          <li><a href="/powermonitorweb/profile/">Change Profile</a></li>
-	      <li><a href="/powermonitorweb/logout/">Logout</a></li>
-	  </ul>
-	  </div>
-
-	</div>
-
-      </div>
-      <div id="container">
-	     <!--Not really using header block because there can be several per page
-	      User should be authenticated to see this page at all-->
-	
-	{%block main %}
-	{% endblock %}
-      </div>
-      <div id="footer">
-        <small>
-	    {% block footer %}
-            Copyright &copy; EcoBerry 2014
-        {% endblock %}
-        </small>
-      </div>
-    </div>
-  </body>
+            <div id="push"></div><!-- for the footer to stay at the bottom of the page -->
+        </div>
+        <div id="footer">
+            <small>
+                {% block footer %}
+                    Copyright &copy; EcoBerry 2014
+                {% endblock %}
+            </small>
+        </div>
+    </body>
 </html>
 

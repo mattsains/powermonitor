@@ -9,19 +9,23 @@
     {% if posted %}
     <strong>Profile saved!</strong>
     {% else %}
-    <div class="group">
-        <div class="heading"><h3>Manage Profile</h3></div>
-        <form id="profile_form" method="post" action="/powermonitorweb/profile/" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="listform">
-            {{ profile_form.as_p }}
-            <a href="/powermonitorweb/change_password/">Change Password</a>
-        </div>
-        <div class="buttons">
-            <input class ="button" type="submit" name="submit" value="Save Changes" />
-        </div>
-
-    </form>
+    <div class="panel panel-default">
+        <div class="panel-heading"><h3>Manage Profile</h3></div>
+        <form class="panel-body" method="post" action="/powermonitorweb/profile/" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="listform">
+                {{ profile_form.as_p }}
+            
+            </div>
+            <div class="listform">
+                <p>
+                    <a class="form-right" href="/powermonitorweb/change_password/">Change Password</a>
+                </p>
+                <p>
+                    <input class="btn btn-success form-right" type="submit" name="submit" value="Save Changes" /></div>
+                </p>
+            </div>
+        </form>
     </div>
     {% endif %}
     {% endif %}
