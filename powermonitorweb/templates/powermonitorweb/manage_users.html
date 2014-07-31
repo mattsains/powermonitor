@@ -11,38 +11,36 @@
     {% if posted %}
     <strong>User settings saved!</strong>
     {% else %}
-    <div class="group">
-        <div class="heading"><h3>Manage Users</h3></div>
-        <form id="manage_users_form" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div id="mini_menu">
-            <ul>
-                <li id="manage_users">Manage Users</li>
-                <li id="add_users">Add Users</li>
-            </ul>
-        </div>
-        <div id="manage_form" class="listform">
-            <div class="floatleft">
-                <div class="listlayout">
-                    <h2>All Users</h2>
-                    {{ user_list_form.as_p }}
-                    <br /><input type="button" class="button" id="delete_user" name="delete" value="Delete User" />
+    <div class="panel panel-default">
+        <div class="panel-heading"><h3>Manage Users</h3></div>
+        <form class="panel-body fillparenttarget" id="manage_users_form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div id="manage_form" class="pull-left col-xs-6 fillparent">
+                <div class="panel panel-primary listlayout">
+                    <div class="panel-heading"><h2>All Users</h2></div>
+                    <p class="panel-body">{{ user_list_form.users }}
+                        <input type="button" class="btn btn-success" id="add_user" name="add" value="Add User" />
+                        <input type="button" class="btn btn-danger" id="delete_user" name="delete" value="Delete User" />
+                    </p>
                 </div>
             </div>
-            <div class="floatright">
-                <div class="formlayout">
-                <h2>Selected User</h2>
-                    {{ manage_users_form.as_p }}
-                    {{ manage_users_form.errors }}
-                    <br/>
-                 <input class="button" type="button" id="update_user" name="add" value="Update" /><br />
-                 <small>Send user email to reset password</small>
-                <input class="button" type="button" id="reset_password" name="reset_password" value="Reset Password">
+            <div class="pull-left col-xs-6 fillparent">
+                <div class="panel panel-primary">
+                    <div class="panel-heading"><h2>Selected User</h2></div>
+                    <div class="miniform panel-body">
+                        {{ manage_users_form.as_p }}
+                        {{ manage_users_form.errors }}
+                        <input class="btn btn-primary form-right" type="button" id="update_user" name="add" value="Update" /><br />
+                        <br/>
+                        <p>
+                            <label for="reset_password">Send password reset email</label>
+                            <input class="btn btn-warning" type="button" id="reset_password" name="reset_password" value="Reset Password" />
+                        </p>
+                    </div>
                 </div>
             </div>
-        </div>
-
-    </form>
+        </form>
+    <!-- not sure what this is...
         <div id="add_form" class="listform">
             <form id="add_users_form" method="post" action="/powermonitorweb/manage_users/" enctype="multipart/form-data">
                 {% csrf_token %}
@@ -51,7 +49,7 @@
                 <input type="submit" name="submit" value="Add User" />
             </div>
             </form>
-        </div>
+        </div>-->
     </div>
     {% endif %}
     {% endif %}
