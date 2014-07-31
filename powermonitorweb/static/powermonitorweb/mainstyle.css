@@ -245,6 +245,11 @@ ul#bar
 	width:auto;
 }
 
+#bar .bar-heading
+{
+    margin-top: 3px;
+}
+
 div#imageholder
 {
     border-radius: 10px 10px 0px 0px;
@@ -409,8 +414,7 @@ div.heading /* changed this to class so it can be used in 2 divs in the graph pa
 
 #usermenu li:hover
 {
-    background-color: orange;
-    
+    background-color: rgb(230, 149, 0);
 }
 
 #usermenu a
@@ -424,7 +428,7 @@ div.heading /* changed this to class so it can be used in 2 divs in the graph pa
 }
 #usermenu li:hover a
 {
-    color: #DDDEE0;
+    color: white;
 }
 .icon
 {

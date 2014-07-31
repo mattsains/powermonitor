@@ -3,14 +3,12 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <script src="{% static '/static/powermonitorweb/jquery.js' %}"></script>
-    <script src="{% static '/static/powermonitorweb/bootstrap.js' %}"></script>
-    <script src="{% static '/static/powermonitorweb/plugins/jquery.datetimepicker.js' %}" ></script> <!-- a jquery datetime picker -->
-    <link rel="stylesheet" type="text/css" href="{% static '/static/powermonitorweb/plugins/jquery.datetimepicker.css' %}"/>
+    <script type="text/javascript" src="{% static '/static/powermonitorweb/jquery.js' %}"></script>
+    <script type="text/javascript" src="{% static '/static/powermonitorweb/bootstrap.js' %}"></script>
     <script type="text/javascript" src="{% static '/static/powermonitorweb/scripts.js' %}"></script>
-    <link  rel="stylesheet" type="text/css" href="{% static '/static/powermonitorweb/mainstyle.css' %}"/><!-- not so use about the single quotes here -->
-    <title>Power Monitor - {% block title %}Intelligent Power Monitoring{% endblock %}</title>   
-    </head>
+    <link rel="stylesheet" type="text/css" href="{% static '/static/powermonitorweb/plugins/jquery.datetimepicker.css' %}"/></script>
+    <link  rel="stylesheet" type="text/css" href="{% static '/static/powermonitorweb/mainstyle.css' %}"/>
+    <title>Power Monitor - {% block title %}Intelligent Power Monitoring{% endblock %}</title>       </head>
     <body>
         <div id="content_wrapper">
             <div id="main">
@@ -23,7 +21,7 @@
                                 <div class="pull-left">
                                     <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/users_icon.svg' %}" />
                                 </div>
-                                <div class="pull-left">User</div>
+                                <div class="pull-left bar-heading">User</div>
                             </a>
                         </li>
                         {% endif %}
@@ -32,21 +30,21 @@
                                 <div class="pull-left">
                                     <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/graphs_icon.svg' %}" />
                                 </div>
-                                <div class="pull-left">Graphs</div>
+                                <div class="pull-left bar-heading">Graphs</div>
                             </a>
                         </li>
                         <li class="pull-left">
                             <div class="pull-left">
                                 <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/food_icon.svg' %}" />
                             </div>
-                            <div class="pull-left">Food</div>
+                            <div class="pull-left bar-heading">Food</div>
                         </li>
                         <li class="pull-left">
                             <a href="#">
                                 <div class="pull-left">
                                     <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/alerts_icon.svg' %}" />
                                 </div>
-                                <div class="pull-left">Events</div>
+                                <div class="pull-left bar-heading">Events</div>
                             </a>
                         </li>
                         <li class="pull-left">
@@ -54,7 +52,7 @@
                                 <div class="pull-left">
                                     <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/reports_icon.svg' %}" />
                                 </div>
-                                <div class="pull-left">Reports</div>
+                                <div class="pull-left bar-heading">Reports</div>
                             </a>
                         </li>
                         <li class="pull-left">
@@ -62,14 +60,14 @@
                                 <div class="pull-left">
                                     <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/social_icon.svg' %}" />
                                 </div>
-                                <div class="pull-left">Social</div>
+                                <div class="pull-left bar-heading">Social</div>
                             </a>
                         </li>
                     </ul>
                     <img id="lizard" alt="monitor lizard"  src="{% static '/static/powermonitorweb/images/MonitorLizard2.svg' %}" />
                 </div>
                 <div id="userdetails">
-                    <div class="pull-right marginfive">Welcome, <span id="username">{{user.first_name}}<span class="caret" /></span>
+                    <div class="pull-right marginfive">Welcome, <span id="username">{{user.first_name}}<span class="caret" id="downarrow"/></span>
                         <div id="usermenu">
                             <ul>
                                 <li><a href="/powermonitorweb/profile/">Change Profile</a></li>

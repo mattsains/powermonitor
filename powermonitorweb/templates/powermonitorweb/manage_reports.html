@@ -4,8 +4,9 @@
 
 {% block header %}Manage Your Daily Reports{% endblock %}
 {% block main %}
-    <script src="{% static '/static/powermonitorweb/scripts/manage_reports.js' %}" ></script>
-    {% if failed %}
+    <script type="text/javascript" src="{% static '/static/powermonitorweb/scripts/manage_reports.js' %}" ></script>
+    <script type="text/javascript" src="{% static '/static/powermonitorweb/plugins/jquery.datetimepicker.js' %}" ></script> <!-- a jquery datetime picker -->
+	{% if failed %}
     <strong>Something went wrong saving your report profile.</strong>
     {% else %}
     {% if posted %}
@@ -13,7 +14,7 @@
     {% else %}
     <div class="panel panel-default">
         <div class="panel-heading"><h3>Manage Reports</h3></div>
-        <form class="panel-body fillparenttarget" method="post" action="/powermonitorweb/manage_reports/" enctype="multipart/form-data">
+        <form id="manage_reports_form" class="panel-body fillparenttarget" method="post" action="/powermonitorweb/manage_reports/" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="pull-left col-xs-6 fillparent">
                 <div class="panel panel-primary listlayout">
