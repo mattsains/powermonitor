@@ -57,9 +57,12 @@ $(document).ready(function(){
 
     $reports.change(
     function () {
-        var enabled = $("select#id_report_type option:selected").attr("data-enabled");
+	var $selected = $("select#id_report_type option:selected");	
+        var enabled = $selected.attr("data-enabled");
 	var $display = $("#display"); 
         hideButtons();
+	$display.find("h2").text("Selected Report: " + $selected.text());
+	
         if (enabled)
         {
 	    $display.css("background-color", "rgb(206, 241, 206)");/*TODO: edit heading and border color? */	    
@@ -67,9 +70,11 @@ $(document).ready(function(){
             $("input#save_report").show();
         }
         else
+	{
 	    $display.css("background-color","white"); /*TODO: edit heading and border color? */
-            $("input#enable_report").show();
-    }).change();
+	    $("input#enable_report").show();
+	}
+    });
 
     function hideButtons()
     {
