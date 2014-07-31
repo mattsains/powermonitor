@@ -10,25 +10,33 @@ $(document).ready(function(){
 			   createFieldFiller("occurrence_type", "datetime", "report_daily", "report_weekly", "report_monthly")));
 
     /* save changes to an enabled entry */
-    $("#save_report").click(
-	createPOSTFunction("/powermonitorweb/manage_reports/", "#manage_reports_form", "save_report_click",
+    $("#enable_report").click(
+	createPOSTFunction("/powermonitorweb/manage_reports/", "#manage_reports_form", "enable_report_click",
 			  function(response) { if (messageAsAlert(response))
 					       {
 						   var $reports = $("#id_report_type");
-						   var $newlyenabled = $reports.find(":selected").detach()
+						   var $newlyenabled = $reports.find(":selected").detach();
 						   $newlyenabled.attr("data-enabled", "true");
-						   $reports.insertBefore($newlyenabled, $reports);
+						   $newlyenabled.insertAfter($("#id_report_type option[data-enabled=true]").last())
+						   $reports.change();
 					       }}));
 
     /* enable a disabled entry */
-    $("#enable_report").click(
-	createPOSTFunction("/powermonitorweb/manage_reports/", "#manage_reports_form", "enable_report_click",
+    $("#save_report").click(
+	createPOSTFunction("/powermonitorweb/manage_reports/", "#manage_reports_form", "save_report_click",
 			  messageAsAlert));
 
     /* disable an enabled entry */
     $("#disable_report").click(
 	createPOSTFunction("/powermonitorweb/manage_reports/", "#id_report_type", "disable_report_click",
-			   messageAsAlert));
+			   function(response) {if (messageAsAlert(response))
+			      {
+				  var $reports = $("#id_report_type");
+				  var $newlyenabled = $reports.find(":selected").detach();
+				  $newlyenabled.removeAttr("data-enabled");
+				  $newlyenabled.insertAfter($("#id_report_type option[data-enabled=true]").last())
+				  $reports.change();
+			      }}));
     
     hideButtons();
 
