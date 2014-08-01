@@ -6,7 +6,7 @@ This is the code for the power monitoring project.
 If you're interested in the microcontroller's code, check out the example code in ./Firmware/Examples/
 
 Current list of required python packages:
-- apscheduler (Requires sqlalchemy for database jobstore)
+- apscheduler < 3.0 (Requires sqlalchemy for database jobstore)
 - beautifulsoup4
 - django
 - inlinestyler (if not using premailer)
