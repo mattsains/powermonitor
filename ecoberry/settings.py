@@ -68,7 +68,7 @@ DATABASES = {
         'NAME': 'powermonitor',
         'USER': 'powermonitor',
         'PASSWORD': 'p0w3rm0n1t0r',
-        'HOST': 'localhost',
+        'HOST': '192.168.1.5',
     }
 }
 # Internationalization
