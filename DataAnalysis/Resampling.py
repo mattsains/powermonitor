@@ -256,21 +256,23 @@ class Resampling:
         if type(periods) is not int:
             raise ValueError("The periods inputted isn't correct, should be a number")
 
-        beginning = DataFrame_in.ix[0]
-        ending = DataFrame_in.ix[len(DataFrame_in)-1]
+        beginning = DataFrame_in.ix[0].name
+        ending = DataFrame_in.ix[len(DataFrame_in)-1].name
         difference = ending - beginning
+
         DeltaTime = difference/periods
         freqConstant = DeltaTime.seconds
-        freq = "" + freqConstant + "s"
-        DataFrame_weighted = plt.Plotter().equal_weight_moving_average(data_frame=DataFrame_in,freq=freq)
-
+        if (freqConstant <60):
+            freqConstant=60
+        freq = "%ds" % freqConstant
+        DataFrame_weighted = self.downsample_data_frame(data_frame=DataFrame_in,freq=freq,method="mean")
         ArrayList = []
 
         for x in range(len(DataFrame_weighted)):
-            cur = DataFrame_in.ix[x]
+            cur = DataFrame_weighted.ix[x]
             curDate = cur.name
-            curReading = cur.reading.iloc[x]
+            curReading = cur.iloc[0]
             tupleForMatt=(curDate,curReading)
-            ArrayList[x] = tupleForMatt
+            ArrayList.append(tupleForMatt)
 
         return ArrayList

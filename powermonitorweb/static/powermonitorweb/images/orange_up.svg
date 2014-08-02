@@ -9,12 +9,12 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="85mm"
-   height="54mm"
+   width="301.18109"
+   height="56.692913"
    id="svg3794"
    version="1.1"
    inkscape:version="0.48.5 r10040"
-   sodipodi:docname="green_up.svg">
+   sodipodi:docname="orange_down.svg">
   <defs
      id="defs3" />
   <sodipodi:namedview
@@ -24,9 +24,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.6970563"
-     inkscape:cx="185.40315"
-     inkscape:cy="134.66513"
+     inkscape:zoom="3.3941125"
+     inkscape:cx="154.20988"
+     inkscape:cy="25.212798"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -34,7 +34,8 @@
      inkscape:window-height="705"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
-     inkscape:window-maximized="1" />
+     inkscape:window-maximized="1"
+     units="mm" />
   <metadata
      id="metadata3798">
     <rdf:RDF>
@@ -50,23 +51,24 @@
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     transform="translate(0,-134.64566)">
     <text
        xml:space="preserve"
-       style="font-size:80.63848876999998100px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#faa217;fill-opacity:1;stroke:none;font-family:Sans"
-       x="5.5404987"
-       y="138.03885"
+       style="font-size:63.14783096px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="58.080624"
+       y="196.19911"
        id="text2985"
        sodipodi:linespacing="125%"
-       transform="scale(1.2029403,0.83129645)"><tspan
+       transform="scale(1.0563177,0.94668488)"><tspan
          sodipodi:role="line"
          id="tspan2987"
-         x="5.5404987"
-         y="138.03885"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Calibri;-inkscape-font-specification:Calibri;fill:#faa217;fill-opacity:1">AMBER</tspan></text>
+         x="58.080624"
+         y="196.19911"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#f0ad4e;fill-opacity:1;font-family:DokChampa;-inkscape-font-specification:DokChampa">AMBER</tspan></text>
     <path
-       style="fill:#faa217;fill-opacity:1;stroke:#faa217;stroke-width:0.45845862999999998px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="M 6.5149461,65.092959 296.81838,64.470896 149.94277,3.5087524 z"
+       style="fill:#f0ad4e;fill-opacity:1;stroke:#f0ad4e;stroke-width:0.17294738px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 1.1430468,186.17447 58.35106,185.72525 29.407336,141.70189 z"
        id="path3003"
        inkscape:connector-curvature="0" />
   </g>
