@@ -41,9 +41,18 @@ function drawChart() {
                 data=response_data.graph;
                 
                 var dataView=new google.visualization.DataTable();
-                dataView.addColumn('datetime', 'Date');
-                dataView.addColumn('number', 'Reading');
+                dataView.addColumn('datetime', 'Time');
+                dataView.addColumn('number', 'Power Usage');
                 dataView.addRows(data);
+                
+                var wattsformatter = new google.visualization.NumberFormat({
+                    fractionDigits:2,
+                    suffix: ' W'
+                });
+
+                wattsformatter.format(dataView, 1);
+                var dateformatter = new google.visualization.DateFormat({pattern: ' hh:mma, d MMMM yyyy'});
+                dateformatter.format(dataView, 0);
                 if (chart==null)
                     chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
                 
