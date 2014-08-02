@@ -6,11 +6,16 @@ import time
 
 pw=PowerMonitor()
 database=DbConnection()
+#
+# database.execute_non_query("IF (SELECT count(*) FROM powermonitorweb_readings) > 0 THEN \
+#                                 INSERT INTO powermonitorweb_readings(time, reading) \
+#                                 VALUES (DATE_ADD((SELECT MAX(time) FROM powermonitorweb_readings),SECOND,1),0)")
+# database.execute_non_query("INSERT INTO powermonitorweb_readings(reading) VALUES (0)")
 
-database.execute_non_query("IF (SELECT count(*) FROM powermonitorweb_readings) > 0 THEN \
-                                INSERT INTO powermonitorweb_readings(time, reading) 
-                                VALUES ((SELECT MAX(time) FROM powermonitorweb_readings),0)")
-database.execute_non_query("INSERT INTO powermonitorweb_readings(reading) VALUES (0)")
+rowcount = database.execute_query("select count(*) from powermonitorweb_readings;")
+if list(rowcount)[0][0] < 0:
+    database.execute_query('INSERT INTO powermonitorweb_readings(time, reading) VALUES (DATE_ADD((SELECT MAX(time) \
+                           FROM powermonitorweb_readings as new_time), INTERVAL 1 SECOND),0);')
 
 while True:
     response=pw.handshake()
