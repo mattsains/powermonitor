@@ -570,7 +570,7 @@ def graphs(request):
             #TODO: do this
             pass
         
-        points=Resampling().buildArrayTimeReading(frame)
+        points=Resampling().buildArrayTimeReading(frame)  #TODO: Some error handling needs to be done here
             
         json_graph="["+",".join(map(lambda x: "["+str(Resampling().timestamp_to_milliseconds(x[0]))+","+str(x[1])+"]", points))+"]"
         
@@ -583,7 +583,8 @@ def graphs(request):
     else:
         # otherwise the page was loaded, so show a default graph. currently defaults to 12hr graph
         graph_period_form = SelectGraphPeriodForm(initial={'period': '12hour'})
-        graph_name = generate_usage_graph(period_type='hour', length=12, file_path=file_path)
+        # This doesn't need to be generated any more
+        # graph_name = generate_usage_graph(period_type='hour', length=12, file_path=file_path)
         current_stats = get_current_statistics()
         status_image = '%s.svg' % current_stats['eskom_status']
     return render_to_response(

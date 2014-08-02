@@ -46,8 +46,8 @@ class ReportBuilder():
                                                    period_start=str(datetime.now().replace(microsecond=0) - relativedelta(hours=1)), #TODO: Change this back to str(datetime.now().replace(microseconds=0) - relativedelta(hours=1))
                                                    period_length=1)
             stats = self._usage_stats.get_frame_stats(frame)
-            self._plotter.plot_single_frame(data_frame=frame, title='Usage for last hour', y_label='Usage (kW)',
-                                            x_label='Time', file_name=file_path + 'last_hour.png')
+            self._plotter.plot_single_frame(data_frame=frame, title='Usage for last hour', y_label='Watts',
+                                                  file_name=file_path + 'last_hour.png')
             del frame
         except:
             raise StandardError('Could not collect data')

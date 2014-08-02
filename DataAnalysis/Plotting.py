@@ -4,12 +4,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import io
 import Resampling as rs
-import PIL
+from PIL import Image
+from matplotlib.ticker import FormatStrFormatter
 
 class Plotter:
     """Plotter"""
-    GraphColorGreen = "#66FF00"
-    GraphColorBlue = "#3366CC"
+    graph_colour = "#3366CC"
+    prediction_graph_colour = "#3366CC"
     AlertRed ="#FF0000"
     AlertOrange="#FF6600"
     AlertGreen="#339900"
@@ -52,8 +53,8 @@ class Plotter:
         Return: return the figure or a stringIO of the figure if no filename is given
         """
         # Review comments: How does this end up in the plt object? Don't have docs to check
-        unweighted_data_frame.reading.plot(label=unweighted_legend, color=self.GraphColorGreen, linewidth=0.5)
-        weighted_data_frame.plot(label=weighted_legend, color=self.GraphColorBlue, marker='o', linewidth=0.5)
+        unweighted_data_frame.reading.plot(label=unweighted_legend, color=self.graph_colour, linewidth=0.5)
+        weighted_data_frame.plot(label=weighted_legend, color=self.prediction_graph_colour, marker='o', linewidth=0.5)
 
         if title:
             plt.title(title)
@@ -132,7 +133,7 @@ class Plotter:
         """
         # Review comments: How does this end up in the plt object? Don't have docs to check
         if not prediction:
-            data_frame.reading.plot(label=legend, color=self.GraphColorGreen)
+            data_frame.reading.plot(label=legend, color=self.graph_colour)
         else:
             data_frame.plot(label=legend, color='b')    # This is to handle plotting forecast data
         if title:
@@ -143,20 +144,28 @@ class Plotter:
             plt.xlabel(x_label)
         if legend:
             plt.legend()
+        else:
+            plt.legend().set_visible(False)
+
+        plt.gca().yaxis.set_major_formatter(FormatStrFormatter('%d W'))
+        plt.grid(linestyle='-', linewidth=2, alpha=0.5, color='#E5E5E5')
         
         minval, maxval = self.get_plot_y_limits(data_frame)
         plt.ylim([minval, maxval])
 
+        plt.fill_between(data_frame.time.values, 0, data_frame.reading.values, alpha=0.8, facecolor='#C2D1F0')
+
         if not file_name:   # if file_name is None
-            if (not(file_type.__eq__("bmp") or file_type.__eq__("png") or file_type.__eq__("jpg"))):
+            if not(file_type == "bmp" or file_type == "png" or file_type == "jpg"):
                 file_type = "png"
             buf = io.BytesIO()
-            plt.savefig(buf, format = file_type,bbox_inches ="tight",dpi = 300,facecolor ="w",edgecolor="g")
+            plt.savefig(buf, format=file_type, bbox_inches="tight", dpi=300, facecolor="w", edgecolor="g")
             buf.seek(0)
-            im = PIL.Image.open(buf)
+            im = Image.open(buf)
             # possibly should use save fig
             return im
         else:
+            print 'saving'
             file_name_split = file_name.split(".")
             if (file_name_split[-1] == "svg") or (file_name_split[-1] == "png") or (file_name_split[-1] == "jpg"):
                 return plt.savefig(file_name)
@@ -168,11 +177,10 @@ class Plotter:
         frame_min = data_frame.reading.min()
         frame_max = data_frame.reading.max()
         diff = frame_max - frame_min
-        count = -1
+        count = 0
         while diff > 10:
             diff /= 10
             count += 1
-        frame_min -= pow(10, count-1)
         frame_max += pow(10, count)
         return 0, frame_max
 
@@ -239,9 +247,8 @@ class Plotter:
         #data_frame.reading.bar(label=legend,color= self.GraphColorGreen)
         #data_frame.reading.plot(label=legend,color= self.GraphColorGreen)
         #data_frame.reading.plot(label=legend)
-        #plt.show()
         plt.ylabel("Usage(kwh)")
-        plt.xlabel("timestamp")
+        plt.xlabel("Time")
         plt.title("unusual plot")
         #print(data_frame["reading"])
         #plt.scatter(data_frame.index,data_frame["reading"],marker="o")
@@ -250,9 +257,9 @@ class Plotter:
             if (not(file_type.__eq__("bmp") or file_type.__eq__("png") or file_type.__eq__("jpg"))):
                 file_type = "png"
             buf = io.BytesIO()
-            plt.savefig(buf, format = file_type,bbox_inches ="tight",dpi = 300,facecolor ="w",edgecolor="g")
+            plt.savefig(buf, format=file_type, bbox_inches="tight", dpi=300, facecolor="w", edgecolor="g")
             buf.seek(0)
-            im = PIL.Image.open(buf)
+            im = Image.open(buf)
             # possibly should use save fig
             return im
         else:
