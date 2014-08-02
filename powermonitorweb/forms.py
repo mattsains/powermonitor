@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from powermonitorweb.models import SocialMediaAccount, Report, UserReports
+from powermonitorweb.models import SocialMediaAccount, Report, UserReports, Alert, UserAlerts
 from powermonitorweb import widgets
 
 
@@ -139,6 +139,49 @@ class ReportDetailsForm(forms.ModelForm):
         self.fields['occurrence_type'] = forms.ChoiceField(widget=forms.Select,
                                                            choices=[('1', 'recurring'), ('0', 'once-off')])
 
+
+#The following 2 forms are displayed together on the manage reports page
+class AlertTypeForm(forms.ModelForm):
+    class Meta:
+        model = Alert
+        fields = ('alert_description',)
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user')
+        super(AlertTypeForm, self).__init__(*args, **kwargs)
+
+        enabled_choices = []
+        choices = []
+        remainder = []
+
+        # create a list of IDs of all enabled reports
+        for a in Alert.objects.all().select_related("users").filter(users=user.id):
+            enabled_choices.append(a.id)
+
+        for a in Alert.objects.all():
+            if a.id in enabled_choices:
+                choices.append((a.id, a.alert_description))
+            else:
+                remainder.append((a.id, a.alert_description))
+
+        choices = choices + remainder
+
+        self.fields['alert_type'] = forms.ChoiceField(
+            widget=widgets.EnabledSelect(enabled_choices, attrs={'size': '15', 'required': 'true'}),
+            choices=choices, label='Alerts')
+
+
+class AlertDetailsForm(forms.ModelForm):
+    class Meta:
+
+        model = UserAlerts
+        fields = (
+            'user_id',
+            'alert_id',)
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user')   # Not sure what you wanted to do with this. I added this to fix the errors I was getting
+        super(AlertDetailsForm, self).__init__(*args, **kwargs)
 
 class UserListForm(forms.Form):
     class Meta:

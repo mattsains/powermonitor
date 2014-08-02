@@ -29,7 +29,6 @@ class UserAlerts(models.Model):
     """
     user_id = models.ForeignKey(User)
     alert_id = models.ForeignKey(Alert)
-    alert_time = models.DateTimeField()
 
 
 class AlertTip(models.Model):

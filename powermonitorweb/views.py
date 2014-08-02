@@ -11,7 +11,7 @@ from django.core.urlresolvers import reverse
 
 from powermonitorweb.forms import UserForm, SelectGraphPeriodForm
 from powermonitorweb.forms import HouseholdSetupUserForm, SocialMediaAccountForm, ReportTypeForm, ReportDetailsForm, \
-    ManageUsersForm, UserListForm, ProfileForm
+    ManageUsersForm, UserListForm, ProfileForm, UserAlerts, AlertTypeForm, AlertDetailsForm
 from powermonitorweb.models import Report, ElectricityType, User, UserReports
 from powermonitorweb.utils import createmessage
 # requirements for graphing
@@ -158,6 +158,48 @@ def post_to_socialmedia(request):
         context
     )
 
+
+@login_required()
+def manage_alerts(request):
+    context = RequestContext(request)
+    posted = False
+
+    user = request.user
+    user_alerts = UserAlerts.objects.all().filter(user_id=user.id)
+    user_alert_details = None
+
+    if request.is_ajax():
+        datadict = request.POST
+        if datadict.get('identifier') == 'id_report_type_change':
+            #User has clicked on a different user, so update the form
+            myalert = user_alerts.filter(alert_id=datadict.get('alert_description'))
+            if len(myalert) == 1:
+                JSONdata = serializers.serialize('json', myalert, fields=('alert_description'))
+            else:
+                pass
+                # send blank fields to override values as a reset mechanism
+            print (JSONdata)
+
+            JSONdata = createmessage(True, 'Report Changes Saved', 'All changes to this report have been saved')
+        else:
+            JSONdata = '[{}]'
+
+        return HttpResponse(JSONdata.replace('[', '').replace(']', ''))  # clean and send data
+    elif request.method == 'POST':
+        alert_type_form = AlertTypeForm(data=request.POST, user=user)
+        alert_details_form = AlertDetailsForm(data=request.POST, user=user)
+    else:
+        alert_type_form = AlertTypeForm(user=user)
+        alert_details_form = AlertDetailsForm(user=user)
+
+    return render_to_response(
+        'powermonitorweb/manage_alerts.html',
+        {
+            'posted': posted, 'alert_type_form': alert_type_form, 'alert_details_form': alert_details_form,
+            'user_reports': user_alerts, 'user_report_details': user_alert_details
+        },
+        context
+    )
 
 @login_required()
 def manage_reports(request):
