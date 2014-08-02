@@ -3,19 +3,19 @@
 <head>
     <title>{{ title }}</title>
     <style type="text/css">
-        #header { background-color: Black; }
-        #header h1 { font: Arial; font-weight: bold; font-size: 15pt; color: #FFFFFF; }
+        #header { background-color: #2A5382; }
+        #header h1 { font: Arial; font-weight: bold; font-size: 15pt; color: #FFFFFF;}
         p { font: Arial,Helvetica; size: 10pt; }
-        body { background-color: #FFFFFF; }
+        body { background-color: #FFF; }
         #pageContainer {
-            background-color: #EEEEEE;
+            background-color: #FFF;
             padding:10px;
             margin-left:auto;
             margin-right:auto;
             width:800px;
         }
         #footer {
-            background-color: Black;
+            background-color: #243A69;
             color: White;
             text-align: center;
         }
@@ -28,16 +28,16 @@
 <body>
     <div id="pageContainer">
     <div id="header">
-        <h1>{{ title }}</h1>
+        <h1>PowerMonitor - {{ title }}</h1>
     </div>
     <div id="section">
         <p>Hello {{ name }},</p>
-        <p>Power Alert Issued</p>
-        <p>Eskom have issued a {{ power_alert_status }} power alert. You're currently using {{ power_current }}kW of electricity.</p>
-        <p>Your peak usage over the last hour was {{ power_peak }}kW</p>
+		
+        <p>Eskom have issued a <strong>{{ power_alert_status }}</strong> power alert. You're currently using {{ power_current }}W of electricity.</p>
+        <p>Your peak usage over the last hour was <span style="color: #F00;">{{ power_peak }}W</span></p>
         
         <p>Here's a graph of your usage history:</p>
-        <a href="http://local-ip-address{{ reporting_url }}"> <!-- TODO: find out domain name/ip of pi -->
+        <a href="http://{{ domain }}{{ reporting_url }}">
             <img src="{{ graph_url }}" alt="Electricity usage graph" />
         </a>
         

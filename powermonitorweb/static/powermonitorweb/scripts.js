@@ -142,7 +142,7 @@ $(document).ready(function() {
 	
 	/* Function for enabling and disabling options in manage reports screen */
 	$("input[name=occurrence_type]:radio").change(function() {
-		if ($('input[name="occurrence_type"]:radio').val() == "onceoff") {
+		if ($('input[name="occurrence_type"]:radio').val() == "once-off") {
 			$("#report_time").prop("disabled", false);
 			$('input[type="checkbox"]').prop("disabled", true);
 		} else if ($('input[name="occurrence_type"]:radio').val() == "recurring") {

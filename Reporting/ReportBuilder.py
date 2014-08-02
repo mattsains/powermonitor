@@ -21,6 +21,7 @@ from powermonitorweb.models import AlertTip, User
 from django.core.urlresolvers import reverse
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+import socket
 
 
 class ReportBuilder():
@@ -33,6 +34,7 @@ class ReportBuilder():
         self._plotter = Plotter()
         self._usage_stats = UsageStats()
         self._collector = DataFrameCollector()
+        self._ip = socket.gethostbyname(socket.gethostname())  # gets the network ip address of the pi
 
     def build_power_alert_report(self, power_alert_status):
         """Send an Eskom power alert to a user"""
@@ -65,7 +67,7 @@ class ReportBuilder():
         email_context['power_current'] = stats['end']
         # I'm guessing this is where it was intended to link to
         email_context['reporting_url'] = reverse('powermonitorweb:graphs')
-
+        email_context['domain'] = self._ip
         email_context['graph_url'] = 'cid:graph'
         email_context['tips'] = AlertTip.objects.filter(id=1)  # TODO: Still need to work out how to query the reporting tips
         images.append(('graph', file_path + 'last_hour.png'))
@@ -101,6 +103,16 @@ class ReportBuilder():
             del frame
         except:
             raise StandardError('Could not collect data')
+        email_context['title'] = 'Usage Report from %s to %s' % (report_start, report_end)
+        # email_context['report_period'] = 'What?'  #Why have this and report_start and report_end
+        email_context['report_start'] = report_start
+        email_context['report_end'] = report_end
+        email_context['power_sum'] = stats['total_usage']
+        email_context['power_average'] = stats['average']
+        email_context['image_url'] = 'cid:graph'
+        email_context['reporting_url'] = reverse('powermonitorweb:graphs')
+
+        email_context['name'] = user.first_name  #TODO: this must be done for each user
 
 
 

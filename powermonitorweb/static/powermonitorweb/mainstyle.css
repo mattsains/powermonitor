@@ -88,7 +88,7 @@ body
 
 .miniform label+input[type=checkbox]
 {
-    width: 0;
+    width: auto;
 }
 
 .miniform .form-right
@@ -243,6 +243,11 @@ ul#bar
 #bar li ul li a:link, 
 #bar li ul li a:visited {
 	width:auto;
+}
+
+#bar .bar-heading
+{
+    margin-top: 3px;
 }
 
 div#imageholder
@@ -409,8 +414,7 @@ div.heading /* changed this to class so it can be used in 2 divs in the graph pa
 
 #usermenu li:hover
 {
-    background-color: orange;
-    
+    background-color: rgb(230, 149, 0);
 }
 
 #usermenu a
@@ -424,7 +428,7 @@ div.heading /* changed this to class so it can be used in 2 divs in the graph pa
 }
 #usermenu li:hover a
 {
-    color: #DDDEE0;
+    color: white;
 }
 .icon
 {

@@ -231,3 +231,34 @@ class Resampling:
             return True
         else:
             return False
+
+    def buildArrayTimeReading(self,DataFrame_in,periods=1000):
+        """
+        This will take a Pandas DateFrame this dataFrame should be resampled using a calculated frequency
+        The periods is the number of periods you want to resample the data to have the number of points
+        :return: This will return a array of tupples that contain (timestamp,reading)
+        """
+        if DataFrame_in is None:
+            raise ValueError('Invalid DateFrame, Please pass DateFrame with actually data')
+        if type(periods) is not int:
+            raise ValueError("The periods inputted isn't correct, should be a number")
+
+        beginning = DataFrame_in.ix[0]
+        ending = DataFrame_in.ix[len(DataFrame_in)-1]
+        difference = ending - beginning
+        DeltaTime = difference/periods
+        freqConstant = DeltaTime.seconds
+        freq = "" + freqConstant + "s"
+        DataFrame_weighted = plt.Plotter().equal_weight_moving_average(data_frame=DataFrame_in,freq=freq)
+
+        ArrayList = []
+
+        for x in range(len(DataFrame_weighted)):
+            cur = DataFrame_in.ix[x]
+            curDate = cur.name
+            curReading = cur.reading.iloc[x]
+            tupleForMatt=(curDate,curReading)
+            ArrayList[x] = tupleForMatt
+
+        return ArrayList
+

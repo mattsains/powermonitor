@@ -189,14 +189,15 @@ def manage_reports(request):
             report_monthly = not (datadict.get('report_monthly')is None)
 
             report_details_model = UserReports(user_id=user,
-                                                   report_id=report_type,
-                                                   occurrence_type=occurrence_type,
-                                                   datetime=datetime,
-                                                   report_daily=report_daily,
-                                                   report_weekly=report_weekly,
-                                                   report_monthly=report_monthly)
+                                               report_id=report_type,
+                                               occurrence_type=occurrence_type,
+                                               datetime=datetime,
+                                               report_daily=report_daily,
+                                               report_weekly=report_weekly,
+                                               report_monthly=report_monthly)
 
             report_details_model.save()
+
             if (True): #TODO: validation should happen
                 JSONdata = createmessage(True, 'Report Enabled', 'Successfully enabled [report name]')
             else:
