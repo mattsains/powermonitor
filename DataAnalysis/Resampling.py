@@ -3,6 +3,7 @@ __author__ = 'Vincent'
 import pandas as pd
 import numpy as np
 import Plotting as plt
+from datetime import datetime
 
 
 class Resampling:
@@ -231,3 +232,14 @@ class Resampling:
             return True
         else:
             return False
+
+
+    def timestamp_to_milliseconds(self, timestamp):
+        """
+        Convert pandas.Timestamp object to milliseconds
+        :param timestamp: pandas.Timestamp
+        :return: milliseconds from epoch as an integer
+        """
+        if type(timestamp) is not pd.Timestamp:
+            raise TypeError('timestamp must be of type pandas.Timestamp')
+        return int(timestamp.to_datetime() - datetime(1970,1,1) * 1000)
