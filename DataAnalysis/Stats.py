@@ -84,6 +84,7 @@ class UsageStats:
         except:
             logging.warning('Unable to load data frame')
         return None
+
     def get_total_savings(self,data_frame):
         """
         data_frame: The frame of data you want savings for!!

@@ -276,6 +276,7 @@ class Resampling:
             curReading = cur.iloc[0]
             tupleForMatt=(curDate,curReading)
             if (not math.isnan(curReading)):
+                curReading = np.round(curReading,2)
                 ArrayList.append(tupleForMatt)
 
         return ArrayList
