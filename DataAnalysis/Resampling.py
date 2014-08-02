@@ -271,10 +271,9 @@ class Resampling:
         for x in range(len(DataFrame_weighted)):
             cur = DataFrame_weighted.ix[x]
             curDate = cur.name
-            curReading = cur.iloc[0]
-            tupleForMatt=(curDate,curReading)
+            curReading = cur.iloc[1]
             if (not math.isnan(curReading)):
                 curReading = np.round(curReading,2)
-                ArrayList.append(tupleForMatt)
+                ArrayList.append((curDate,curReading))
 
         return ArrayList
