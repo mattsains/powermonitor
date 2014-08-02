@@ -33,6 +33,7 @@ class PowerAlertScraper:
         """
         Renew the alert tag and usage tags at the same time to reduce network usage
         """
+        print 'Renewing tags'
         bs = self.__scraper.get_beautifulsoup()
         for td in bs.find_all('td', {'bgcolor': '#FEC5D5', 'align': 'center'}):
             for img in td.find_all('img'):

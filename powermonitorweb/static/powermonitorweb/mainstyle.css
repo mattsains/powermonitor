@@ -132,6 +132,26 @@ body
     margin: auto;
 }
 
+.panel-success-success {
+  border-color: #2A8322;
+}
+
+.panel-success-success > .panel-heading {
+  color: white;
+  background-color: #2A8322;
+  border-color: #2A8322;
+}
+.panel-success-success > .panel-heading + .panel-collapse > .panel-body {
+  border-top-color:#2A8322;
+}
+.panel-success-success > .panel-heading .badge {
+  color: #2A8322;
+  background-color: #2A8322;
+}
+.panel-success-success > .panel-footer + .panel-collapse > .panel-body {
+  border-bottom-color: #2A8322;
+}
+
 div#main
 {
     border-radius: 10px 10px 0px 0px;

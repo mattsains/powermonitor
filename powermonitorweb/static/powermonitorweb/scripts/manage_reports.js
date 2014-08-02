@@ -65,16 +65,18 @@ $(document).ready(function(){
 	
         if (enabled)
         {
-	    $display.css("background-color", "rgb(206, 241, 206)");/*TODO: edit heading and border color? */	    
+	    $display.addClass("panel-success-success");
+	    $display.removeClass("panel-primary");
             $("input#disable_report").show();
             $("input#save_report").show();
         }
         else
 	{
-	    $display.css("background-color","white"); /*TODO: edit heading and border color? */
+	    $display.removeClass("panel-success-success");
+	    $display.addClass("panel-primary");
 	    $("input#enable_report").show();
 	}
-    });
+    }).change();
 
     function hideButtons()
     {
