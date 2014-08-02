@@ -101,13 +101,19 @@ class ReportTypeForm(forms.ModelForm):
 
         enabled_choices = []
         choices = []
+        remainder = []
 
         # create a list of IDs of all enabled reports
         for a in Report.objects.all().select_related("users").filter(users=user.id):
             enabled_choices.append(a.id)
 
         for a in Report.objects.all():
-            choices.append((a.id, a.report_type))
+            if a.id in enabled_choices:
+                choices.append((a.id, a.report_type))
+            else:
+                remainder.append((a.id, a.report_type))
+
+        choices = choices + remainder
 
         self.fields['report_type'] = forms.ChoiceField(
             widget=widgets.EnabledSelect(enabled_choices, attrs={'size': '15', 'required': 'true'}),

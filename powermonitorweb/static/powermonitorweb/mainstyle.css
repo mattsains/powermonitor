@@ -1,3 +1,5 @@
+@import "bootstrap.css";
+
 #lizard
 {
     position: absolute;
@@ -22,40 +24,83 @@
 
 }
 
+html
+{
+    height: 100%;
+}
+
 body
 {
     font-family: sans-serif;
     background-image: url("images/triangular.png");
     margin: 0px;
     padding: 0px;
+    height: 100%;
+}
+#content_wrapper
+{
+    min-height: 100%;
+	height: auto !important;
+	height: 100%;
+	margin: 0 auto -30px
+}
+#push
+{
+    height: 30px;
+}
+.fillparenttarget
+{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    flex:1 0 auto;
+}
+.fillparent
+{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    flex:1 0 auto;
+}
+.fillparent>*
+{
+    width:100%;
 }
 
-.formlayout
+.miniform p
 {
     width: 100%;
-    text-align: left;
-    margin: 0px auto 15px 0px;
 }
 
-.formlayout input[type=text],input[type=password],input[type=email]
+.miniform label
 {
-    width: 100%;
-    height: 20px;
+    float: left;
+    width: 50%;
+    text-align: right;
+    padding-right: 10px;
 }
 
-.formlayout select
+
+.miniform label+*
 {
-    width: 100%;
+    width: 50%;
 }
 
-.formlayout p
+.miniform label+input[type=checkbox]
 {
-      margin: 8px 0px;
+    width: auto;
+}
+
+.miniform .form-right
+{
+    margin-left: 50%;
+    padding-right: 10px;
+    width: 50%;
 }
 
 .listlayout p
 {
-      margin: 8px 0px;
+    margin: 8px 0px;
 }
 .listlayout select
 {
@@ -63,16 +108,11 @@ body
     height: 100%;
 }
 
-.listlayout
-{
-    width: 90%;
-}
-
 .west
 {
     display: block;
     width: 33%;
-    float:left;
+    float: left;
     height: 100%;
 }
 
@@ -88,16 +128,8 @@ body
 {
     width: 120px;
     height: 30px;
-    display:block;
+    display: block;
     margin: auto;
-}
-
-.buttons
-{
-    width: 100%;
-    display:block;
-    float: left;
-    margin-bottom: 20px;
 }
 
 div#main
@@ -106,7 +138,7 @@ div#main
     margin: auto;
     margin-top: 45px;
     width: 1000px;
-    background-color: /*#e02927;*/#CCCBCB;
+    background-color: rgb(221, 222, 224);
     overflow: visible;
     box-shadow: -5px 5px 10px #888888;
 }
@@ -122,11 +154,7 @@ div#main
 
 div.group
 {
-    overflow: auto;
-    border-radius: 3px;
     margin-top: 15px;
-    background-color:  #ede9e3 ;
-    box-shadow: 0 0 10px #AAAAAA ;
 }
 
 div#container
@@ -180,12 +208,13 @@ ul#bar
     padding-top: 0px;
     display: inline-block;
     text-align: center;
-    /*no borders*/
     padding: 0px 7px;
-    /*Right border?*/
-    /*padding: 0px 10px 0px 2px;
-    border-right: solid white 1px;*/
     color: white;
+}
+
+#bar li a:nth-child(2)
+{
+    line-height:35px;
 }
 
 #subBar {
@@ -195,12 +224,7 @@ ul#bar
 #bar li a:link, #bar li a:visited {
 	display:block;
 	text-decoration:none;
-	/*background-color:#ede9e3;*/
 	margin:0;
-}
-
-#bar li a:hover {
-	/*background-color:#0CF;*/
 }
 
 #bar li ul {
@@ -216,13 +240,14 @@ ul#bar
 	display: inline;
 }
 
-#bar li ul li a:link, #bar li ul li a:visited {
+#bar li ul li a:link, 
+#bar li ul li a:visited {
 	width:auto;
-	/*background-color:#09F;*/
 }
 
-#bar li ul li a:hover {
-	/*background-color:#0CF;*/
+#bar .bar-heading
+{
+    margin-top: 3px;
 }
 
 div#imageholder
@@ -243,23 +268,6 @@ h2
     padding: 0px;
 }
 
-.floatright
-{
-    display: block;
-    float:right;
-}
-
-.floatleft
-{
-    display: block;
-    float:left;
-}
-
-.half
-{
-    width: 50%;
-}
-
 #graphdiv {
 	background-color: #fff;
     border: solid black 1px;
@@ -269,25 +277,59 @@ h2
     display: block;
     overflow: auto;
 }
-
 .listform
 {
-    border: solid black 1px;
-    border-radius: 5px;
-    padding: 30px 100px;
-    margin: 20px 80px;
-    display: block;
-    overflow: auto;
+    padding-right: 22.5%;
 }
 
-.listform .floatleft
+.listform p
+{
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.listform label
+{
+    float: left;
+    width: 45%;
+    text-align: right;
+    padding-right: 10px;
+}
+
+
+.listform label+*
+{
+    width: 55%;
+}
+
+.listform ul.errorlist
+{
+    width:50%;
+    margin-left: calc(45% + 10px);
+    padding-left: 10px;
+}
+
+ul.errorlist li {
+  color: #a94442;
+  background-color: #f2dede;
+  display:block;
+  padding: 10px;
+  border: 1px solid #ebccd1;
+  border-radius: 4px;
+  width: calc(55% + 4px);
+}
+
+.listform .pull-left
 {
     width: 45%;
 }
 
-.listform .floatright
+.listform .form-right
 {
-    width: 45%;
+    margin-left: 45%;
+    padding-right: 10px;
+    width: 55%;
 }
 
 h3
@@ -311,21 +353,42 @@ h3
 
 }
 
+.panel-default > .panel-heading
+{
+    padding: 10px 15px;
+    border-bottom: 1px solid #DDD;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    color: #333;
+    background-color: #F5F5F5;
+}
+.panel.panel-default
+{
+    margin-bottom: 0;
+    background-color: #FFF;
+    border: 1px solid #DDD;
+    border-radius: 0;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.05);
+}
+
 div.heading /* changed this to class so it can be used in 2 divs in the graph page */
 {
-    background-color: #7FB0E7;
-    text-align: center;
+    border-bottom: 1px solid #444;
+    margin-bottom: 10px;
 }
 
 #userdetails
 {
-    height: 30px;    
+    height: 30px;
+    font-size: 20px;
     background-color: #243A69;
     position: relative;
+    color: rgb(122, 141, 186);
 }
 
 #usermenu
 {
+    display:none;
     right: 0px;
     top: 100%;
     position: absolute;
@@ -333,6 +396,8 @@ div.heading /* changed this to class so it can be used in 2 divs in the graph pa
     background-color: #19294B;
     text-align: left;
     box-shadow: -2px 2px 2px black;
+    tab-index: -1;
+    z-index: 10;
 }
 
 #usermenu li
@@ -349,28 +414,26 @@ div.heading /* changed this to class so it can be used in 2 divs in the graph pa
 
 #usermenu li:hover
 {
-    background-color: orange;
+    background-color: rgb(230, 149, 0);
 }
 
 #usermenu a
 {
-    color: white;
+    color: #7A8DBA;
     text-decoration: inherit;
     display: block;
     width: 100%;
     height: 100%;
+    font-size: 17px;
 }
-
+#usermenu li:hover a
+{
+    color: white;
+}
 .icon
 {
     
     margin: 0px 3px 0px 0px;
-}
-
-#downarrow
-{
-    margin: -2px 4px 2px 3px;
-
 }
 
 h1
@@ -387,13 +450,15 @@ h1
 #username
 {
     color: #CBCFEB;
-    text-shadow: 2px 2px 3px #000000;
     cursor: pointer;
+    display: inline-block;
 }
 
-.marginfive
+#username .caret
 {
-    margin: 5px;
+    margin: -2px 7px 0 5px;
+    font-size: 20px;
+    color: #7A8DBA;
 }
 
 div#footer
@@ -475,22 +540,26 @@ div#add_form {
 	display: none;
 }
 
-div.metrics {
-	float: left;
-	width: 22.5%;
-	padding: 5px 5px;
-	margin: 5px 5px;
-	background-color: #fff;
-    border: solid black 1px;
-    border-radius: 5px;
-    display: block;
-    overflow: auto;
-	height: 100px;
+div#metrics_div
+{
+    margin-left: -10px;
 }
 
-div.metrics h4 {
+div.metric {
+	padding: 0 0 0 0;
+	margin: 5px 2px 5px 2px;
+	height: 100px;
+    width: calc(25% - 4px);
+}
+
+#eskom_status .panel-body
+{
+    padding: 2px 0 0 0;
+}
+
+div.metric h4 {
 	font-size: 16px;
-	font-style: bold;
+	font-weight: bold;
 	padding: 0;
 	margin: 0;
 }

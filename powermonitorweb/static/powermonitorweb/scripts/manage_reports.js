@@ -5,30 +5,44 @@ $(document).ready(function(){
     var messageAsAlert = ecoberry.ajax.messageAsAlert;
     
     /*Change the details in the fields to match the selected entry */
-    $("#id_report_type").change(
+    var $reports = $("#id_report_type"); 
+    
+    $reports.change(
 	createPOSTFunction("/powermonitorweb/manage_reports/", "#id_report_type", "id_report_type_change",
 			   createFieldFiller("occurrence_type", "datetime", "report_daily", "report_weekly", "report_monthly")));
 
     /* save changes to an enabled entry */
-    $("#save_report").click(
-	createPOSTFunction("/powermonitorweb/manage_reports/", "#manage_reports_form", "save_report_click",
+    $("#enable_report").click(
+	createPOSTFunction("/powermonitorweb/manage_reports/", "#manage_reports_form", "enable_report_click",
 			  function(response) { if (messageAsAlert(response))
 					       {
-						   var $reports = $("#id_report_type");
-						   var $newlyenabled = $reports.find(":selected").detach()
-						   $newlyenabled.attr("data-enabled", "true");
-						   $reports.insertBefore($newlyenabled, $reports);
+						   var $newlyenabled = $reports.find(":selected").detach();
+						   $newlyenabled.attr("data-enabled", "true");						
+						   if ($("#id_report_type option[data-enabled=true]").length)
+						       $newlyenabled.insertAfter($("#id_report_type option[data-enabled=true]").last());
+						   else
+						       $newlyenabled.insertBefore($("#id_report_type option").first());						   
+						   $reports.change();
 					       }}));
 
     /* enable a disabled entry */
-    $("#enable_report").click(
-	createPOSTFunction("/powermonitorweb/manage_reports/", "#manage_reports_form", "enable_report_click",
+    $("#save_report").click(
+	createPOSTFunction("/powermonitorweb/manage_reports/", "#manage_reports_form", "save_report_click",
 			  messageAsAlert));
 
     /* disable an enabled entry */
     $("#disable_report").click(
 	createPOSTFunction("/powermonitorweb/manage_reports/", "#id_report_type", "disable_report_click",
-			   messageAsAlert));
+			   function(response) {if (messageAsAlert(response))
+			      {
+				  var $newlydisabled = $reports.find(":selected").detach();
+				  $newlydisabled.removeAttr("data-enabled");
+				  if ($("#id_report_type option[data-enabled=true]").length)
+				      $newlydisabled.insertAfter($("#id_report_type option[data-enabled=true]").last());
+				  else
+				      $newlydisabled.insertBefore($("#id_report_type option").first());						   
+				  $reports.change();
+			      }}));
     
     hideButtons();
 
@@ -41,18 +55,26 @@ $(document).ready(function(){
             $('input[type=checkbox]').parent().show();
     }).change();
 
-    $("select#id_report_type").change(
+    $reports.change(
     function () {
-        var enabled = $("select#id_report_type option:selected").attr("data-enabled");
+	var $selected = $("select#id_report_type option:selected");	
+        var enabled = $selected.attr("data-enabled");
+	var $display = $("#display"); 
         hideButtons();
+	$display.find("h2").text("Selected Report: " + $selected.text());
+	
         if (enabled)
         {
+	    $display.css("background-color", "rgb(206, 241, 206)");/*TODO: edit heading and border color? */	    
             $("input#disable_report").show();
             $("input#save_report").show();
         }
         else
-            $("input#enable_report").show();
-    }).change();
+	{
+	    $display.css("background-color","white"); /*TODO: edit heading and border color? */
+	    $("input#enable_report").show();
+	}
+    });
 
     function hideButtons()
     {

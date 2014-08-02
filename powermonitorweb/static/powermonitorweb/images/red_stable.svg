@@ -9,12 +9,12 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="85mm"
-   height="54mm"
+   width="201.96851"
+   height="56.692913"
    id="svg3794"
    version="1.1"
    inkscape:version="0.48.5 r10040"
-   sodipodi:docname="red_up.svg">
+   sodipodi:docname="red_down.svg">
   <defs
      id="defs3" />
   <sodipodi:namedview
@@ -24,9 +24,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.6970563"
-     inkscape:cx="185.40315"
-     inkscape:cy="134.66513"
+     inkscape:zoom="3.3941125"
+     inkscape:cx="171.44725"
+     inkscape:cy="25.212798"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -35,13 +35,7 @@
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     showguides="true"
-     inkscape:guide-bbox="true">
-    <sodipodi:guide
-       orientation="1,0"
-       position="149.08168,99.584205"
-       id="guide4867" />
-  </sodipodi:namedview>
+     units="mm" />
   <metadata
      id="metadata3798">
     <rdf:RDF>
@@ -57,19 +51,20 @@
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     transform="translate(0,-134.64566)">
     <text
        xml:space="preserve"
-       style="font-size:86.43445586999999400px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ff0000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="43.005711"
-       y="147.96054"
+       style="font-size:63.14783096px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="58.080612"
+       y="196.19911"
        id="text2985"
        sodipodi:linespacing="125%"
-       transform="scale(1.2894028,0.77555283)"><tspan
+       transform="scale(1.0563177,0.94668488)"><tspan
          sodipodi:role="line"
          id="tspan2987"
-         x="43.005711"
-         y="147.96054"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#ff0000;fill-opacity:1;font-family:Calibri;-inkscape-font-specification:Calibri">RED</tspan></text>
+         x="58.080612"
+         y="196.19911"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#c9302c;fill-opacity:1;font-family:DokChampa;-inkscape-font-specification:DokChampa">RED</tspan></text>
   </g>
 </svg>
