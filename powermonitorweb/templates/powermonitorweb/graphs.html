@@ -4,6 +4,8 @@
 
 {% block header %}Usage Graphs{% endblock %}
 {% block main %}
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
     <script src="{% static '/static/powermonitorweb/scripts/graphs.js' %}" ></script>
     <div class="panel panel-default">
         <div class="panel-heading"><h3>Graphs</h3></div>
@@ -12,12 +14,7 @@
                 Select the period you wish to view:
                 {{ graph_period_form.as_p }}
             </div>
-            <div id="graphdiv">
-                {% if graph != 'null' %}
-                <img src="{{ STATIC_URL }}powermonitorweb/images/graphs/{{ graph }}" alt=""/>
-                {% else %}
-                <strong>No graph found. There may not be any data to graph. Try another period to display</strong>
-                {% endif %}
+        <div id="chart_div" style="width:100%; height:500px;">
             </div>
         </div>
     </div>

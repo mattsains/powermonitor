@@ -19,9 +19,11 @@ from DataAnalysis.Forecasting import PowerForecasting as pf
 from DataAnalysis.Plotting import Plotter as plt
 from DataAnalysis.DataFrameCollector import DataFrameCollector as dfc
 from DataAnalysis.PowerAlertScraper import PowerAlertScraper as PAS
+from DataAnalysis.Resampling import Resampling
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import os
+import math
 
 @login_required()
 def index(request):
@@ -500,37 +502,41 @@ def graphs(request):
         datadict = request.POST
         # generate a new graph based on the user's selection
         if datadict.get('period') == '1hour':
-            graph_name = generate_usage_graph(period_type='hour', length=1, file_path=file_path)
+            frame = dfc().collect_period(period_type='hour', period_start=str(
+                datetime.now().replace(microsecond=0) - relativedelta(hours=1)), period_length=1)
         elif datadict.get('period') == '12hour':
-            graph_name = generate_usage_graph(period_type='hour', length=12, file_path=file_path)
+            frame = dfc().collect_period(period_type='hour', period_start=str(
+                datetime.now().replace(microsecond=0) - relativedelta(hours=12)), period_length=12)
         elif datadict.get('period') == 'day':
-            graph_name = generate_usage_graph(period_type='day', length=1, file_path=file_path)
+            frame = dfc().collect_period(period_type='day', period_start=str(
+                datetime.now().replace(microsecond=0) - relativedelta(days=1)), period_length=1)
         elif datadict.get('period') == 'week':
-            graph_name = generate_usage_graph(period_type='week', length=1, file_path=file_path)
+            frame = dfc().collect_period(period_type='week', period_start=str(
+                datetime.now().replace(microsecond=0) - relativedelta(weeks=1)), period_length=1)
         elif datadict.get('period') == '1month':
-            graph_name = generate_usage_graph(period_type='month', length=1, file_path=file_path)
+            frame = dfc().collect_period(period_type='month', period_start=str(
+                datetime.now().replace(microsecond=0) - relativedelta(months=1)), period_length=1)
         elif datadict.get('period') == '6month':
-            graph_name = generate_usage_graph(period_type='month', length=6, file_path=file_path)
+            frame = dfc().collect_period(period_type='month', period_start=str(
+                datetime.now().replace(microsecond=0) - relativedelta(months=6)), period_length=6)
         elif datadict.get('period') == 'year':
-            graph_name = generate_usage_graph(period_type='year', length=1, file_path=file_path)
+            frame = dfc().collect_period(period_type='year', period_start=str(
+                datetime.now().replace(microsecond=0) - relativedelta(years=1)), period_length=1)
+        
         elif datadict.get('period') == 'predict':
             # Generating a prediction graph works a little differently
-            graph_name = generate_prediction_graph(file_path=file_path)
-        if graph_name != 'null':
-            # A graph was produced!
-            # It seemed easier to generate the html tag here, then just use JS to plonk it in the div
-            graph_html = "<img src='/static/powermonitorweb/images/graphs/%s' />" % graph_name
-        else:
-            graph_html = "<strong>No graph found. There may be insufficient data to generate a graph.<br />" \
-                         "Try selecting another period.</strong>" \
-                         "<p>If a power outage has occurred, you may need to wait 12hours before predictions can be " \
-                         "calculated</p>"
+            #TODO: do this
+            pass
+        
+        points=Resampling().buildArrayTimeReading(frame)
+            
+        json_graph="["+",".join(map(lambda x: "["+str(Resampling().timestamp_to_milliseconds(x[0]))+","+str(x[1])+"]", points))+"]"
+        
         current_stats = get_current_statistics()
         # return the name of the new graph to display
-        JSONdata = '{"graph": "%s", "current_usage": "%s", "average_usage": "%s", "eskom_status": "%s", ' \
-                   '"savings": "%s"}' % (graph_html, current_stats['current_usage'], current_stats['average_usage'],
+        JSONdata = '{"graph": '+json_graph+', "current_usage": "%s", "average_usage": "%s", "eskom_status": "%s", ' \
+                   '"savings": "%s"}' % (current_stats['current_usage'], current_stats['average_usage'],
                     current_stats['eskom_status'], current_stats['savings'])
-        print JSONdata
         return HttpResponse(JSONdata)
     else:
         # otherwise the page was loaded, so show a default graph. currently defaults to 12hr graph
