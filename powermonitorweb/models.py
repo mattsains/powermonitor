@@ -7,7 +7,7 @@ class Readings(models.Model):
     """
     Stores electricity readings from the power monitoring circuit
     """
-    time = UnixTimestampField(auto_created=True, primary_key=True, null=False)
+    time = UnixTimestampField(auto_now_add=True, auto_created=True, primary_key=True, null=False)
     reading = models.FloatField()
 
 

@@ -1,16 +1,48 @@
-{% include '_header.html' }
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+    <title>{{ title }}</title>
+    <style type="text/css">
+        #header { background-color: #2A5382; }
+        #header h1 { font: Arial; font-weight: bold; font-size: 15pt; color: #FFFFFF;}
+        p { font: Arial,Helvetica; size: 10pt; }
+        body { background-color: #FFF; }
+        #pageContainer {
+            background-color: #FFF;
+            padding:10px;
+            margin-left:auto;
+            margin-right:auto;
+            width:800px;
+        }
+        #footer {
+            background-color: #243A69;
+            color: White;
+            text-align: center;
+        }
+        #section a:link { text-decoration:none; }
+        #section a:visited { text-decoration:none; }
+        #section a:hover { color: #FF0000; }
+        #section a:active { text-decoration:none; }
+    </style>
+</head>
+<body>
+    <div id="pageContainer">
     <div id="header">
         <h1>{{ title }}</h1>
     </div>
     <div id="section">
         <p>Hello {{ name }},</p>
         <p>Here's a {{ report_period }} power usage report</p>
-        <p>Between {{ report_begin }} and {{ report_end }}, you used {{ power_sum }}kWh.</p>
-        <p>That's an average of {{ power_average }}kW</p>
+        <p>Between {{ report_begin }} and {{ report_end }}, you used {{ power_sum }}Wh.</p>
+        <p>That's an average of {{ power_average }}W</p>
         
         <a href="reporting_url">
             <img src="{{ image_url }}" alt="Electricity usage graph" />
         </a>
         
     </div>
-{% include '_footer.html' }
+        <div id="footer">
+            Copyright {{ owner }} 2014 &copy;
+        </div>
+    </div>
+</body>

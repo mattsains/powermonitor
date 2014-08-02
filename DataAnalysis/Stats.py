@@ -78,12 +78,14 @@ class UsageStats:
             stats['min'] = '%.2f' % data_frame.reading.min()
             stats['min_time'] = data_frame.time.min()   # The time at which the minimum occurred
             stats['total_usage'] = '%.2f' % data_frame.reading.sum()
+            stats['total_per_hour'] = '%.2f' % data_frame.reading.mean()
             stats['end'] = '%.2f' % data_frame.tail(1).iloc[0]['reading']
             del data_frame  # dispose of the frame right now. We don't need it anymore
             return stats
         except:
             logging.warning('Unable to load data frame')
         return None
+
     def get_total_savings(self,data_frame):
         """
         data_frame: The frame of data you want savings for!!

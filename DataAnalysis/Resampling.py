@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import Plotting as plt
 from datetime import datetime
+import math
 
 
 class Resampling:
@@ -242,10 +243,10 @@ class Resampling:
         """
         if type(timestamp) is not pd.Timestamp:
             raise TypeError('timestamp must be of type pandas.Timestamp')
-        return int(timestamp.to_datetime() - datetime(1970,1,1) * 1000)
+        return int((timestamp.to_datetime() - datetime(1970,1,1)).total_seconds() * 1000)
 
 
-    def buildArrayTimeReading(self,DataFrame_in,periods=1000):
+    def buildArrayTimeReading(self, DataFrame_in, periods=1000):
         """
         This will take a Pandas DateFrame this dataFrame should be resampled using a calculated frequency
         The periods is the number of periods you want to resample the data to have the number of points
@@ -253,24 +254,26 @@ class Resampling:
         """
         if DataFrame_in is None:
             raise ValueError('Invalid DateFrame, Please pass DateFrame with actually data')
-        if type(periods) is not int:
-            raise ValueError("The periods inputted isn't correct, should be a number")
 
-        beginning = DataFrame_in.ix[0]
-        ending = DataFrame_in.ix[len(DataFrame_in)-1]
+        beginning = DataFrame_in.ix[0].name
+        ending = DataFrame_in.ix[len(DataFrame_in)-1].name
         difference = ending - beginning
+
         DeltaTime = difference/periods
         freqConstant = DeltaTime.seconds
-        freq = "" + freqConstant + "s"
-        DataFrame_weighted = plt.Plotter().equal_weight_moving_average(data_frame=DataFrame_in,freq=freq)
-
+        if (freqConstant <60):
+            DataFrame_weighted = DataFrame_in
+        else:
+            freq = "%ds" % freqConstant
+            DataFrame_weighted = self.downsample_data_frame(data_frame=DataFrame_in,freq=freq,method="mean")
         ArrayList = []
 
         for x in range(len(DataFrame_weighted)):
-            cur = DataFrame_in.ix[x]
+            cur = DataFrame_weighted.ix[x]
             curDate = cur.name
-            curReading = cur.reading.iloc[x]
-            tupleForMatt=(curDate,curReading)
-            ArrayList[x] = tupleForMatt
+            curReading = cur.iloc[1]
+            if (not math.isnan(curReading)):
+                curReading = np.round(curReading,2)
+                ArrayList.append((curDate,curReading))
 
         return ArrayList

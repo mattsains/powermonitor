@@ -43,7 +43,7 @@ class ReportBuilder():
         file_path = os.path.join(settings.BASE_DIR,'powermonitorweb', 'media', 'graphs', '')
         try:
             frame = self._collector.collect_period(period_type='hour',
-                                                   period_start='2014-07-15 19:30:00', #TODO: Change this back to str(datetime.now().replace(microseconds=0) - relativedelta(hours=1))
+                                                   period_start=str(datetime.now().replace(microsecond=0) - relativedelta(hours=1)), #TODO: Change this back to str(datetime.now().replace(microseconds=0) - relativedelta(hours=1))
                                                    period_length=1)
             stats = self._usage_stats.get_frame_stats(frame)
             self._plotter.plot_single_frame(data_frame=frame, title='Usage for last hour', y_label='Usage (kW)',
@@ -89,32 +89,37 @@ class ReportBuilder():
                     raise StandardError('Could not create email for user %s' % user.first_name)
         self._mailer.send_emails(self._mailer.get_mail_list())  # send all the emails at once
 
-    def send_usage_report(self, user, report_start, report_end):
+    def build_usage_report(self, period_type, report_begin, report_end):
         """Send a report of electricity consumption"""
         # needs: title name report_period report_begin report_end power_sum power_average image_url reporting_url
         email_context = {}
         images = []
         stats = None
         try:
-            frame = self._collector.collect_period(period_start=report_start, period_end=report_end)
+            frame = self._collector.collect_period(period_start=report_begin, period_end=report_end)
             self._plotter.plot_single_frame(data_frame=frame, title='Power Usage', y_label='Usage (kW)',
                                             x_label='Time', file_name='usage_report.svg')
             stats = self._usage_stats.get_frame_stats(data_frame=frame)
             del frame
         except:
             raise StandardError('Could not collect data')
-        email_context['title'] = 'Usage Report from %s to %s' % (report_start, report_end)
-        # email_context['report_period'] = 'What?'  #Why have this and report_start and report_end
-        email_context['report_start'] = report_start
+        email_context['title'] = 'Usage Report from %s to %s' % (report_begin, report_end)
+        email_context['report_period'] = period_type
+        email_context['report_begin'] = report_begin
         email_context['report_end'] = report_end
-        email_context['power_sum'] = stats['total_usage']
+        email_context['power_sum'] = stats['total_per_hour']
         email_context['power_average'] = stats['average']
         email_context['image_url'] = 'cid:graph'
         email_context['reporting_url'] = reverse('powermonitorweb:graphs')
 
-        email_context['name'] = user.first_name  #TODO: this must be done for each user
+        user = User.objects.get(id=2)
+        email_context['name'] = user.first_name
 
-
+        mail = self._mailer.create_multipart_mail(template_name='UsageReport', email_context=email_context,
+                                           subject=email_context['title'], recipients=[str(user.email), ],
+                                           images=tuple(images))
+        print mail
+        self._mailer.send_emails(self._mailer.get_mail_list())
 
 
     def send_usage_alert(self, user, alert_event):  # TODO evaluate parameter choice here
