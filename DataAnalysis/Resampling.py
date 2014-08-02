@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import Plotting as plt
 from datetime import datetime
+import math
 
 
 class Resampling:
@@ -273,6 +274,7 @@ class Resampling:
             curDate = cur.name
             curReading = cur.iloc[0]
             tupleForMatt=(curDate,curReading)
-            ArrayList.append(tupleForMatt)
+            if (not math.isnan(curReading)):
+                ArrayList.append(tupleForMatt)
 
         return ArrayList
