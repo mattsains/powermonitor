@@ -262,9 +262,10 @@ class Resampling:
         DeltaTime = difference/periods
         freqConstant = DeltaTime.seconds
         if (freqConstant <60):
-            freqConstant=60
-        freq = "%ds" % freqConstant
-        DataFrame_weighted = self.downsample_data_frame(data_frame=DataFrame_in,freq=freq,method="mean")
+            DataFrame_weighted = DataFrame_in
+        else:
+            freq = "%ds" % freqConstant
+            DataFrame_weighted = self.downsample_data_frame(data_frame=DataFrame_in,freq=freq,method="mean")
         ArrayList = []
 
         for x in range(len(DataFrame_weighted)):
@@ -273,6 +274,7 @@ class Resampling:
             curReading = cur.iloc[0]
             tupleForMatt=(curDate,curReading)
             if (not math.isnan(curReading)):
+                curReading = np.round(curReading,2)
                 ArrayList.append(tupleForMatt)
 
         return ArrayList
