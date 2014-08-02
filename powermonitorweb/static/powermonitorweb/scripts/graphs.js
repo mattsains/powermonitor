@@ -61,7 +61,7 @@ function drawChart() {
     
     var do_populate=function(){ 
         get_data("/powermonitorweb/graphs/", "period="+$id_period.val()); 
-        setTimeout(do_populate, 5000);
+        setTimeout(do_populate, 60000);
     };
     
     do_populate();
