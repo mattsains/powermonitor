@@ -88,7 +88,7 @@ body
 
 .miniform label+input[type=checkbox]
 {
-    width: 0;
+    width: auto;
 }
 
 .miniform .form-right
