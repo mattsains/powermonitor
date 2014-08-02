@@ -243,10 +243,10 @@ class Resampling:
         """
         if type(timestamp) is not pd.Timestamp:
             raise TypeError('timestamp must be of type pandas.Timestamp')
-        return int(timestamp.to_datetime() - datetime(1970,1,1) * 1000)
+        return int((timestamp.to_datetime() - datetime(1970,1,1)).total_seconds() * 1000)
 
 
-    def buildArrayTimeReading(self,DataFrame_in,periods=1000):
+    def buildArrayTimeReading(self, DataFrame_in, periods=1000):
         """
         This will take a Pandas DateFrame this dataFrame should be resampled using a calculated frequency
         The periods is the number of periods you want to resample the data to have the number of points
@@ -254,8 +254,6 @@ class Resampling:
         """
         if DataFrame_in is None:
             raise ValueError('Invalid DateFrame, Please pass DateFrame with actually data')
-        if type(periods) is not int:
-            raise ValueError("The periods inputted isn't correct, should be a number")
 
         beginning = DataFrame_in.ix[0].name
         ending = DataFrame_in.ix[len(DataFrame_in)-1].name
