@@ -26,12 +26,14 @@
                 <div id="display" class="panel panel-primary">
                     <div class="panel-heading"><h2>Selected Report</h2></div>
                     <div class="miniform panel-body">
-                        {{ report_details_form.as_p }}
-                        <br/>
-                        <input class="btn btn-primary" type="button" id="save_report" name="save" value="Save Changes" />
+                        {{ report_details_form.as_p }}                     
+                  
+                    </div>
+		    <div class="buttons">
+		        <input class="btn btn-primary" type="button" id="save_report" name="save" value="Save Changes" />
                         <input class="btn btn-success" type="button" id="enable_report" name="enable" value="Enable" />
                         <input class="btn btn-danger" type="button" id="disable_report" name="disable" value="Disable" />
-                    </div>
+		    </div>
                 </div>
             </div>
         </form>

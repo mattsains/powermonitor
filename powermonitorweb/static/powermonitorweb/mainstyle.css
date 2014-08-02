@@ -486,7 +486,7 @@ div#footer
     margin-top: 15px;
     background-color: #243A69;
     text-align: center;
-    height: 30px;
+    height: 20px;
     color: white;
 }
 
@@ -531,6 +531,14 @@ a
     text-align: center;
     float: left;
     width: 50%;
+}
+
+.buttons
+{
+    width: 453px;
+    text-align: center;
+    position: absolute;
+    bottom: 40px;
 }
 
 li {
