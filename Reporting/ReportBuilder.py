@@ -89,32 +89,33 @@ class ReportBuilder():
                     raise StandardError('Could not create email for user %s' % user.first_name)
         self._mailer.send_emails(self._mailer.get_mail_list())  # send all the emails at once
 
-    def build_usage_report(self, user, period_type, report_start, report_end):
+    def build_usage_report(self, period_type, report_begin, report_end):
         """Send a report of electricity consumption"""
         # needs: title name report_period report_begin report_end power_sum power_average image_url reporting_url
         email_context = {}
         images = []
         stats = None
         try:
-            frame = self._collector.collect_period(period_start=report_start, period_end=report_end)
+            frame = self._collector.collect_period(period_start=report_begin, period_end=report_end)
             self._plotter.plot_single_frame(data_frame=frame, title='Power Usage', y_label='Usage (kW)',
                                             x_label='Time', file_name='usage_report.svg')
             stats = self._usage_stats.get_frame_stats(data_frame=frame)
             del frame
         except:
             raise StandardError('Could not collect data')
-        email_context['title'] = 'Usage Report from %s to %s' % (report_start, report_end)
+        email_context['title'] = 'Usage Report from %s to %s' % (report_begin, report_end)
         email_context['report_period'] = period_type
-        email_context['report_start'] = report_start
+        email_context['report_begin'] = report_begin
         email_context['report_end'] = report_end
-        email_context['power_sum'] = stats['total_usage']
+        email_context['power_sum'] = stats['total_per_hour']
         email_context['power_average'] = stats['average']
         email_context['image_url'] = 'cid:graph'
         email_context['reporting_url'] = reverse('powermonitorweb:graphs')
 
+        user = User.objects.get(id=2)
         email_context['name'] = user.first_name
 
-        mail = self._mailer.create_multipart_mail(template_name='PowerAlert', email_context=email_context,
+        mail = self._mailer.create_multipart_mail(template_name='UsageReport', email_context=email_context,
                                            subject=email_context['title'], recipients=[str(user.email), ],
                                            images=tuple(images))
         print mail
