@@ -34,7 +34,7 @@ class ReportBuilder():
         self._plotter = Plotter()
         self._usage_stats = UsageStats()
         self._collector = DataFrameCollector()
-        self._ip = socket.gethostbyname(socket.gethostname())  # gets the network ip address of the pi
+        self._ip = socket.gethostbyname(socket.gethostname())
 
     def build_power_alert_report(self, power_alert_status):
         """Send an Eskom power alert to a user"""
@@ -47,7 +47,7 @@ class ReportBuilder():
                                                    period_length=1)
             stats = self._usage_stats.get_frame_stats(frame)
             self._plotter.plot_single_frame(data_frame=frame, title='Usage for last hour', y_label='Watts',
-                                                  file_name=file_path + 'last_hour.png')
+                                            file_name=file_path + 'last_hour.png')
             del frame
         except:
             raise StandardError('Could not collect data')
@@ -61,7 +61,7 @@ class ReportBuilder():
         else:
             return  # I don't think it's necessary to send "power's all fine chaps!"
 
-
+        email_context['time'] = str(datetime.now().replace(microsecond=0))  # So we know when the report was sent
         email_context['power_peak'] = stats['max']
         email_context['power_peak_time'] = stats['max_time']
         email_context['power_current'] = stats['end']

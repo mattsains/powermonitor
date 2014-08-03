@@ -148,7 +148,7 @@ class Plotter:
             plt.legend().set_visible(False)
 
         plt.gca().yaxis.set_major_formatter(FormatStrFormatter('%d W'))
-        plt.grid(linestyle='-', linewidth=2, alpha=0.5, color='#E5E5E5')
+        plt.grid(linestyle='-', linewidth=2, alpha=0.5, color='#CCCCCC')
         
         minval, maxval = self.get_plot_y_limits(data_frame)
         plt.ylim([minval, maxval])

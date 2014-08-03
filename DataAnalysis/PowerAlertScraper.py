@@ -131,7 +131,7 @@ class PowerAlertScraper:
         pattern = re.compile('(?<=height=")[0-9]?[0-9]')   # Compile regex for the height of the current bar
         if self.__alert_string is not None:
             match = re.search(pattern, self.__alert_string)    # Find the regex
-            return int(match.end())   # Will only return one item...I hope!
+            return int(match.group())   # Will only return one item...I hope!
         else:
             return None
 
@@ -173,10 +173,12 @@ class PowerAlertScraper:
         builder = ReportBuilder()
         if stats['colour'] and stats['status']:  # if both of these are True
             if self.get_alert_colour() == 'red' and self.get_usage_status() == 'up':
-                builder.build_power_alert_report(power_alert_status='warning')
+                # builder.build_power_alert_report(power_alert_status='warning') #TODO: Uncomment
+                print 'warning'  #TODO: Remove
                 return 'warning'
             elif self.get_alert_colour() == 'black' and self.get_usage_status() == 'up':
-                builder.build_power_alert_report(power_alert_status='critical')
+                print 'critical'  #TODO: Remove
+                # builder.build_power_alert_report(power_alert_status='critical') #TODO: Uncomment
                 return 'critical'
             else:   # TODO: Should the user be notified if the colour is red but usage is down?
                 return 'stable'

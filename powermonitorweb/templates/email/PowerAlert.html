@@ -4,7 +4,7 @@
     <title>{{ title }}</title>
     <style type="text/css">
         #header { background-color: #2A5382; }
-        #header h1 { font: Arial; font-weight: bold; font-size: 15pt; color: #FFFFFF;}
+        #header h1 { font: Arial; font-size: 15pt; color: #FFFFFF;}
         p { font: Arial,Helvetica; size: 10pt; }
         body { background-color: #FFF; }
         #pageContainer {
@@ -28,12 +28,12 @@
 <body>
     <div id="pageContainer">
     <div id="header">
-        <h1>PowerMonitor - {{ title }}</h1>
+        <h1>Power Monitor - {{ title }}</h1>
     </div>
     <div id="section">
         <p>Hello {{ name }},</p>
 		
-        <p>Eskom have issued a <strong>{{ power_alert_status }}</strong> power alert. You're currently using {{ power_current }}W of electricity.</p>
+        <p>Eskom have issued a <strong>{{ power_alert_status }}</strong> power alert at {{ time }}. You are currently using {{ power_current }}W of electricity.</p>
         <p>Your peak usage over the last hour was <span style="color: #F00;">{{ power_peak }}W</span></p>
         
         <p>Here's a graph of your usage history:</p>
@@ -49,7 +49,7 @@
         </ul>
     </div>
         <div id="footer">
-            Copyright {{ owner }} 2014 &copy;
+            Copyright EcoBerry 2014 &copy;
         </div>
     </div>
 </body>
