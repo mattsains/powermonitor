@@ -2,7 +2,8 @@
 from __future__ import division
 from GPIOInterface.powermonitor import PowerMonitor
 from Database.DBConnect import DbConnection
-import time
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 pw=PowerMonitor()
 database=DbConnection()
@@ -19,7 +20,7 @@ if list(rowcount)[0][0] > 0:
         database.execute_query('INSERT INTO powermonitorweb_readings(time, reading) VALUES (DATE_ADD((SELECT MAX(time) \
                                 FROM powermonitorweb_readings as new_time), INTERVAL 1 MINUTE),0);')
         last_time=database.execute_query('select max(time) from powermonitorweb_readings;')
-        if list(last_time)[0][0] >= time.time():
+        if list(last_time)[0][0] >= datetime.now():
             break;
 
 print("starting to collect data.")
@@ -35,8 +36,8 @@ while True:
         
         readings=[]
         #Save to the database every minute
-        stop_time=time.time()+60
-        while time.time() < stop_time:
+        stop_time=datetime.now()+relativedelta(seconds=60)
+        while datetime.now() < stop_time:
             readings.append(pw.read_watts())
         average=sum(readings)/len(readings)
         if (average<0):
