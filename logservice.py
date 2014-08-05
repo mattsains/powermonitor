@@ -13,14 +13,20 @@ database=DbConnection()
 # database.execute_non_query("INSERT INTO powermonitorweb_readings(reading) VALUES (0)")
 
 rowcount = database.execute_query("select count(*) from powermonitorweb_readings;")
-if list(rowcount)[0][0] < 0:
-    database.execute_query('INSERT INTO powermonitorweb_readings(time, reading) VALUES (DATE_ADD((SELECT MAX(time) \
-                           FROM powermonitorweb_readings as new_time), INTERVAL 1 SECOND),0);')
+if list(rowcount)[0][0] > 0:
+    print("Recovering from power failure")
+    while True:
+        database.execute_query('INSERT INTO powermonitorweb_readings(time, reading) VALUES (DATE_ADD((SELECT MAX(time) \
+                                FROM powermonitorweb_readings as new_time), INTERVAL 1 MINUTE),0);')
+        last_time=database.execute_query('select max(time) from powermonitorweb_readings;')
+        if list(last_time)[0][0] >= time.time():
+            break;
 
+print("starting to collect data.")
 while True:
     response=pw.handshake()
     while (response!=False):
-        if response["NO_VOLTAGE"] :
+        if response["NO_VOLTAGE"]:
             #Let the web interface know about the lack of voltage signal
             database.execute_non_query("UPDATE powermonitor_configuration SET value=1 WHERE field='no_voltage'")
         if response["OVER_CURRENT"]:
