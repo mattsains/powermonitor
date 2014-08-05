@@ -104,6 +104,10 @@ ecoberry.ajax.createFieldFiller = function(/* names, of, fields */)
 				//trigger possible onchange events for dropdown
 				$("#id_" + args[i]).change();
 			}
+		    else if($("#id_" + args[i]).is("div"))
+			{
+			   $("#id_" + args[i]).text(json.fields[args[i]]);
+			}
 		    else			                         //anything else  
 			$("#id_" + args[i]).val(json.fields[args[i]]);			
 		}

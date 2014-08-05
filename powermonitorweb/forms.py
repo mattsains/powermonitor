@@ -160,9 +160,9 @@ class AlertTypeForm(forms.ModelForm):
 
         for a in Alert.objects.all():
             if a.id in enabled_choices:
-                choices.append((a.id, a.alert_description))
+                choices.append((a.id, a.alert_name))
             else:
-                remainder.append((a.id, a.alert_description))
+                remainder.append((a.id, a.alert_name))
 
         choices = choices + remainder
 

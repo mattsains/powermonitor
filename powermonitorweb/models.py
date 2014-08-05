@@ -17,11 +17,11 @@ class Alert(models.Model):
     """
     # UserAlerts must be defined with quotes because the class is only defined after this class
     users = models.ManyToManyField(User, through='UserAlerts')
+    alert_name = models.CharField(max_length=128)
     alert_description = models.CharField(max_length=255)
 
     def __unicode__(self):
         return self.alert_description
-
 
 class UserAlerts(models.Model):
     """

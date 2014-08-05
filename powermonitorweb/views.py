@@ -158,7 +158,6 @@ def post_to_socialmedia(request):
         context
     )
 
-
 @login_required()
 def manage_alerts(request):
     context = RequestContext(request)
@@ -173,14 +172,13 @@ def manage_alerts(request):
         if datadict.get('identifier') == 'id_report_type_change':
             #User has clicked on a different user, so update the form
             myalert = user_alerts.filter(alert_id=datadict.get('alert_description'))
-            if len(myalert) == 1:
-                JSONdata = serializers.serialize('json', myalert, fields=('alert_description'))
-            else:
-                pass
-                # send blank fields to override values as a reset mechanism
+            JSONdata = serializers.serialize('json', myalert, fields=('alert_description'))
             print (JSONdata)
-
             JSONdata = createmessage(True, 'Report Changes Saved', 'All changes to this report have been saved')
+        elif datadict.get('identifier') == 'enable_alert_click':
+            pass
+        elif datadict.get('identifier') == 'disable_alert_click':
+            pass
         else:
             JSONdata = '[{}]'
 

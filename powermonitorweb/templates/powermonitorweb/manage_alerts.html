@@ -4,6 +4,7 @@
 
 {% block header %}Manage Your Daily Events{% endblock %}
 {% block main %}
+<script type="text/javascript" src="{% static '/static/powermonitorweb/scripts/manage_alerts.js' %}" ></script>
 	{% if failed %}
     <strong>Something went wrong saving your report profile.</strong>
     {% else %}
@@ -14,18 +15,25 @@
         <div class="panel-heading"><h3>Manage Alerts</h3></div>
         <form id="manage_reports_form" class="panel-body fillparenttarget" method="post" action="/powermonitorweb/manage_reports/" enctype="multipart/form-data">
             {% csrf_token %}
-            <div class="pull-left col-xs-6 fillparent">
+
+<div class="pull-left col-xs-6 fillparent">
                 <div class="panel panel-primary listlayout">
                     <div class="panel-heading"><h2>Alerts</h2></div>
                     <p class="panel-body">{{ alert_type_form.alert_type }}</p>
-                    <div>
-                        <input class="btn btn-success" type="button" id="enable_report" name="enable" value="Enable" />
-                        <input class="btn btn-danger" type="button" id="disable_report" name="disable" value="Disable" />
+                </div>
+            </div>
+
+            <div class="pull-left col-xs-6 fillparent">
+                <div class="panel panel-primary listlayout" id="display">
+                    <div class="panel-heading"><h2>Selected Alert</h2>
+                    </div> <div id="id_alert_description" class="well"></div>
+                    <div class= "buttons">
+                        <input class="btn btn-success" type="button" id="enable_alert" name="enable" value="Enable" />
+                        <input class="btn btn-danger" type="button" id="disable_alert" name="disable" value="Disable" />
                     </div>
                 </div>
 
             </div>
-
         </form>
     </div>
     {% endif %}
