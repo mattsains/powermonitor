@@ -97,8 +97,8 @@ class ReportBuilder():
         stats = None
         try:
             frame = self._collector.collect_period(period_start=report_begin, period_end=report_end)
-            self._plotter.plot_single_frame(data_frame=frame, title='Power Usage', y_label='Usage (kW)',
-                                            x_label='Time', file_name='usage_report.svg')
+            self._plotter.plot_single_frame(data_frame=frame, title='Power Usage', y_label='Watts',
+                                            file_name='usage_report.svg')
             stats = self._usage_stats.get_frame_stats(data_frame=frame)
             del frame
         except:
@@ -112,7 +112,7 @@ class ReportBuilder():
         email_context['image_url'] = 'cid:graph'
         email_context['reporting_url'] = reverse('powermonitorweb:graphs')
 
-        user = User.objects.get(id=2)
+        user = User.objects.get(id=2)  # TODO: Remove and add user back to parameters
         email_context['name'] = user.first_name
 
         mail = self._mailer.create_multipart_mail(template_name='UsageReport', email_context=email_context,
