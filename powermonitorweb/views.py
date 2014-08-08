@@ -15,7 +15,7 @@ from powermonitorweb.forms import HouseholdSetupUserForm, SocialMediaAccountForm
 from powermonitorweb.models import Report, ElectricityType, User, UserReports
 from powermonitorweb.utils import createmessage
 # requirements for graphing
-from DataAnalysis.Forecasting import PowerForecasting as pf
+from DataAnalysis.Stats import PowerForecasting as forecast
 from DataAnalysis.Plotting import Plotter as plt
 from DataAnalysis.DataFrameCollector import DataFrameCollector as dfc
 from DataAnalysis.PowerAlertScraper import PowerAlertScraper as PAS
@@ -23,7 +23,6 @@ from DataAnalysis.Resampling import Resampling
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import os
-import math
 
 @login_required()
 def index(request):
@@ -537,7 +536,7 @@ def graphs(request):
     file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'powermonitorweb', 'static', 'powermonitorweb',
                              'images', 'graphs', '')  # new unix friendly flavour! Forgot the trailing slash...
     graph_name = 'null'
-
+    frame = None
     if request.is_ajax():   # The user has selected a different graph
         datadict = request.POST
         # generate a new graph based on the user's selection
@@ -567,8 +566,12 @@ def graphs(request):
             # Generating a prediction graph works a little differently
             #TODO: do this
             pass
-        
-        points=Resampling().buildArrayTimeReading(frame)  #TODO: Some error handling needs to be done here
+
+        points = None
+        try:
+            points = Resampling().buildArrayTimeReading(frame)
+        except:
+            pass  # Will sending empty points to the graph give an error?
             
         json_graph="["+",".join(map(lambda x: "["+str(Resampling().timestamp_to_milliseconds(x[0]))+","+str(x[1])+"]", points))+"]"
         

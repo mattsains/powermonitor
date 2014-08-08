@@ -7,6 +7,13 @@ https://docs.djangoproject.com/en/1.6/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.6/ref/settings/
 """
+import pymysql
+pymysql.install_as_MySQLdb()  # If we plan on using uwsgi to deploy the site. Apache might need it too
+
+# Linux is a little snobbish, and does not recognize svg as a mime type, this seems to rectify the issues
+# Django dev server now seems to serve svg files correctly from Linux.
+import mimetypes
+mimetypes.add_type("image/svg+xml", ".svg", True)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
