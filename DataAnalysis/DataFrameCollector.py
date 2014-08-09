@@ -61,7 +61,7 @@ class DataFrameCollector():
         db = DbConnection()
         # db.connect()    # make sure the database connection is open
         # Damn you MariaDB! Why you no work same as MySQL?! This is a little cleaner though
-        sql = "SELECT CONVERT_TZ(time, @@session.time_zone, '+00:00') AS 'time', reading FROM powermonitor.powermonitorweb_readings WHERE time >= %s and time <= %s;"
+        sql = "SELECT time, reading FROM powermonitor.powermonitorweb_readings WHERE time >= %s and time <= %s;"
         params = (self.__start.strftime(self.__format), self.__end.strftime(self.__format))
         result = db.execute_query(statement=sql, data=params)
         db.disconnect()
