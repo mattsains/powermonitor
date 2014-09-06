@@ -218,7 +218,7 @@ ul#bar
     list-style-type: none;
     margin: 0px;
     margin-left: 14px;
-    padding: 0px;    
+    padding: 0px;
 }
 
 #bar li
@@ -241,10 +241,17 @@ ul#bar
 	clear: both;
 }
 
-#bar li a:link, #bar li a:visited {
+#bar li a:link, 
+#bar li a:visited {
 	display:block;
 	text-decoration:none;
 	margin:0;
+}
+
+#bar li a:hover {
+    color: #fff;
+    text-shadow: 2px 2px 3px rgb(68, 106, 149);
+    
 }
 
 #bar li ul {
@@ -464,7 +471,11 @@ h1
     margin: 0px;
     font-size: 40pt;
     color: white;
-/* font-family: "Courier New";*/
+}
+
+a#homepage-link
+{
+    text-decoration: none;
 }
 
 #username

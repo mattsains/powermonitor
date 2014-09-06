@@ -15,18 +15,8 @@
         <div id="content_wrapper">
             <div id="main">
                 <div id="imageholder">
-                    <a href="/powermonitorweb/"><h1>Power Monitor</h1></a>
+                    <a href="/powermonitorweb/" id="homepage-link"><h1>Power Monitor</h1></a>
                     <ul id="bar">
-                        {% if user.is_superuser %}
-                        <li class="pull-left">
-                            <a href="/powermonitorweb/manage_users/">
-                                <div class="pull-left">
-                                    <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/users_icon.svg' %}" />
-                                </div>
-                                <div class="pull-left bar-heading">User</div>
-                            </a>
-                        </li>
-                        {% endif %}
                         <li class="pull-left">
                             <a href="/powermonitorweb/graphs/">
                                 <div class="pull-left">
@@ -36,10 +26,12 @@
                             </a>
                         </li>
                         <li class="pull-left">
-                            <div class="pull-left">
-                                <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/food_icon.svg' %}" />
-                            </div>
-                            <div class="pull-left bar-heading">Food</div>
+                            <a href="#">
+                                <div class="pull-left">
+                                    <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/food_icon.svg' %}" />
+                                </div>
+                                <div class="pull-left bar-heading">Food</div>
+                            </a>
                         </li>
                         <li class="pull-left">
                             <a href="/powermonitorweb/manage_alerts/">
@@ -65,6 +57,16 @@
                                 <div class="pull-left bar-heading">Social</div>
                             </a>
                         </li>
+                        {% if user.is_superuser %}
+                        <li class="pull-left">
+                            <a href="/powermonitorweb/manage_users/">
+                                <div class="pull-left">
+                                    <img class="icon" alt=""  src="{% static '/static/powermonitorweb/images/users_icon.svg' %}" />
+                                </div>
+                                <div class="pull-left bar-heading">Users</div>
+                            </a>
+                        </li>
+                        {% endif %}
                     </ul>
                     <img id="lizard" alt="monitor lizard"  src="{% static '/static/powermonitorweb/images/MonitorLizard2.svg' %}" />
                 </div>
