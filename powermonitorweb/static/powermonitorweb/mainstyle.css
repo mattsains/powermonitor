@@ -592,8 +592,24 @@ div.metric h4 {
 	margin: 0;
 }
 
+div.metric div.panel-body {
+    height: calc(100% - 40px);
+}
+
+div.center-helper
+{
+    height: 100%;
+    display: inline-block;
+    vertical-align: middle;
+}
+
 div#eskom_image {
 	text-align: center;
+    height: 100%;
+}
+
+div#eskom_image img {
+    vertical-align: middle;
 }
 
 div#clearfloat { clear: both; }
