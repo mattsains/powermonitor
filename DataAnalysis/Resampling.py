@@ -267,13 +267,11 @@ class Resampling:
             freq = "%ds" % freqConstant
             DataFrame_weighted = self.downsample_data_frame(data_frame=DataFrame_in,freq=freq,method="mean")
         ArrayList = []
-
-        for x in range(len(DataFrame_weighted)):
-            cur = DataFrame_weighted.ix[x]
-            curDate = cur.name
-            curReading = cur.iloc[1]
-            if (not math.isnan(curReading)):
-                curReading = np.round(curReading,2)
-                ArrayList.append((curDate,curReading))
+        
+        for date, reading in DataFrame_weighted.iterrows():
+            reading=reading.reading
+            if (not math.isnan(reading)):
+                reading = np.round(reading,2)
+                ArrayList.append((date,reading))
 
         return ArrayList

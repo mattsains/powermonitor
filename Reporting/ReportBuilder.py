@@ -119,10 +119,30 @@ class ReportBuilder():
         mail = self._mailer.create_multipart_mail(template_name='UsageReport', email_context=email_context,
                                            subject=email_context['title'], recipients=[str(user.email), ],
                                            images=tuple(images))
-        print mail
+
         self._mailer.send_emails(self._mailer.get_mail_list())
 
 
     def send_usage_alert(self, user, alert_event):  # TODO evaluate parameter choice here
         """Send an alert of electricity consumption"""
         # needs: title name power_peak power_average image_url reporting_url
+        email_context = {}
+        images = []
+        stats = None
+        try:
+            stats = self._usage_stats.get_stats('hour',
+                                                str(datetime.now().replace(microsecond=0) - relativedelta(hours=1)),
+                                                str(datetime.now().replace(microsecond=0)))
+        except:
+            raise StandardError('Could not collect usage stats')
+
+        email_context['title'] = 'Usage Alert'
+        email_context['power_sum'] = stats['total_per_hour']
+        email_context['power_average'] = stats['average']
+        #email_context['image_url'] = 'cid:graph'  # Not sure if we need to add images to this report
+        email_context['reporting_url'] = reverse('powermonitor:graph')
+
+        email_context['name'] = user.first_name
+        mail = self._mailer.create_multipart_mail(template_name='UsageAlert', email_context=email_context,
+                                                  subject=email_context['title'], recipients=[str(user.email),],)
+        self._mailer.send_emails(self._mailer.get_mail_list())
