@@ -30,7 +30,7 @@ class Scraper():
         pattern = re.compile(regex)
         url_string = self.__url.read().decode(encoding='UTF-8')
         match = re.search(pattern, url_string)
-        if len(match) == 0:
+        if len(str(match)) == 0:
             return None
         else:
             return match
