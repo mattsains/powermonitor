@@ -35,19 +35,19 @@ class ReportBuilder():
         self._usage_stats = UsageStats()
         self._collector = DataFrameCollector()
         self._ip = socket.gethostbyname(socket.gethostname())
+        self.file_path = os.path.join(settings.BASE_DIR,'powermonitorweb', 'media', 'graphs', '')
 
     def build_power_alert_report(self, power_alert_status):
         """Send an Eskom power alert to a user"""
         # needs: title name power_alert_status power_peak reporting_url image_url tips[]
         stats = None
-        file_path = os.path.join(settings.BASE_DIR,'powermonitorweb', 'media', 'graphs', '')
         try:
             frame = self._collector.collect_period(period_type='hour',
                                                    period_start=str(datetime.now().replace(microsecond=0) - relativedelta(hours=1)), #TODO: Change this back to str(datetime.now().replace(microseconds=0) - relativedelta(hours=1))
                                                    period_length=1)
             stats = self._usage_stats.get_frame_stats(frame)
             self._plotter.plot_single_frame(data_frame=frame, title='Usage for last hour', y_label='Watts',
-                                            file_name=file_path + 'last_hour.png')
+                                            file_name=self.file_path + 'last_hour.png')
             del frame
         except:
             raise StandardError('Could not collect data')
@@ -70,7 +70,7 @@ class ReportBuilder():
         email_context['domain'] = self._ip
         email_context['graph_url'] = 'cid:graph'
         email_context['tips'] = AlertTip.objects.filter(id=1)  # TODO: Still need to work out how to query the reporting tips
-        images.append(('graph', file_path + 'last_hour.png'))
+        images.append(('graph', self.file_path + 'last_hour.png'))
 
         # build a report for each user
         mail_list = []
@@ -89,7 +89,7 @@ class ReportBuilder():
                     raise StandardError('Could not create email for user %s' % user.first_name)
         self._mailer.send_emails(self._mailer.get_mail_list())  # send all the emails at once
 
-    def build_usage_report(self, period_type, report_begin, report_end):
+    def build_usage_report(self, user, period_type, report_begin, report_end):
         """Send a report of electricity consumption"""
         # needs: title name report_period report_begin report_end power_sum power_average image_url reporting_url
         email_context = {}
@@ -112,9 +112,10 @@ class ReportBuilder():
         email_context['image_url'] = 'cid:graph'
         email_context['reporting_url'] = reverse('powermonitorweb:graphs')
 
-        user = User.objects.get(id=2)  # TODO: Remove and add user back to parameters
+        # user = User.objects.get(id=2)  # TODO: Remove and add user back to parameters
         email_context['name'] = user.first_name
 
+        images.append(('graph', self.file_path + 'usage_report.svg'))
         mail = self._mailer.create_multipart_mail(template_name='UsageReport', email_context=email_context,
                                            subject=email_context['title'], recipients=[str(user.email), ],
                                            images=tuple(images))
