@@ -12,7 +12,7 @@ from django.core.urlresolvers import reverse
 from powermonitorweb.forms import UserForm, SelectGraphPeriodForm
 from powermonitorweb.forms import HouseholdSetupUserForm, SocialMediaAccountForm, ReportTypeForm, ReportDetailsForm, \
     ManageUsersForm, UserListForm, ProfileForm, UserAlerts, AlertTypeForm, AlertDetailsForm
-from powermonitorweb.models import Report, ElectricityType, User, UserReports
+from powermonitorweb.models import Report, ElectricityType, User, UserReports, Alert, UserAlerts
 from powermonitorweb.utils import createmessage
 # requirements for graphing
 from DataAnalysis.Stats import PowerForecasting as forecast
@@ -164,19 +164,29 @@ def manage_alerts(request):
 
     user = request.user
     user_alerts = UserAlerts.objects.all().filter(user_id=user.id)
+    alerts = Alert.objects.all();
     user_alert_details = None
     if request.is_ajax():
         datadict = request.POST
-        if datadict.get('identifier') == 'id_report_type_change':
-            #User has clicked on a different user, so update the form
-            myalert = user_alerts.filter(alert_id=datadict.get('alert_description'))
-            JSONdata = serializers.serialize('json', myalert, fields=('alert_description'))
-            print (JSONdata)
-            JSONdata = createmessage(True, 'Report Changes Saved', 'All changes to this report have been saved')
+
+        if datadict.get('identifier') == 'id_alert_type_change':
+
+            myalert = alerts.filter(id=datadict.get('alert_type'))
+            print myalert
+            if len(myalert) == 1:
+                JSONdata = serializers.serialize('json', myalert, fields=('alert_description',))
+            else:
+                # send blank fields to override values as a reset mechanism
+                JSONdata = '{ "fields":{"alert_description" : ""}}'
         elif datadict.get('identifier') == 'enable_alert_click':
-            pass
+            rec_alert_id = Alert.objects.get(id=int(datadict.get('alert_type')))
+            alert_details_model = UserAlerts(user_id=user, alert_id= rec_alert_id);
+            alert_details_model.save()
+            JSONdata = createmessage(True, 'Alert Changes Saved', 'Your alert has been activated')
         elif datadict.get('identifier') == 'disable_alert_click':
-            pass
+            alert_to_delete = user_alerts.filter(alert_id=Alert.objects.get(id=datadict.get('alert_type')))
+            alert_to_delete.delete()
+            JSONdata = createmessage(True, 'Alert Disabled', 'The alert was disabled')
         else:
             JSONdata = '[{}]'
 
@@ -219,7 +229,6 @@ def manage_reports(request):
                 # send blank fields to override values as a reset mechanism
                 JSONdata = '{ "fields":{"occurrence_type" : "", "datetime" : "", "report_daily": "",' \
                            '"report_weekly": "", "report_monthly": ""}}'
-            print (JSONdata)
         elif datadict.get('identifier') == 'enable_report_click':
             report_type = Report.objects.get(id=int(datadict.get('report_type')))
             occurrence_type = int(datadict.get('occurrence_type'))
