@@ -166,7 +166,6 @@ def manage_alerts(request):
     user = request.user
     user_alerts = UserAlerts.objects.all().filter(user_id=user.id)
     user_alert_details = None
-
     if request.is_ajax():
         datadict = request.POST
         if datadict.get('identifier') == 'id_report_type_change':
