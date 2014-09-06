@@ -36,7 +36,6 @@ class Resampling:
         # Ask kevin about checking type to dataFrame
         # if (type(dateFrameIn) == pd.DateFrame):
 
-        print data_frame
         if data_frame is None:
             raise ValueError('Invalid DateFrame, Please pass DateFrame with actually data')
         if not (closed_side == "left" or closed_side == "right"):
