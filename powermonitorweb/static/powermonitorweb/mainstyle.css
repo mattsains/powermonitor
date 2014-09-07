@@ -5,7 +5,7 @@
     position: absolute;
     right: 0px;
     bottom: 0px;
-    height: 200px;
+    height: 165px;
 }
 
 #graphholder
@@ -248,7 +248,8 @@ ul#bar
 	margin:0;
 }
 
-#bar li a:hover {
+#bar li a:hover,
+#bar li a:active {
     color: #fff;
     text-shadow: 2px 2px 3px rgb(68, 106, 149);
     
@@ -328,6 +329,11 @@ h2
 .listform label+*
 {
     width: 55%;
+}
+
+.listform input[type="radio"]
+{
+    width: 20px;
 }
 
 .listform ul.errorlist

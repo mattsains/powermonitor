@@ -1,26 +1,29 @@
 {% extends 'powermonitorweb/login_base.html' %}
 {% block title %}Setup Household Profile{% endblock %}
 
+{% block header %}Setup Household Profile{% endblock %}
 {% block main %}
-    <h1>Setup the Household Profile</h1>
-
+<div class="panel panel-default">
+    <div class="panel-heading"><h3>Setup Household Profile</h3></div>
     {% if setup %}
-    <p><strong>Setup complete!</strong></p>
-    <a href="/powermonitorweb/">Return to home page</a>
+        <div class="panel-body">
+            <div class="alert alert-info"><strong>Setup complete!</strong></div>
+            <a href="/powermonitorweb/">Return to home page</a>
+        </div>
     {% else %}
-    <!--<p><strong>Register Here!</strong></p>-->
-        <form id="household_form" method="post" action="/powermonitorweb/setup_household/" enctype="multipart/form-data">
+        <form id="household_form" class="panel-body" method="post" action="/powermonitorweb/setup_household/" enctype="multipart/form-data">
             {% csrf_token %}
-            <div class="formlayout">
-            {{ setup_homeowner_form.as_p }}
-            <p>
-                <label>Electricity Type:</label>
-                <input type="radio" name="electricity_type" value="prepaid" required />Prepaid <br/>
-                <input type="radio" name="electricity_type" value="postpaid" required />Postpaid
-            </p>
+            <div class="listform">
+                {{ setup_homeowner_form.as_p }}
+                <p>
+                    <label>Electricity Type:</label>
+                    <input type="radio" name="electricity_type" value="prepaid" required />Prepaid <br/>
+                    <input type="radio" name="electricity_type" value="postpaid" required />Postpaid
+                </p>
+                <p>
+                    <input class="btn btn-success form-right" type="submit" name="submit" value="Add User" class="button"/>
+                </p>
             </div>
-            <input type="submit" name="submit" value="Add User" class="button"/>
-
         </form>
     {% endif %}
 {% endblock %}
