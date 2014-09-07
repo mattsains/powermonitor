@@ -60,7 +60,6 @@ class SocialMedia():
 
     def three_legged_auth_part1_getRequestToken(self):
         """"""
-        consumer = oauth.Consumer(self.consumer_key, self.consumer_secret)
         # Step 1: Get a request token. This is a temporary token that is used for
         # having the user authorize an access token and to sign the request to obtain
         # said access token.
@@ -79,30 +78,36 @@ class SocialMedia():
         # we need to figure out how to go to the link, you guys need to sort this out
         print "Go to the following link in your browser:"
         print "%s?oauth_token=%s" % (self.authorize_url, request_token['oauth_token'])
-        print
 
     def three_legged_auth_part3_accept_pin(self):
         # After the user has granted access to you, the consumer, the provider will
         # redirect you to whatever URL you have told them to redirect to. You can
         # usually define this in the oauth_callback argument as well.
+
         # Okay guys, so here we need to figure out how to accept the pin that they have received
         # This will probably via our website
         accepted = 'n'
         while accepted.lower() == 'n':
             accepted = raw_input('Have you authorized me? (y/n) ')
         oauth_verifier = raw_input('What is the PIN? ')
+        return ""
 
+    def three_legged_auth_part4_get_access_token(self, request_token,oauth_verifier):
         # Step 3: Once the consumer has redirected the user back to the oauth_callback
         # URL you can request the access token the user has approved. You use the
         # request token to sign this request. After this is done you throw away the
         # request token and use the access token returned. You should store this
         # access token somewhere safe, like a database, for future use.
+
+        consumer = oauth.Consumer(self.consumer_key, self.consumer_secret)
         token = oauth.Token(request_token['oauth_token'],request_token['oauth_token_secret'])
         token.set_verifier(oauth_verifier) # got this pin from the user!
         client = oauth.Client(consumer, token)
 
         resp, content = client.request(self.access_token_url, "POST")
         access_token = dict(urlparse.parse_qsl(content))
+        return access_token
+
 
 
 
