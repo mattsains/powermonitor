@@ -17,7 +17,7 @@
                 <div class="panel panel-primary listlayout">
                     <div class="panel-heading"><h3>Select Account</h3></div>
                     <p class="panel-body">
-                        <select name="account_select" size=15    multiple required>
+                        <select name="account_select" size=15  class="form-control"   multiple required>
                             {% for account in user_accounts %}
                             <option value="{{ account.account_type }}">{{ account.account_type }}</option>
                             {% endfor %}
