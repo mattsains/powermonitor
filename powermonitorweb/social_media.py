@@ -112,6 +112,20 @@ class SocialMedia():
         access_token = dict(urlparse.parse_qsl(content))
         return access_token
 
+    def make_a_tweet(self, access_token):
+        """
+        hopefully make a tweet!
+        :return:
+        """
+        pass
+        # I think this is done via url generation, I'm not sure
+
+        # example
+        # status=Maybe%20he%27ll%20finally%20find%20his%20keys.%20%23peterfalk&trim_user=true&include_entities=true
+        # So i really definitely think you create a link from the https://api.twitter.com/1/statuses/update.json
+        # add all the codes and authentication secrets and keys with the token for his to post, can add hash tags!
+
+
 
 
 
