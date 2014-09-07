@@ -44,7 +44,9 @@ class SocialMedia():
         req.sign_request(signature_method, consumer, token)
 
     def using_the_client(self):
-        """"""
+        """ We need the client access as part of the connection process for the pin, also provides
+         us with the response that allows us to know that connection with twitter was successful
+         The content part allows us to get a request token to intiatiate the three legged oauth"""
         # Create your consumer with the proper key/secret.
         consumer = oauth.Consumer(key=self.consumerKey, secret=self.consumerSecret)
 
@@ -58,8 +60,9 @@ class SocialMedia():
         print content #testing purposes
         return resp, content
 
-    def three_legged_auth_part1_getRequestToken(self):
-        """"""
+    def three_legged_auth_part1_getrequesttoken(self):
+        """ This basically ensures that we did receive a access token, a success  would mean the response is 200
+        then we can get a request token"""
         # Step 1: Get a request token. This is a temporary token that is used for
         # having the user authorize an access token and to sign the request to obtain
         # said access token.
@@ -86,13 +89,14 @@ class SocialMedia():
 
         # Okay guys, so here we need to figure out how to accept the pin that they have received
         # This will probably via our website
+        # we will probably have to create another temporary link that will accept this pin
         accepted = 'n'
         while accepted.lower() == 'n':
             accepted = raw_input('Have you authorized me? (y/n) ')
         oauth_verifier = raw_input('What is the PIN? ')
-        return ""
+        return oauth_verifier
 
-    def three_legged_auth_part4_get_access_token(self, request_token,oauth_verifier):
+    def three_legged_auth_part4_get_access_token(self, request_token, oauth_verifier):
         # Step 3: Once the consumer has redirected the user back to the oauth_callback
         # URL you can request the access token the user has approved. You use the
         # request token to sign this request. After this is done you throw away the
@@ -100,7 +104,7 @@ class SocialMedia():
         # access token somewhere safe, like a database, for future use.
 
         consumer = oauth.Consumer(self.consumer_key, self.consumer_secret)
-        token = oauth.Token(request_token['oauth_token'],request_token['oauth_token_secret'])
+        token = oauth.Token(request_token['oauth_token'], request_token['oauth_token_secret'])
         token.set_verifier(oauth_verifier) # got this pin from the user!
         client = oauth.Client(consumer, token)
 
