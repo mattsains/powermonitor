@@ -116,7 +116,7 @@ class ReportTypeForm(forms.ModelForm):
         choices = choices + remainder
 
         self.fields['report_type'] = forms.ChoiceField(
-            widget=widgets.EnabledSelect(enabled_choices, attrs={'size': '15', 'required': 'true'}),
+            widget=widgets.EnabledSelect(enabled_choices, attrs={'size': '15', 'required': 'true', 'class':'form-control'}),
             choices=choices, label='Reports')
 
 
@@ -167,7 +167,7 @@ class AlertTypeForm(forms.ModelForm):
         choices = choices + remainder
 
         self.fields['alert_type'] = forms.ChoiceField(
-            widget=widgets.EnabledSelect(enabled_choices, attrs={'size': '15', 'required': 'true'}),
+            widget=widgets.EnabledSelect(enabled_choices, attrs={'size': '15', 'required': 'true','class':'form-control'}),
             choices=choices, label='Alerts')
 
 
@@ -190,7 +190,7 @@ class UserListForm(forms.Form):
     def __init__(self, *args, **kwargs):
         users = kwargs.pop('user_list')
         super(UserListForm, self).__init__(*args, **kwargs)
-        self.fields['users'] = forms.ChoiceField(widget=forms.Select(attrs={'size': '11', 'required': 'true'}),
+        self.fields['users'] = forms.ChoiceField(widget=forms.Select(attrs={'size': '11', 'required': 'true','class':'form-control'}),
                                                  choices=users)
 
 
