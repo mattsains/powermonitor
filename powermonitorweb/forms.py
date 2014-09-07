@@ -135,7 +135,7 @@ class ReportDetailsForm(forms.ModelForm):
         user = kwargs.pop('user')   # Not sure what you wanted to do with this. I added this to fix the errors I was getting
         super(ReportDetailsForm, self).__init__(*args, **kwargs)
 
-        #generated fields work for everything else but this needs to be custom
+        # generated fields work for everything else but this needs to be custom
         self.fields['occurrence_type'] = forms.ChoiceField(widget=forms.Select,
                                                            choices=[('1', 'recurring'), ('0', 'once-off')])
 

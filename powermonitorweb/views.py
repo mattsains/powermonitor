@@ -180,7 +180,7 @@ def manage_alerts(request):
                 JSONdata = '{ "fields":{"alert_description" : ""}}'
         elif datadict.get('identifier') == 'enable_alert_click':
             rec_alert_id = Alert.objects.get(id=int(datadict.get('alert_type')))
-            alert_details_model = UserAlerts(user_id=user, alert_id= rec_alert_id);
+            alert_details_model = UserAlerts(user_id=user, alert_id=rec_alert_id);
             alert_details_model.save()
             JSONdata = createmessage(True, 'Alert Changes Saved', 'Your alert has been activated')
         elif datadict.get('identifier') == 'disable_alert_click':
