@@ -18,7 +18,7 @@ from powermonitorweb.utils import createmessage
 from DataAnalysis.Stats import PowerForecasting as forecast
 from DataAnalysis.Plotting import Plotter as plt
 from DataAnalysis.DataFrameCollector import DataFrameCollector as dfc
-from DataAnalysis.PowerAlertScraper import PowerAlertScraper as PAS
+from Externals.PowerAlertScraper import PowerAlertScraper as PAS
 from DataAnalysis.Resampling import Resampling
 from datetime import datetime
 from dateutil.relativedelta import relativedelta

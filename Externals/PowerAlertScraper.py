@@ -1,7 +1,7 @@
 """
 PowerAlertScraper: Connect to www.poweralert.co.za, and collect data to use for alerts and analysis.
 """
-import DataAnalysis.WebScraper
+import Externals.WebScraper
 import re
 from Decorators import Singleton
 from Database.DBConnect import DbConnection as db
@@ -23,7 +23,7 @@ class PowerAlertScraper:
         self.__alert_string = None
         self.__usage = None
         self.__usage_string = None
-        self.__scraper = DataAnalysis.WebScraper.Scraper()
+        self.__scraper = Externals.WebScraper.Scraper()
         self.__scraper.open_page('http://www.poweralert.co.za/poweralert5/index.php')
         self.__current_readings = {'level': 0, 'colour': 'green', 'status': 'down'}
         self.__db = db()
