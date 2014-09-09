@@ -49,20 +49,13 @@
                         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                         <h4 class="modal-title">Add User</h4>
                     </div>
-                    <form id="add_users_form" class="modal-body" method="post" action="/powermonitorweb/manage_users/" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <div class="miniform">
-                            {{ add_user_form.as_p }}
-                            <p><input type="submit" name="submit" class="btn btn-success form-right" value="Add User" /></p>
-                        </div>
-                    </form>
+                    <div id="add_form_body" class="modal-body">
+                        <!-- the form is added here with ajax -->
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     {% endif %}
-    {% endif %}
-    {% if user_added %}
-    <script>alert('User Added!');</script>
     {% endif %}
 {% endblock %}

@@ -80,7 +80,6 @@ body
     padding-right: 10px;
 }
 
-
 .miniform label+*
 {
     width: 50%;
@@ -96,6 +95,20 @@ body
     margin-left: 50%;
     padding-right: 10px;
     width: 50%;
+}
+
+.miniform ul.errorlist
+{
+    margin-left: calc(45% - 10px);
+}
+
+.miniform ul.errorlist li {
+  color: #a94442;
+  background-color: #f2dede;
+  display:block;
+  padding: 10px;
+  border: 1px solid #ebccd1;
+  border-radius: 4px;
 }
 
 .listlayout p
@@ -343,7 +356,7 @@ h2
     padding-left: 10px;
 }
 
-ul.errorlist li {
+.listform ul.errorlist li {
   color: #a94442;
   background-color: #f2dede;
   display:block;

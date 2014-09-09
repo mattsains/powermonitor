@@ -360,35 +360,46 @@ def manage_users(request):
         else:
             JSONdata = "[{}]"   # Give it an empty dictionary
         return HttpResponse(JSONdata.replace('[', '').replace(']', ''))  # clean and send data
+    else:
+        manage_users_form = ManageUsersForm()
+        user_list_form = UserListForm(user_list=user_list)
+        
+        return render_to_response(
+            'powermonitorweb/manage_users.html',
+            {
+                'manage_users_form': manage_users_form,
+                'user_list_form': user_list_form,
+            },
+            context
+        )
 
-    elif request.method == 'POST':
-        # otherwise we got a post request, so we must handle it
+# Ajax-loaded add user form:
+@login_required()
+@user_passes_test(lambda u: u.is_superuser)  # Only the homeowner can access this view
+def add_user(request):
+    context = RequestContext(request)
+    if request.method == 'POST':
+        # add user form was submitted
         # Save the add user data
         add_user_form = UserForm(data=request.POST)
         if add_user_form.is_valid():
             add_user_form.save()
-            user_added = True
-        else:
-            print add_user_form.errors
-            user_added = False
-        # These two are handled with Ajax, so ignore them
-        manage_users_form = ManageUsersForm()
-        users = User.objects.filter(is_superuser='0')   # refresh the user list for the new user
-        user_list = [(u.id, u.username) for u in users]
-        user_list_form = UserListForm(user_list=user_list)
+            return render_to_response(
+                'powermonitorweb/add_user.html',
+                {
+                    'user_added': True,
+                    'username': request.POST['username']
+                },
+                context
+            )
     else:
-        manage_users_form = ManageUsersForm()
-        user_list_form = UserListForm(user_list=user_list)
         add_user_form = UserForm()
-        user_added = False
-
+               
     return render_to_response(
-        'powermonitorweb/manage_users.html',
+        'powermonitorweb/add_user.html',
         {
-            'manage_users_form': manage_users_form,
-            'user_list_form': user_list_form,
             'add_user_form': add_user_form,
-            'user_added': user_added
+            'user_added': False
         },
         context
     )

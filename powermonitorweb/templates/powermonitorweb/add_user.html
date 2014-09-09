@@ -1,0 +1,15 @@
+{% if user_added %}
+<input type="hidden" id="added" value="true" />
+<div class="alert alert-success" role="alert">
+    <strong>User Added</strong>
+    {{ username }} was added
+</div>
+{% else %}
+<form id="add_users_form"  method="post" action="/powermonitorweb/manage_users/" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="miniform">
+        {{ add_user_form.as_p }}
+        <p><input type="submit" name="submit" class="btn btn-success form-right" value="Add User" /></p>
+    </div>
+</form>
+{% endif %}
