@@ -1,0 +1,11 @@
+[Unit]
+Description=PowerMonitor Startup Jobs
+After=network.target time-sync.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/startupjobs.py
+
+[Install]
+WantedBy=multi-user.target

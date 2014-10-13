@@ -1,0 +1,11 @@
+[Unit]
+Description=PowerMonitor Web Server
+After=network.target time-sync.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/powermonitorweb.server
+
+[Install]
+WantedBy=multi-user.target

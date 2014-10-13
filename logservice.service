@@ -1,0 +1,11 @@
+[Unit]
+Description=PowerMonitor logservice
+After=network.target time-sync.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/logservice.py
+
+[Install]
+WantedBy=multi-user.target
