@@ -17,6 +17,7 @@ class PowerAlertScraper:
     sql_select = "SELECT * FROM powermonitor.powermonitorweb_eskomstats where field=%s;"
     sql_insert = "INSERT INTO powermonitor.powermonitorweb_eskomstats(field, value) values(%s, %s);"
     sql_update = "UPDATE powermonitor.powermonitorweb_eskomstats SET value=%s where field=%s;"
+    page       = 'http://www.poweralert.co.za/poweralert5/index.php'
 
     def __init__(self):
         self.__alert = None
@@ -24,7 +25,7 @@ class PowerAlertScraper:
         self.__usage = None
         self.__usage_string = None
         self.__scraper = Externals.WebScraper.Scraper()
-        self.__scraper.open_page('http://www.poweralert.co.za/poweralert5/index.php')
+        self.__scraper.open_page(self.page)
         self.__current_readings = {'level': 0, 'colour': 'green', 'status': 'down'}
         self.__db = db()
         # self.renew_tags()
@@ -34,7 +35,7 @@ class PowerAlertScraper:
         Renew the alert tag and usage tags at the same time to reduce network usage
         """
         print 'Renewing tags'
-        bs = self.__scraper.get_beautifulsoup()
+        bs = self.__scraper.get_beautifulsoup(self.page)
         for td in bs.find_all('td', {'bgcolor': '#FEC5D5', 'align': 'center'}):
             for img in td.find_all('img'):
                 self.__alert = img  # A for loop had to be used because td.find_all is an iterable
@@ -173,12 +174,10 @@ class PowerAlertScraper:
         builder = ReportBuilder()
         if stats['colour'] and stats['status']:  # if both of these are True
             if self.get_alert_colour() == 'red' and self.get_usage_status() == 'up':
-                # builder.build_power_alert_report(power_alert_status='warning') #TODO: Uncomment
-                print 'warning'  #TODO: Remove
+                builder.build_power_alert_report(power_alert_status='warning') #TODO: Uncomment
                 return 'warning'
             elif self.get_alert_colour() == 'black' and self.get_usage_status() == 'up':
-                print 'critical'  #TODO: Remove
-                # builder.build_power_alert_report(power_alert_status='critical') #TODO: Uncomment
+                builder.build_power_alert_report(power_alert_status='critical') #TODO: Uncomment
                 return 'critical'
             else:   # TODO: Should the user be notified if the colour is red but usage is down?
                 return 'stable'
