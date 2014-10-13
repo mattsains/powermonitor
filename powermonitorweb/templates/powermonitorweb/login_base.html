@@ -1,29 +1,38 @@
-
 <!DOCTYPE html>
 {% load static %}
 <html>
-  <head lang="en">
-    <meta charset="UTF-8">
-    <title>
-        {% block title %}
-        {% endblock %}
-    </title>
     <head lang="en">
-    <meta charset="UTF-8">
-    <link href="{% static "/static/powermonitorweb/loginstyle.css" %}" rel="stylesheet" type="text/css" />
-  </head>
-  <body>
-    <div id="main">
-      <div id="imageholder">
-	<img alt="logo" src="{% static "/static/powermonitorweb/images/Attempt2.png" %}"></img>
-      </div>
-      <div id="container">
-
-          <div class="group">
-              {% block main %}
-              {% endblock %}
-          </div>
-      </div>
-    </div>
-  </body>
+        <meta charset="UTF-8">
+        <script type="text/javascript" src="{% static '/static/powermonitorweb/jquery.js' %}"></script>
+        <script type="text/javascript" src="{% static '/static/powermonitorweb/bootstrap.js' %}"></script>
+        <script type="text/javascript" src="{% static '/static/powermonitorweb/scripts.js' %}"></script>
+        <link rel="shortcut icon" type="image/png" href="{% static '/static/powermonitorweb/images/icon.png' %}"/>
+        <link rel="stylesheet" type="text/css" href="{% static '/static/powermonitorweb/plugins/jquery.datetimepicker.css' %}"/>
+        <link  rel="stylesheet" type="text/css" href="{% static '/static/powermonitorweb/mainstyle.css' %}"/>
+        <title>Power Monitor - {% block title %}Intelligent Power Monitoring{% endblock %}</title>
+    </head>
+    <body>
+        <div id="content_wrapper">
+            <div id="main">
+                <div id="imageholder">
+                    <a href="/powermonitorweb/" id="homepage-link"><h1>Power Monitor</h1></a>
+                    <!-- source: http://www.turbophoto.com/Free-Images/tag/polar-bear/ -->
+                    <img id="lizard" alt="monitor lizard" height="165" src="{% static '/static/powermonitorweb/images/MonitorLizard.png' %}" />
+                </div>
+                {%block main %}
+                {% endblock %}
+                
+                
+            </div>
+            <div id="push"></div><!-- for the footer to stay at the bottom of the page -->
+        </div>
+        <div id="footer">
+            <small>
+                {% block footer %}
+                Copyright &copy; EcoBerry 2014
+                {% endblock %}
+            </small>
+        </div>
+    </body>
 </html>
+

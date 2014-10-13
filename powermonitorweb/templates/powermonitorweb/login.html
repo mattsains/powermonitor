@@ -1,19 +1,24 @@
 {% extends 'powermonitorweb/login_base.html' %}
-{% block title %}Login {% endblock %}
+{% block title %}Login{% endblock %}
 
+{% block header %}Sign in{% endblock %}
 {% block main %}
-<h1>Sign in</h1>
-      <form id="login_form" method="post" action="/powermonitorweb/login/">
-            {% csrf_token %}
-          <div class="formlayout">
-            <p><label for="username">Username:</label>
-            <input type="text" name="username" id="username"></input></p>
-            <p><label for="passwd">Password:</label>
-            <input type="password" name="password" id="passwd"></input></p>
+<div class="panel panel-default">
+    <div class="panel-heading"><h3>Sign in</h3></div>
+    <form id="login_form" class="panel-body" method="post" action="/powermonitorweb/login/">
+        {% csrf_token %}
+        <div class="listform">
+            <p><label for="username">Username:</label> <input type="text" name="username"/></p>
+            <p><label for="passwd">Password:</label> <input type="password" name="password"/></p>
+        </div>
+        <div class="listform">
             <p>
-                <a href="/powermonitorweb/reset_password/">Forgot your password?</a>
+                <a class="form-right" href="/powermonitorweb/reset_password/">Forgot your password?</a>
             </p>
-          </div>
-          <input class="button" type="submit" value="Login"></input>
-      </form>
+            <p>
+                <input class="btn btn-success form-right" type="submit" value="Login"/>
+            </p>
+        </div>
+    </form>
+</div>
 {% endblock %}

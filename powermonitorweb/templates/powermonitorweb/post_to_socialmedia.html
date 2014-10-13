@@ -11,7 +11,7 @@
     {% else %}
     <div class="panel panel-default">
         <div class="panel-heading"><h3>Post to Social Media</h3></div>
-        <form class="panel-body fillparenttarget" method="post" action="/powermonitorweb/post_to_socialmedia/" enctype="multipart/form-data">
+        <form class="panel-body fillparenttarget" method="post" action="/powermonitorweb/manage_social_media/" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="pull-left col-xs-6 fillparent">
                 <div class="panel panel-primary listlayout">
@@ -23,6 +23,10 @@
                             {% endfor %}
                         </select>
                     </p>
+                    <div class="buttons">
+                        <input type="button" class="btn btn-success" id="add_account" name="add" data-toggle="modal" data-target="#add_form"value="Add Account" />
+                        <input type="button" class="btn btn-danger" id="delete_account" name="delete" value="Delete Account" />
+                    </div>
                 </div>
             </div>
             <div class="pull-left col-xs-6 fillparent">
@@ -41,14 +45,37 @@
                                 <option value="year">Year</option>
                             </select>
                         </p>
-			
                     </div>
-		    <div class="buttons">
+		            <div class="form-right">
                         <input class="btn btn-success" type="submit" name="submit" value="Submit" />
-			</div>
+			        </div>
                 </div>
             </div>
         </form>
+        <div id="add_form" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title">Add Account</h4>
+                    </div>
+                    <div id="add_form_body" class="modal-body">
+                        <form  method="post" action="/powermonitorweb/manage_social_media/" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="miniform">
+                                <p><label for="network">Network</label>
+                                    <select name="network" required>
+                                        <option value="facebook">Facebook</option>
+                                        <option value="twitter">Twitter</option>
+                                    </select>
+                                </p>
+                                <p><input type="submit" name="submit" class="btn btn-success form-right" value="Add Account" /></p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     {% endif %}
     {% endif %}

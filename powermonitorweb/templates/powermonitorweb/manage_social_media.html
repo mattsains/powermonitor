@@ -1,0 +1,82 @@
+{% extends 'powermonitorweb/base.html' %}
+{% block title %}Post To Social Media{% endblock %}
+
+{% block header %}Post Statistics to Your Favourite Social Media Sites{% endblock %}
+{% block main %}
+    {% if failed %}
+    <strong>Post failed. Make sure you selected a site, and at least one report.</strong>
+    {% else %}
+    {% if posted %}
+    <strong>Your statistics have been posted!</strong>
+    {% else %}
+    <div class="panel panel-default">
+        <div class="panel-heading"><h3>Post to Social Media</h3></div>
+        <form class="panel-body fillparenttarget" method="post" action="/powermonitorweb/manage_social_media/" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="pull-left col-xs-6 fillparent">
+                <div class="panel panel-primary listlayout">
+                    <div class="panel-heading"><h3>Select Account</h3></div>
+                    <p class="panel-body">
+                        <select name="account_select" size=15    multiple required>
+                            {% for account in user_accounts %}
+                            <option value="{{ account.account_type }}">{{ account.account_type }}</option>
+                            {% endfor %}
+                        </select>
+                    </p>
+                    <div class="buttons">
+                        <input type="button" class="btn btn-success" id="add_account" name="add" data-toggle="modal" data-target="#add_form"value="Add Account" />
+                        <input type="button" class="btn btn-danger" id="delete_account" name="delete" value="Delete Account" />
+                    </div>
+                </div>
+            </div>
+            <div class="pull-left col-xs-6 fillparent">
+                <div class="panel panel-primary miniform">
+                    <div class="panel-heading"><h3>Select Reports</h3></div>
+                    <div class="miniform panel-body">
+                        <p><label for="posts[current_usage]">Current Usage</label><input type="checkbox" name="posts" value="current_usage" /></p>
+                        <p><label for="posts[average_usage]">Average Usage</label><input type="checkbox" name="posts" value="average_usage" /></p>
+                        <p><label for="posts[savings]">Savings</label><input type="checkbox" name="posts" value="savings" /></p>
+                        <p><label for="posts[graph]">Graph</label><input type="checkbox" name="posts" value="graph" /></p>
+                        <p><label for="period_select">Period</label>
+                            <select name="period_select" required>
+                                <option value="day">Day</option>
+                                <option value="week">Week</option>
+                                <option value="month">Month</option>
+                                <option value="year">Year</option>
+                            </select>
+                        </p>
+                    </div>
+		            <div class="form-right">
+                        <input class="btn btn-success" type="submit" name="submit" value="Submit" />
+			        </div>
+                </div>
+            </div>
+        </form>
+        <div id="add_form" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title">Add Account</h4>
+                    </div>
+                    <div id="add_form_body" class="modal-body">
+                        <form  method="post" action="/powermonitorweb/manage_social_media/" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="miniform">
+                                <p><label for="network">Network</label>
+                                    <select name="network" required>
+                                        <option value="facebook">Facebook</option>
+                                        <option value="twitter">Twitter</option>
+                                    </select>
+                                </p>
+                                <p><input type="submit" name="submit" class="btn btn-success form-right" value="Add Account" /></p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% endif %}
+{% endblock %}

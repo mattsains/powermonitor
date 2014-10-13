@@ -67,10 +67,11 @@ class SocialMediaAccount(models.Model):
     """
     Social media account info for each user
     """
-    users = models.ManyToManyField(User)
+    user_id = models.ForeignKey(User)
     account_type = models.CharField(max_length=255)
-    account_username = models.CharField(max_length=255)
     account_token = models.CharField(max_length=255)
+    account_token_secret = models.CharField(max_length=255)
+    account_auth_verify = models.CharField(max_length=255)
     post_daily = models.BooleanField()
     post_weekly = models.BooleanField()
     post_monthly = models.BooleanField()

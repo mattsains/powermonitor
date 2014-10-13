@@ -18,7 +18,7 @@ from powermonitorweb.utils import createmessage
 from DataAnalysis.Stats import PowerForecasting as forecast
 from DataAnalysis.Plotting import Plotter as plt
 from DataAnalysis.DataFrameCollector import DataFrameCollector as dfc
-from DataAnalysis.PowerAlertScraper import PowerAlertScraper as PAS
+from Externals.PowerAlertScraper import PowerAlertScraper as PAS
 from DataAnalysis.Resampling import Resampling
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -124,8 +124,9 @@ def user_logout(request):
 
 
 from powermonitorweb.models import SocialMediaAccount
+pending_social_accounts = {}
 @login_required()
-def post_to_socialmedia(request):
+def manage_social_media(request):
     """
     Display options for the user to select which social media to post to.
     """
@@ -133,13 +134,23 @@ def post_to_socialmedia(request):
     context = RequestContext(request)
 
     user = request.user
-    user_accounts = \
-        SocialMediaAccount.objects.all().select_related('users').filter(users=user.id)
+    user_accounts = SocialMediaAccount.objects.all().filter(user_id=user.id)
 
     failed = False
     posted = False
 
     if request.method == 'POST':
+        if request.POST.get('network'):
+            network=request.POST.get('network')
+            # redirect to the social network for approval
+            if network == 'facebook':
+                raise NotImplementedError()
+            elif network == 'twitter':
+                from Externals import Twitter
+                twitter = pending_social_accounts[(user.id, network)] = Twitter.Twitter()
+                print request.get_host()+"/auth_social_media"
+                return HttpResponseRedirect(twitter.authorize("http://%s/powermonitorweb/auth_social_media/"%request.get_host()))
+
         account = request.POST.get('account_select')
         posts = request.POST.getlist('posts')
         period = request.POST.get('period_select')
@@ -164,10 +175,48 @@ def post_to_socialmedia(request):
             failed = True
 
     return render_to_response(
-        'powermonitorweb/post_to_socialmedia.html',
+        'powermonitorweb/manage_social_media.html',
         {'failed': failed, 'user_accounts': user_accounts, 'posted': posted},
         context
     )
+
+def auth_social_media(request):
+    #try to detect the network we're getting a redirect from
+    if request.GET.get('oauth_token'):
+        network = 'twitter'
+    else:
+        network = 'facebook'
+    
+    user = request.user
+    if (user.id,network) not in pending_social_accounts:
+        raise EnvironmentError("How are we getting responses for networks we aren't trying to authorize?")
+    else:
+        if network == 'facebook':
+            raise NotImplementedError()
+        else:
+            twitter = pending_social_accounts[(user.id,network)]
+            # todo error handling - do we need it?
+            twitter.authorize_receive(oauth_token=request.GET.get('oauth_token'),
+                                      oauth_verifier=request.GET.get('oauth_verifier'))
+            account_token=twitter.request_token
+            account_token_secret=twitter.request_token_secret
+            account_auth_verify=twitter.authorized_verifier
+            del pending_social_accounts[(user.id,network)]
+
+        social_media_account = SocialMediaAccount(
+            user_id=user,
+            account_type=network,
+            account_token=account_token,
+            account_token_secret=account_token_secret,
+            account_auth_verify=account_auth_verify,
+            post_daily=False,
+            post_weekly=False,
+            post_monthly=False,
+            post_yearly=False,
+            is_enabled=False)
+        social_media_account.save()
+        return HttpResponseRedirect("powermonitoweb/manage_social_media/")
+
 
 @login_required()
 def manage_alerts(request):
@@ -381,35 +430,46 @@ def manage_users(request):
         else:
             JSONdata = "[{}]"   # Give it an empty dictionary
         return HttpResponse(JSONdata.replace('[', '').replace(']', ''))  # clean and send data
+    else:
+        manage_users_form = ManageUsersForm()
+        user_list_form = UserListForm(user_list=user_list)
+        
+        return render_to_response(
+            'powermonitorweb/manage_users.html',
+            {
+                'manage_users_form': manage_users_form,
+                'user_list_form': user_list_form,
+            },
+            context
+        )
 
-    elif request.method == 'POST':
-        # otherwise we got a post request, so we must handle it
+# Ajax-loaded add user form:
+@login_required()
+@user_passes_test(lambda u: u.is_superuser)  # Only the homeowner can access this view
+def add_user(request):
+    context = RequestContext(request)
+    if request.method == 'POST':
+        # add user form was submitted
         # Save the add user data
         add_user_form = UserForm(data=request.POST)
         if add_user_form.is_valid():
             add_user_form.save()
-            user_added = True
-        else:
-            print add_user_form.errors
-            user_added = False
-        # These two are handled with Ajax, so ignore them
-        manage_users_form = ManageUsersForm()
-        users = User.objects.filter(is_superuser='0')   # refresh the user list for the new user
-        user_list = [(u.id, u.username) for u in users]
-        user_list_form = UserListForm(user_list=user_list)
+            return render_to_response(
+                'powermonitorweb/add_user.html',
+                {
+                    'user_added': True,
+                    'username': request.POST['username']
+                },
+                context
+            )
     else:
-        manage_users_form = ManageUsersForm()
-        user_list_form = UserListForm(user_list=user_list)
         add_user_form = UserForm()
-        user_added = False
-
+               
     return render_to_response(
-        'powermonitorweb/manage_users.html',
+        'powermonitorweb/add_user.html',
         {
-            'manage_users_form': manage_users_form,
-            'user_list_form': user_list_form,
             'add_user_form': add_user_form,
-            'user_added': user_added
+            'user_added': False
         },
         context
     )

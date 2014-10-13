@@ -60,9 +60,6 @@ class SocialMediaAccountForm(forms.ModelForm):
     class Meta:
         model = SocialMediaAccount
         fields = (
-            'account_type',  # a select list of accounts for the user
-            'account_username',  # the username for the social media account
-            'account_token',  # the authentication token given by the social media service
             'post_daily',  # automatically post daily reports?
             'post_weekly',  # automatically post weekly reports?
             'post_monthly',  # automatically post monthly reports?
@@ -73,14 +70,7 @@ class SocialMediaAccountForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
         super(SocialMediaAccountForm, self).__init__(*args, **kwargs)
-        choice_list = [
-            (a.id, a.account_type)
-            for a in SocialMediaAccount.objects.all().select_related('users').filter(users=user.id)]
 
-        self.fields['account_type'] = forms.ChoiceField(
-            widget=forms.Select(attrs={'size': '5', 'required': 'true'}), choices=choice_list)
-        self.fields['account_username'] = forms.CharField(widget=forms.TextInput)
-        self.fields['account_token'] = forms.CharField(widget=forms.TextInput)
         self.fields['post_daily'] = forms.ChoiceField(widget=forms.CheckboxInput())
         self.fields['post_weekly'] = forms.ChoiceField(widget=forms.CheckboxInput())
         self.fields['post_monthly'] = forms.ChoiceField(widget=forms.CheckboxInput())

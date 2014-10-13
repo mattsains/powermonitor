@@ -1,8 +1,30 @@
 {% extends 'powermonitorweb/login_base.html' %}
 {% block title %}Failed Login{% endblock %}
 
-<h1>Invalid Login</h1>
+{% block header %}Sign in{% endblock %}
 {% block main %}
-    Invalid username or password for <strong>{{ username }}</strong><br />
-    <a href="/powermonitorweb/login/">Try again?</a>
+<div class="panel panel-default">
+    <div class="panel-heading"><h3>Sign in</h3></div>
+    <div class="panel-body">
+        <div class="alert alert-danger">
+            <strong>Invalid Login</strong>
+            Invalid username or password for '{{ username }}'.
+        </div>
+        <form id="login_form" class="panel-body" method="post" action="/powermonitorweb/login/">
+            {% csrf_token %}
+            <div class="listform">
+                <p><label for="username">Username:</label> <input type="text" name="username" value="{{ username }}"/></p>
+                <p><label for="passwd">Password:</label> <input type="password" name="password"/></p>
+            </div>
+            <div class="listform">
+                <p>
+                    <a class="form-right" href="/powermonitorweb/reset_password/">Forgot your password?</a>
+                </p>
+                <p>
+                    <input class="btn btn-success form-right" type="submit" value="Login"/>
+                </p>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

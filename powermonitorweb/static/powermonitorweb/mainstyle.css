@@ -5,7 +5,7 @@
     position: absolute;
     right: 0px;
     bottom: 0px;
-    height: 200px;
+    height: 165px;
 }
 
 #graphholder
@@ -80,7 +80,6 @@ body
     padding-right: 10px;
 }
 
-
 .miniform label+*
 {
     width: 50%;
@@ -98,6 +97,20 @@ body
     width: 50%;
 }
 
+.miniform ul.errorlist
+{
+    margin-left: calc(45% - 10px);
+}
+
+.miniform ul.errorlist li {
+  color: #a94442;
+  background-color: #f2dede;
+  display:block;
+  padding: 10px;
+  border: 1px solid #ebccd1;
+  border-radius: 4px;
+}
+
 .listlayout p
 {
     margin: 8px 0px;
@@ -106,6 +119,7 @@ body
 {
     width: 100%;
     height: 100%;
+    margin-bottom: 42px;
 }
 
 .west
@@ -218,7 +232,7 @@ ul#bar
     list-style-type: none;
     margin: 0px;
     margin-left: 14px;
-    padding: 0px;    
+    padding: 0px;
 }
 
 #bar li
@@ -241,10 +255,18 @@ ul#bar
 	clear: both;
 }
 
-#bar li a:link, #bar li a:visited {
+#bar li a:link, 
+#bar li a:visited {
 	display:block;
 	text-decoration:none;
 	margin:0;
+}
+
+#bar li a:hover,
+#bar li a:active {
+    color: #fff;
+    text-shadow: 2px 2px 3px rgb(68, 106, 149);
+    
 }
 
 #bar li ul {
@@ -323,6 +345,11 @@ h2
     width: 55%;
 }
 
+.listform input[type="radio"]
+{
+    width: 20px;
+}
+
 .listform ul.errorlist
 {
     width:50%;
@@ -330,7 +357,7 @@ h2
     padding-left: 10px;
 }
 
-ul.errorlist li {
+.listform ul.errorlist li {
   color: #a94442;
   background-color: #f2dede;
   display:block;
@@ -464,7 +491,11 @@ h1
     margin: 0px;
     font-size: 40pt;
     color: white;
-/* font-family: "Courier New";*/
+}
+
+a#homepage-link
+{
+    text-decoration: none;
 }
 
 #username

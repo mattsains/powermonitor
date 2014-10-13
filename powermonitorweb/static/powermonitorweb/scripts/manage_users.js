@@ -52,4 +52,24 @@ $(document).ready(function() {
 		    $("#id_users").val($("#id_users option:first").val()).change(); //Select the first user
 		} else { alert("There was a problem deleting the user"); }
 	    }});});
+    
+    form_submit_modal=function(){
+        $("form#add_users_form").submit(function(event){
+            //load in the result using ajax
+            $("div#add_form_body").load("/powermonitorweb/add_user/", $("form#add_users_form").serializeArray(), function(){
+                added=$("div#add_form_body").find("input[type='hidden']#added");
+                if (added && (added.val()=="true"))
+                    location.reload();
+                else
+                    form_submit_modal();
+            });
+            event.preventDefault();
+        });
+    };
+    // This event dynamically loads the add form and makes sure it is submitted via ajax
+    $("#add_user").click(function() {
+        $("div#add_form_body").load("/powermonitorweb/add_user/", function(){
+            form_submit_modal();
+        });
+    });
 });

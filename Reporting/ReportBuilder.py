@@ -13,7 +13,7 @@ import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ecoberry.settings")
 from ecoberry import settings
 from Reporting.Mailer import Mailer
-import DataAnalysis.PowerAlertScraper
+import Externals.PowerAlertScraper
 from DataAnalysis.Plotting import Plotter
 from DataAnalysis.Stats import UsageStats
 from DataAnalysis.DataFrameCollector import DataFrameCollector
@@ -29,7 +29,7 @@ class ReportBuilder():
 
     def __init__(self):
         """Stuff to be initialized with class"""
-        self._alert_scraper = DataAnalysis.PowerAlertScraper.PowerAlertScraper()
+        self._alert_scraper = Externals.PowerAlertScraper.PowerAlertScraper()
         self._mailer = Mailer()
         self._plotter = Plotter()
         self._usage_stats = UsageStats()
