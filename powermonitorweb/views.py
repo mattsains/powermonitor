@@ -36,11 +36,9 @@ def index(request):
         norow = True
     else:
         setup = bool(is_setup[0])
-
+    # If the household has not been setup, redirect to setup_household
     if not setup:
-        print "not setup"
         return HttpResponseRedirect('/powermonitorweb/setup_household')
-    print "setup"
     # If the household has been setup, this will fall through to the next redirect below
     return HttpResponseRedirect('/powermonitorweb/graphs/')  # start at the graphs page
 
