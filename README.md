@@ -8,7 +8,7 @@ If you're interested in the microcontroller's code, check out the example code i
 Current list of required python packages:
 - apscheduler < 3.0 (Requires sqlalchemy for database jobstore)
 - beautifulsoup4
-- django
+- django == 1.6.5 (This is what we started developing with. Don't want to change it just yet)
 - inlinestyler (if not using premailer)
 - matplotlib
 - numpy

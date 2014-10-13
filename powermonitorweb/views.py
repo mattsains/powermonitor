@@ -24,10 +24,24 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import os
 
-@login_required()
+# No need to assert login here, this view just redirects to an appropriate page
 def index(request):
-    context = RequestContext(request)
-    # return render_to_response('powermonitorweb/index.html', {}, context)
+    # Check if the household has been set up. If it hasn't, redirect to setup_household
+    cursor = connection.cursor()
+    cursor.execute("SELECT value FROM powermonitorweb_configuration WHERE field='is_setup'")
+    norow = False
+    is_setup = cursor.fetchone()
+    if is_setup is None:
+        setup = False
+        norow = True
+    else:
+        setup = bool(is_setup[0])
+
+    if not setup:
+        print "not setup"
+        return HttpResponseRedirect('/powermonitorweb/setup_household')
+    print "setup"
+    # If the household has been setup, this will fall through to the next redirect below
     return HttpResponseRedirect('/powermonitorweb/graphs/')  # start at the graphs page
 
 
@@ -491,7 +505,9 @@ def generate_prediction_graph(file_path):
                                                                     relativedelta(hours=12)),
                                                    period_length=12)
         if pre_predction_frame is not None:
-            prediction_frame = pf().predict_usage(data_frame=pre_predction_frame, smooth=True)
+            # I don't think this method is currently being used, so this shouldn't break anything
+            #prediction_frame = pf().predict_usage(data_frame=pre_predction_frame, smooth=True)
+            prediction_frame = None
             graph_name = 'prediction_graph.svg'
             try:    # try delete the file. This should hopefully prevent any issues
                 os.remove(file_path + graph_name)
