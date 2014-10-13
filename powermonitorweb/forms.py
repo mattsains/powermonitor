@@ -116,7 +116,7 @@ class ReportTypeForm(forms.ModelForm):
         choices = choices + remainder
 
         self.fields['report_type'] = forms.ChoiceField(
-            widget=widgets.EnabledSelect(enabled_choices, attrs={'size': '15', 'required': 'true'}),
+            widget=widgets.EnabledSelect(enabled_choices, attrs={'size': '15', 'required': 'true', 'class':'form-control'}),
             choices=choices, label='Reports')
 
 
@@ -135,7 +135,7 @@ class ReportDetailsForm(forms.ModelForm):
         user = kwargs.pop('user')   # Not sure what you wanted to do with this. I added this to fix the errors I was getting
         super(ReportDetailsForm, self).__init__(*args, **kwargs)
 
-        #generated fields work for everything else but this needs to be custom
+        # generated fields work for everything else but this needs to be custom
         self.fields['occurrence_type'] = forms.ChoiceField(widget=forms.Select,
                                                            choices=[('1', 'recurring'), ('0', 'once-off')])
 
@@ -167,7 +167,7 @@ class AlertTypeForm(forms.ModelForm):
         choices = choices + remainder
 
         self.fields['alert_type'] = forms.ChoiceField(
-            widget=widgets.EnabledSelect(enabled_choices, attrs={'size': '15', 'required': 'true'}),
+            widget=widgets.EnabledSelect(enabled_choices, attrs={'size': '15', 'required': 'true','class':'form-control'}),
             choices=choices, label='Alerts')
 
 
@@ -190,7 +190,7 @@ class UserListForm(forms.Form):
     def __init__(self, *args, **kwargs):
         users = kwargs.pop('user_list')
         super(UserListForm, self).__init__(*args, **kwargs)
-        self.fields['users'] = forms.ChoiceField(widget=forms.Select(attrs={'size': '11', 'required': 'true'}),
+        self.fields['users'] = forms.ChoiceField(widget=forms.Select(attrs={'size': '11', 'required': 'true','class':'form-control'}),
                                                  choices=users)
 
 

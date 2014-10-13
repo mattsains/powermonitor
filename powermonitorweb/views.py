@@ -12,7 +12,7 @@ from django.core.urlresolvers import reverse
 from powermonitorweb.forms import UserForm, SelectGraphPeriodForm
 from powermonitorweb.forms import HouseholdSetupUserForm, SocialMediaAccountForm, ReportTypeForm, ReportDetailsForm, \
     ManageUsersForm, UserListForm, ProfileForm, UserAlerts, AlertTypeForm, AlertDetailsForm
-from powermonitorweb.models import Report, ElectricityType, User, UserReports
+from powermonitorweb.models import Report, ElectricityType, User, UserReports, Alert, UserAlerts
 from powermonitorweb.utils import createmessage
 # requirements for graphing
 from DataAnalysis.Stats import PowerForecasting as forecast
@@ -24,10 +24,22 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import os
 
-@login_required()
+# No need to assert login here, this view just redirects to an appropriate page
 def index(request):
-    context = RequestContext(request)
-    # return render_to_response('powermonitorweb/index.html', {}, context)
+    # Check if the household has been set up. If it hasn't, redirect to setup_household
+    cursor = connection.cursor()
+    cursor.execute("SELECT value FROM powermonitorweb_configuration WHERE field='is_setup'")
+    norow = False
+    is_setup = cursor.fetchone()
+    if is_setup is None:
+        setup = False
+        norow = True
+    else:
+        setup = bool(is_setup[0])
+    # If the household has not been setup, redirect to setup_household
+    if not setup:
+        return HttpResponseRedirect('/powermonitorweb/setup_household')
+    # If the household has been setup, this will fall through to the next redirect below
     return HttpResponseRedirect('/powermonitorweb/graphs/')  # start at the graphs page
 
 
@@ -164,19 +176,29 @@ def manage_alerts(request):
 
     user = request.user
     user_alerts = UserAlerts.objects.all().filter(user_id=user.id)
+    alerts = Alert.objects.all();
     user_alert_details = None
     if request.is_ajax():
         datadict = request.POST
-        if datadict.get('identifier') == 'id_report_type_change':
-            #User has clicked on a different user, so update the form
-            myalert = user_alerts.filter(alert_id=datadict.get('alert_description'))
-            JSONdata = serializers.serialize('json', myalert, fields=('alert_description'))
-            print (JSONdata)
-            JSONdata = createmessage(True, 'Report Changes Saved', 'All changes to this report have been saved')
+
+        if datadict.get('identifier') == 'id_alert_type_change':
+
+            myalert = alerts.filter(id=datadict.get('alert_type'))
+            print myalert
+            if len(myalert) == 1:
+                JSONdata = serializers.serialize('json', myalert, fields=('alert_description',))
+            else:
+                # send blank fields to override values as a reset mechanism
+                JSONdata = '{ "fields":{"alert_description" : ""}}'
         elif datadict.get('identifier') == 'enable_alert_click':
-            pass
+            rec_alert_id = Alert.objects.get(id=int(datadict.get('alert_type')))
+            alert_details_model = UserAlerts(user_id=user, alert_id=rec_alert_id);
+            alert_details_model.save()
+            JSONdata = createmessage(True, 'Alert Changes Saved', 'Your alert has been activated')
         elif datadict.get('identifier') == 'disable_alert_click':
-            pass
+            alert_to_delete = user_alerts.filter(alert_id=Alert.objects.get(id=datadict.get('alert_type')))
+            alert_to_delete.delete()
+            JSONdata = createmessage(True, 'Alert Disabled', 'The alert was disabled')
         else:
             JSONdata = '[{}]'
 
@@ -219,7 +241,6 @@ def manage_reports(request):
                 # send blank fields to override values as a reset mechanism
                 JSONdata = '{ "fields":{"occurrence_type" : "", "datetime" : "", "report_daily": "",' \
                            '"report_weekly": "", "report_monthly": ""}}'
-            print (JSONdata)
         elif datadict.get('identifier') == 'enable_report_click':
             report_type = Report.objects.get(id=int(datadict.get('report_type')))
             occurrence_type = int(datadict.get('occurrence_type'))
@@ -482,7 +503,9 @@ def generate_prediction_graph(file_path):
                                                                     relativedelta(hours=12)),
                                                    period_length=12)
         if pre_predction_frame is not None:
-            prediction_frame = pf().predict_usage(data_frame=pre_predction_frame, smooth=True)
+            # I don't think this method is currently being used, so this shouldn't break anything
+            #prediction_frame = pf().predict_usage(data_frame=pre_predction_frame, smooth=True)
+            prediction_frame = None
             graph_name = 'prediction_graph.svg'
             try:    # try delete the file. This should hopefully prevent any issues
                 os.remove(file_path + graph_name)
