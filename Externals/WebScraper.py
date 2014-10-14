@@ -35,6 +35,7 @@ class Scraper():
         else:
             return match
 
-    def get_beautifulsoup(self):
+    def get_beautifulsoup(self, page):
         """Return the BeautifulSoup object for the page to do manual tag searching."""
+        self.open_page(page)
         return self.__soup

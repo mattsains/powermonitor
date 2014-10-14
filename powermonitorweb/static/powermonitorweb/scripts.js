@@ -83,7 +83,8 @@ ecoberry.ajax.createFieldFiller = function(/* names, of, fields */)
 {
     /* "arguments" gives a list of arguments passed into the function.
        I needed to refer to the outer function's arguments from within the inner function
-       hence the creation of "args". Probably a better way to do this. */
+       hence the creation of "args" as arguments would refer to the inner function's arguments.
+       Possibly a better way to do this. */
     
     var args = arguments;
     return function(response)
@@ -106,6 +107,7 @@ ecoberry.ajax.createFieldFiller = function(/* names, of, fields */)
 			}
 		    else if($("#id_" + args[i]).is("div"))
 			{
+			   // alert("#id_" + args[i]);
 			   $("#id_" + args[i]).text(json.fields[args[i]]);
 			}
 		    else			                         //anything else  

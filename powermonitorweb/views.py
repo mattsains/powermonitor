@@ -225,29 +225,39 @@ def manage_alerts(request):
 
     user = request.user
     user_alerts = UserAlerts.objects.all().filter(user_id=user.id)
-    alerts = Alert.objects.all();
+    alerts = Alert.objects.all()
     user_alert_details = None
+
     if request.is_ajax():
         datadict = request.POST
 
         if datadict.get('identifier') == 'id_alert_type_change':
 
             myalert = alerts.filter(id=datadict.get('alert_type'))
-            print myalert
             if len(myalert) == 1:
                 JSONdata = serializers.serialize('json', myalert, fields=('alert_description',))
             else:
                 # send blank fields to override values as a reset mechanism
                 JSONdata = '{ "fields":{"alert_description" : ""}}'
         elif datadict.get('identifier') == 'enable_alert_click':
-            rec_alert_id = Alert.objects.get(id=int(datadict.get('alert_type')))
-            alert_details_model = UserAlerts(user_id=user, alert_id=rec_alert_id);
-            alert_details_model.save()
-            JSONdata = createmessage(True, 'Alert Changes Saved', 'Your alert has been activated')
+            try:
+                rec_alert_id = Alert.objects.get(id=int(datadict.get('alert_type')))
+                alert_details_model = UserAlerts(user_id=user, alert_id=rec_alert_id)
+                alert_details_model.save()
+                JSONdata = createmessage(True, 'Alert Changes Saved', 'Succesfully enabled ' + rec_alert_id.alert_name)
+            except:
+                JSONdata = createmessage(False, 'Alert Not Changed', 'Failed to enable ' + rec_alert_id.alert_name + '. Please try again.')
+
+
         elif datadict.get('identifier') == 'disable_alert_click':
-            alert_to_delete = user_alerts.filter(alert_id=Alert.objects.get(id=datadict.get('alert_type')))
-            alert_to_delete.delete()
-            JSONdata = createmessage(True, 'Alert Disabled', 'The alert was disabled')
+            try:
+                alert = Alert.objects.get(id=datadict.get('alert_type'))
+                alert_to_delete = user_alerts.filter(alert_id=alert)
+                alert_to_delete.delete()
+                JSONdata = createmessage(True, 'Alert Disabled', 'The alert, ' + alert.alert_name + ', was disabled')
+            except:
+                JSONdata = createmessage(False, 'Alert Not Disabled', 'The alert, ' + alert.alert_name + ', was not disabled. Please try again.')
+
         else:
             JSONdata = '[{}]'
 
@@ -291,45 +301,50 @@ def manage_reports(request):
                 JSONdata = '{ "fields":{"occurrence_type" : "", "datetime" : "", "report_daily": "",' \
                            '"report_weekly": "", "report_monthly": ""}}'
         elif datadict.get('identifier') == 'enable_report_click':
-            report_type = Report.objects.get(id=int(datadict.get('report_type')))
-            occurrence_type = int(datadict.get('occurrence_type'))
-            datetime = str(datadict.get('datetime')).replace('/', '-')
-            report_daily = not (datadict.get('report_daily') is None)
-            report_weekly = not (datadict.get('report_weekly') is None)
-            report_monthly = not (datadict.get('report_monthly')is None)
+            try:
+                report = Report.objects.get(id=int(datadict.get('report_type')))
+                occurrence_type = int(datadict.get('occurrence_type'))
+                datetime = str(datadict.get('datetime')).replace('/', '-')
+                report_daily = not (datadict.get('report_daily') is None)
+                report_weekly = not (datadict.get('report_weekly') is None)
+                report_monthly = not (datadict.get('report_monthly')is None)
 
-            report_details_model = UserReports(user_id=user,
-                                               report_id=report_type,
-                                               occurrence_type=occurrence_type,
-                                               datetime=datetime,
-                                               report_daily=report_daily,
-                                               report_weekly=report_weekly,
-                                               report_monthly=report_monthly)
+                report_details_model = UserReports(user_id=user,
+                                                   report_id=report,
+                                                   occurrence_type=occurrence_type,
+                                                   datetime=datetime,
+                                                   report_daily=report_daily,
+                                                   report_weekly=report_weekly,
+                                                   report_monthly=report_monthly)
 
-            report_details_model.save()
+                report_details_model.save()
 
-            if (True): #TODO: validation should happen
-                JSONdata = createmessage(True, 'Report Enabled', 'Successfully enabled [report name]')
-            else:
-                JSONdata = createmessage(False, 'Error', 'The report could not be enabled')
-
+                #try catch here?
+                JSONdata = createmessage(True, 'Report Enabled', 'Successfully enabled ' + report.report_type)
+            except:
+                JSONdata = createmessage(False, 'Report not Enabled', 'The report, ' + report.report_type
+                                         + ', was not enabled. Please try again.')
         elif datadict.get('identifier') == 'disable_report_click':
-            report_to_delete = user_reports.filter(report_id=Report.objects.get(id=datadict.get('report_type')))
-            report_to_delete.delete()
-            JSONdata = createmessage(True, 'Report Disabled', 'The report was disabled')
+            try:
+                report = Report.objects.get(id=datadict.get('report_type'))
+                report_to_delete = user_reports.filter(report_id=report)
+                report_to_delete.delete()
+                JSONdata = createmessage(True, 'Report Disabled', 'The report, ' + report.report_type
+                                         + ', was disabled')
+            except:
+                JSONdata = createmessage(False, 'Report not Disabled', 'The report, ' + report.report_type
+                                         + ', was not disabled. Please try again.')
 
         elif datadict.get('identifier') == 'save_report_click':
-            print("trying to save")
-
             # update changed fields.
-            report_type = Report.objects.get(id=int(datadict.get('report_type')))
+            report = Report.objects.get(id=int(datadict.get('report_type')))
             occurrence_type = int(datadict.get('occurrence_type'))
             datetime = str(datadict.get('datetime')).replace('/', '-')
             report_daily = not (datadict.get('report_daily') is None)
             report_weekly = not (datadict.get('report_weekly') is None)
             report_monthly = not (datadict.get('report_monthly')is None)
 
-            report_to_change = user_reports.get(report_id=report_type)
+            report_to_change = user_reports.get(report_id=report)
 
             if report_to_change.datetime != datetime:
                 report_to_change.datetime = datetime
@@ -346,9 +361,11 @@ def manage_reports(request):
             # save to db
             try:
                 report_to_change.save()
+                JSONdata = createmessage(True, 'Report Changes Saved', 'All changes to ' + report.report_type
+                                     + ' have been saved')
             except:
-                print("lol")
-            JSONdata = createmessage(True, 'Report Changes Saved', 'All changes to this report have been saved')
+                JSONdata = createmessage(False, 'Report Changes Not Saved', 'Changes to ' + report.report_type
+                                     + ' were not successful. Please try again.')
         else:
             JSONdata = '[{}]'
 
