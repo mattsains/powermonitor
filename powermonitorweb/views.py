@@ -143,13 +143,13 @@ def manage_social_media(request):
         if request.POST.get('network'):
             network=request.POST.get('network')
             # redirect to the social network for approval
-            if network == 'facebook':
+            if network == 'Facebook':
                 raise NotImplementedError()
-            elif network == 'twitter':
+            elif network == 'Twitter':
                 from Externals import Twitter
                 twitter = pending_social_accounts[(user.id, network)] = Twitter.Twitter()
                 print request.get_host()+"/auth_social_media"
-                return HttpResponseRedirect(twitter.authorize("http://%s/powermonitorweb/auth_social_media/"%request.get_host()))
+                return HttpResponseRedirect(twitter.authorize("http://%s/powermonitorweb/auth_social_media"%request.get_host()))
 
         account = request.POST.get('account_select')
         posts = request.POST.getlist('posts')
@@ -183,15 +183,15 @@ def manage_social_media(request):
 def auth_social_media(request):
     #try to detect the network we're getting a redirect from
     if request.GET.get('oauth_token'):
-        network = 'twitter'
+        network = 'Twitter'
     else:
-        network = 'facebook'
+        network = 'Facebook'
     
     user = request.user
     if (user.id,network) not in pending_social_accounts:
         raise EnvironmentError("How are we getting responses for networks we aren't trying to authorize?")
     else:
-        if network == 'facebook':
+        if network == 'Facebook':
             raise NotImplementedError()
         else:
             twitter = pending_social_accounts[(user.id,network)]
@@ -215,7 +215,7 @@ def auth_social_media(request):
             post_yearly=False,
             is_enabled=False)
         social_media_account.save()
-        return HttpResponseRedirect("powermonitoweb/manage_social_media/")
+        return HttpResponseRedirect("/powermonitorweb/manage_social_media/")
 
 
 @login_required()
