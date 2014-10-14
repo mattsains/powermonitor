@@ -470,7 +470,9 @@ def add_user(request):
         # Save the add user data
         add_user_form = UserForm(data=request.POST)
         if add_user_form.is_valid():
-            add_user_form.save()
+            user_to_add = add_user_form.save()
+            user_to_add.set_password(add_user_form.get_password())
+            user_to_add.save()
             return render_to_response(
                 'powermonitorweb/add_user.html',
                 {
@@ -556,7 +558,7 @@ def generate_usage_graph(period_type, length, file_path):
         else:
             delta = relativedelta(years=length)
         frame = dfc().collect_period(period_type=period_type,
-                                     period_start=str(datetime.now().replace(microsecond=0) - delta),
+                                     period_start=datetime.utcnow().replace(microsecond=0) - delta,
                                      period_length=length)
         if frame is not None:
             graph_name = 'last_%d%s.svg' % (length, period_type)
@@ -576,8 +578,8 @@ def generate_prediction_graph(file_path):
     try:
         # For now pass a 12hr frame to be on the safe side. The forecasting cuts quite a bit off
         pre_predction_frame = dfc().collect_period(period_type='hour',
-                                                   period_start=str(datetime.now().replace(microsecond=0) -
-                                                                    relativedelta(hours=12)),
+                                                   period_start=datetime.utcnow().replace(microsecond=0) -
+                                                                    relativedelta(hours=12),
                                                    period_length=12)
         if pre_predction_frame is not None:
             # I don't think this method is currently being used, so this shouldn't break anything
@@ -604,8 +606,9 @@ def get_current_statistics():
     savings = None
 
     try:
-        frame = dfc().collect_period(period_type='hour', period_start=str(
-            datetime.now().replace(microsecond=0) - relativedelta(hours=1)), period_length=1)
+        frame = dfc().collect_period(period_type='hour', period_start=
+            datetime.utcnow().replace(microsecond=0) - relativedelta(hours=1), period_length=1)
+        print 'frame ' + frame
         current_usage = frame.tail(1).iloc[0]['reading']
         average_usage = frame.mean(axis=0)['reading']
     except:
@@ -640,26 +643,26 @@ def graphs(request):
         datadict = request.POST
         # generate a new graph based on the user's selection
         if datadict.get('period') == '1hour':
-            frame = dfc().collect_period(period_type='hour', period_start=str(
-                datetime.now().replace(microsecond=0) - relativedelta(hours=1)), period_length=1)
+            frame = dfc().collect_period(period_type='hour', period_start=
+                datetime.utcnow().replace(microsecond=0) - relativedelta(hours=1), period_length=1)
         elif datadict.get('period') == '12hour':
-            frame = dfc().collect_period(period_type='hour', period_start=str(
-                datetime.now().replace(microsecond=0) - relativedelta(hours=12)), period_length=12)
+            frame = dfc().collect_period(period_type='hour', period_start=
+                datetime.utcnow().replace(microsecond=0) - relativedelta(hours=12), period_length=12)
         elif datadict.get('period') == 'day':
-            frame = dfc().collect_period(period_type='day', period_start=str(
-                datetime.now().replace(microsecond=0) - relativedelta(days=1)), period_length=1)
+            frame = dfc().collect_period(period_type='day', period_start=
+                datetime.utcnow().replace(microsecond=0) - relativedelta(days=1), period_length=1)
         elif datadict.get('period') == 'week':
-            frame = dfc().collect_period(period_type='week', period_start=str(
-                datetime.now().replace(microsecond=0) - relativedelta(weeks=1)), period_length=1)
+            frame = dfc().collect_period(period_type='week', period_start=
+                datetime.utcnow().replace(microsecond=0) - relativedelta(weeks=1), period_length=1)
         elif datadict.get('period') == '1month':
-            frame = dfc().collect_period(period_type='month', period_start=str(
-                datetime.now().replace(microsecond=0) - relativedelta(months=1)), period_length=1)
+            frame = dfc().collect_period(period_type='month', period_start=
+                datetime.utcnow().replace(microsecond=0) - relativedelta(months=1), period_length=1)
         elif datadict.get('period') == '6month':
-            frame = dfc().collect_period(period_type='month', period_start=str(
-                datetime.now().replace(microsecond=0) - relativedelta(months=6)), period_length=6)
+            frame = dfc().collect_period(period_type='month', period_start=
+                datetime.utcnow().replace(microsecond=0) - relativedelta(months=6), period_length=6)
         elif datadict.get('period') == 'year':
-            frame = dfc().collect_period(period_type='year', period_start=str(
-                datetime.now().replace(microsecond=0) - relativedelta(years=1)), period_length=1)
+            frame = dfc().collect_period(period_type='year', period_start=
+                datetime.utcnow().replace(microsecond=0) - relativedelta(years=1), period_length=1)
         
         elif datadict.get('period') == 'predict':
             # Generating a prediction graph works a little differently
@@ -667,14 +670,12 @@ def graphs(request):
             pass
 
         points = None
-        try:
-            points = Resampling().buildArrayTimeReading(frame)
-        except:
-            pass  # Will sending empty points to the graph give an error?
+        points = Resampling().buildArrayTimeReading(frame)
             
         json_graph="["+",".join(map(lambda x: "["+str(Resampling().timestamp_to_milliseconds(x[0]))+","+str(x[1])+"]", points))+"]"
         
         current_stats = get_current_statistics()
+        print current_stats #TODO: Remove this. DEBUGGING
         # return the name of the new graph to display
         JSONdata = '{"graph": '+json_graph+', "current_usage": "%s", "average_usage": "%s", "eskom_status": "%s", ' \
                    '"savings": "%s"}' % (current_stats['current_usage'], current_stats['average_usage'],
