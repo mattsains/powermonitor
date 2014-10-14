@@ -43,7 +43,7 @@ class ReportBuilder():
         stats = None
         try:
             frame = self._collector.collect_period(period_type='hour',
-                                                   period_start=str(datetime.now().replace(microsecond=0) - relativedelta(hours=1)), #TODO: Change this back to str(datetime.now().replace(microseconds=0) - relativedelta(hours=1))
+                                                   period_start=datetime.utcnow().replace(microsecond=0) - relativedelta(hours=1), #TODO: Change this back to datetime.utcnow().replace(microseconds=0) - relativedelta(hours=1)
                                                    period_length=1)
             stats = self._usage_stats.get_frame_stats(frame)
             self._plotter.plot_single_frame(data_frame=frame, title='Usage for last hour', y_label='Watts',
@@ -131,8 +131,8 @@ class ReportBuilder():
         stats = None
         try:
             stats = self._usage_stats.get_stats('hour',
-                                                str(datetime.now().replace(microsecond=0) - relativedelta(hours=1)),
-                                                str(datetime.now().replace(microsecond=0)))
+                                                datetime.utcnow().replace(microsecond=0) - relativedelta(hours=1),
+                                                datetime.utcnow().replace(microsecond=0))
         except:
             raise StandardError('Could not collect usage stats')
 

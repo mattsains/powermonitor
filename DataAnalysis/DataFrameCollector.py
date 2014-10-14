@@ -33,12 +33,12 @@ class DataFrameCollector():
         Returns a pandas DataFrame object with timestamp and reading columns"""
         if period_start is not None:
             try:
-                period_start = datetime.strptime(period_start, self.__format)
+                period_start = period_start
             except:
                 raise ValueError('Invalid date format: date must be in format YYYY-MM-DD HH:MM:SS')
         if period_end is not None:
             try:
-                period_end = datetime.strptime(period_end, self.__format)
+                period_end = period_end
             except:
                 raise ValueError('Invalid date format: date must be in format YYYY-MM-DD HH:MM:SS')
 
@@ -73,7 +73,9 @@ class DataFrameCollector():
             return data_frame
         else:
             return None
-
+    
+    def __to_utc(self, time):
+        pass
     '''
     It's probably better to try and refactor these methods. They were written like they currently are just to get this
     module working.
@@ -81,60 +83,60 @@ class DataFrameCollector():
 
     def __do_hour(self, period_start, period_length, period_end):
         if period_start is None:  # If there is no start period, default to 1 hour back
-            period_start = datetime.now() - relativedelta(hours=1)
+            period_start = datetime.utcnow() - relativedelta(hours=1)
         self.__start = period_start  # Set the start time for collect_period to get data from
 
         if period_end is None:
             if period_length is None:  # If no end and period length was set, collect data up to the current time
-                period_end = datetime.now()
+                period_end = datetime.utcnow()
             else:
                 period_end = self.__start + relativedelta(hours=period_length)
         self.__end = period_end  # Set the end time for collect_period to get data from
 
     def __do_day(self, period_start, period_length, period_end):
         if period_start is None:
-            period_start = datetime.now() - relativedelta(days=1)
+            period_start = datetime.utcnow() - relativedelta(days=1)
         self.__start = period_start
 
         if period_end is None:
             if period_length is None:
-                period_end = datetime.now()
+                period_end = datetime.utcnow()
             else:
                 period_end = self.__start + relativedelta(days=period_length)
         self.__end = period_end
 
     def __do_week(self, period_start, period_length, period_end):
         if period_start is None:
-            period_start = datetime.now() - relativedelta(weeks=1)
+            period_start = datetime.utcnow() - relativedelta(weeks=1)
         self.__start = period_start
 
         if period_end is None:
             if period_length is None:
-                period_end = datetime.now()
+                period_end = datetime.utcnow()
             else:
                 period_end = self.__start + relativedelta(weeks=period_length)
         self.__end = period_end
 
     def __do_month(self, period_start, period_length, period_end):
         if period_start is None:
-            period_start = datetime.now() - relativedelta(months=1)
+            period_start = datetime.utcnow() - relativedelta(months=1)
         self.__start = period_start
 
         if period_end is None:
             if period_length is None:
-                period_end = datetime.now()
+                period_end = datetime.utcnow()
             else:
                 period_end = self.__start + relativedelta(months=period_length)
         self.__end = period_end
 
     def __do_year(self, period_start, period_length, period_end):
         if period_start is None:
-            period_start = datetime.now() - relativedelta(years=1)
+            period_start = datetime.utcnow() - relativedelta(years=1)
         self.__start = period_start
 
         if period_end is None:
             if period_length is None:
-                period_end = datetime.now()
+                period_end = datetime.utcnow()
             else:
                 period_end = self.__start + relativedelta(years=period_length)
         self.__end = period_end
