@@ -25,22 +25,22 @@ class UsageStats:
     the dataframe that you have collected yourself elsewhere and pass it to get_frame_stats
     """
     def last_hour_stats(self):
-        return self.get_stats('hour', str(datetime.now().replace(microsecond=0) - relativedelta(hours=1)), 1)
+        return self.get_stats('hour', datetime.utcnow().replace(microsecond=0) - relativedelta(hours=1), 1)
 
     def last_12hour_stats(self):
-        return self.get_stats('hour', str(datetime.now().replace(microsecond=0) - relativedelta(hours=12)), 12)
+        return self.get_stats('hour', datetime.utcnow().replace(microsecond=0) - relativedelta(hours=12), 12)
 
     def last_day_stats(self):
-        return self.get_stats('day', str(datetime.now().replace(microsecond=0) - relativedelta(days=1)), 1)
+        return self.get_stats('day', datetime.utcnow().replace(microsecond=0) - relativedelta(days=1), 1)
 
     def last_week_stats(self):
-        return self.get_stats('week', str(datetime.now().replace(microsecond=0) - relativedelta(weeks=1)), 1)
+        return self.get_stats('week', datetime.utcnow().replace(microsecond=0) - relativedelta(weeks=1), 1)
 
     def last_month_stats(self):
-        return self.get_stats('month', str(datetime.now().replace(microsecond=0) - relativedelta(months=1)), 1)
+        return self.get_stats('month', datetime.utcnow().replace(microsecond=0) - relativedelta(months=1), 1)
 
     def last_year_stats(self):
-        return self.get_stats('year', str(datetime.now().replace(microsecond=0) - relativedelta(years=1)), 1)
+        return self.get_stats('year', datetime.utcnow().replace(microsecond=0) - relativedelta(years=1), 1)
 
     def get_stats(self, period_type, period_start, period_length):
         """
