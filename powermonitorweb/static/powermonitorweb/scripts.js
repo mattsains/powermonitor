@@ -123,8 +123,29 @@ ecoberry.ajax.createFieldFiller = function(/* names, of, fields */)
 
 ecoberry.ajax.messageAsAlert = function(messageAsJSON)
 {
-    var json = $.parseJSON(messageAsJSON)
+    var json = $.parseJSON(messageAsJSON);
     alert(json.heading + "\n\n" + json.message);
+    return json.success;
+};
+
+ecoberry.ajax.messageAsBootStrapAlert = function(messageAsJSON, $parent)
+{
+    //okay i could just write this out as html at this point but nay!
+    //NAY SAYS I! FOR TOO LONG HAVE I LEARNED JQUERY API CALLS! TOO LONG!
+    
+    var json = $.parseJSON(messageAsJSON);
+
+    $parent.empty();
+    
+    var $alert = $(document.createElement('div'));
+    $alert.html('<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button><strong>'
+		+ json.heading + "</strong><br>" + json.message);
+    $alert.attr("role", "alert");
+    $alert.removeClass(); //kill all classes
+    $alert.addClass("alert");
+    $alert.addClass(json.success ? "alert-success" : "alert-danger");
+
+    $parent.append($alert);
     return json.success;
 };
 

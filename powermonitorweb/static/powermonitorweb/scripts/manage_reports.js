@@ -3,6 +3,7 @@ $(document).ready(function(){
     var createPOSTFunction = ecoberry.ajax.createPOSTFunction;
     var createFieldFiller = ecoberry.ajax.createFieldFiller;
     var messageAsAlert = ecoberry.ajax.messageAsAlert;
+    var messageAsBootStrapAlert = ecoberry.ajax.messageAsBootStrapAlert;
     
     /*Change the details in the fields to match the selected entry */
     var $reports = $("#id_report_type"); 
@@ -14,7 +15,7 @@ $(document).ready(function(){
     /* save changes to an enabled entry */
     $("#enable_report").click(
 	createPOSTFunction("/powermonitorweb/manage_reports/", "#manage_reports_form", "enable_report_click",
-			  function(response) { if (messageAsAlert(response))
+			  function(response) { if (messageAsBootStrapAlert(response, $("#error-container")))
 					       {
 						   var $newlyenabled = $reports.find(":selected").detach();
 						   $newlyenabled.attr("data-enabled", "true");						
@@ -28,12 +29,12 @@ $(document).ready(function(){
     /* enable a disabled entry */
     $("#save_report").click(
 	createPOSTFunction("/powermonitorweb/manage_reports/", "#manage_reports_form", "save_report_click",
-			  messageAsAlert));
+			 function(response){ messageAsBootStrapAlert(response, $("#error-container"))}));
 
     /* disable an enabled entry */
     $("#disable_report").click(
 	createPOSTFunction("/powermonitorweb/manage_reports/", "#id_report_type", "disable_report_click",
-			   function(response) {if (messageAsAlert(response))
+			   function(response) {if (messageAsBootStrapAlert(response, $("#error-container")))
 			      {
 				  var $newlydisabled = $reports.find(":selected").detach();
 				  $newlydisabled.removeAttr("data-enabled");

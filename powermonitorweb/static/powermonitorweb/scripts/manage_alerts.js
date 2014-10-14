@@ -2,7 +2,8 @@ $(document).ready(function() {
     var createPOSTFunction = ecoberry.ajax.createPOSTFunction;
     var createFieldFiller = ecoberry.ajax.createFieldFiller;
     var messageAsAlert = ecoberry.ajax.messageAsAlert;
-
+    var messageAsBootStrapAlert = ecoberry.ajax.messageAsBootStrapAlert;
+    
     var $alerts = $("#id_alert_type");
 
     function hideButtons()
@@ -34,7 +35,7 @@ $(document).ready(function() {
 
      $("#enable_alert").click(
 	createPOSTFunction("/powermonitorweb/manage_alerts/", "#manage_reports_form", "enable_alert_click",
-			  function(response) { if (messageAsAlert(response))
+			  function(response) { if (messageAsBootStrapAlert(response, $("#error-container")))
 					       {
 						   var $newlyenabled = $alerts.find(":selected").detach();
 						   $newlyenabled.attr("data-enabled", "true");						
@@ -49,7 +50,7 @@ $(document).ready(function() {
     /* disable an enabled entry */
     $("#disable_alert").click(
 	createPOSTFunction("/powermonitorweb/manage_alerts/", "#id_alert_type", "disable_alert_click",
-			   function(response) {if (messageAsAlert(response))
+			   function(response) { if (messageAsBootStrapAlert(response, $("#error-container")))
 			      {
 				  var $newlydisabled = $alerts.find(":selected").detach();
 				  $newlydisabled.removeAttr("data-enabled");
