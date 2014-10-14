@@ -36,7 +36,7 @@ $(document).ready(function() {
 	createPOSTFunction("/powermonitorweb/manage_alerts/", "#manage_reports_form", "enable_alert_click",
 			  function(response) { if (messageAsAlert(response))
 					       {
-						   var $newlyenabled = $reports.find(":selected").detach();
+						   var $newlyenabled = $alerts.find(":selected").detach();
 						   $newlyenabled.attr("data-enabled", "true");						
 						   if ($("#id_alert_type option[data-enabled=true]").length)
 						       $newlyenabled.insertAfter($("#id_alert_type option[data-enabled=true]").last());
@@ -51,7 +51,7 @@ $(document).ready(function() {
 	createPOSTFunction("/powermonitorweb/manage_alerts/", "#id_alert_type", "disable_alert_click",
 			   function(response) {if (messageAsAlert(response))
 			      {
-				  var $newlydisabled = $reports.find(":selected").detach();
+				  var $newlydisabled = $alerts.find(":selected").detach();
 				  $newlydisabled.removeAttr("data-enabled");
 				  if ($("#id_alert_type option[data-enabled=true]").length)
 				      $newlydisabled.insertAfter($("#id_alert_type option[data-enabled=true]").last());
@@ -61,7 +61,7 @@ $(document).ready(function() {
 			      }}));
 
        $alerts.change(
-	createPOSTFunction("/powermonitorweb/manage_reports/", "#id_report_type", "id_report_type_change",
+	createPOSTFunction("/powermonitorweb/manage_alerts/", "#id_alert_type", "id_alert_type_change",
 			   createFieldFiller("alert_description")));
 
 }

@@ -225,7 +225,7 @@ def manage_alerts(request):
 
     user = request.user
     user_alerts = UserAlerts.objects.all().filter(user_id=user.id)
-    alerts = Alert.objects.all();
+    alerts = Alert.objects.all()
     user_alert_details = None
     if request.is_ajax():
         datadict = request.POST
@@ -236,6 +236,7 @@ def manage_alerts(request):
             print myalert
             if len(myalert) == 1:
                 JSONdata = serializers.serialize('json', myalert, fields=('alert_description',))
+                print JSONdata
             else:
                 # send blank fields to override values as a reset mechanism
                 JSONdata = '{ "fields":{"alert_description" : ""}}'
