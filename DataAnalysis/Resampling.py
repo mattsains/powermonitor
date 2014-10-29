@@ -245,7 +245,7 @@ class Resampling:
         return int((timestamp.to_datetime() - datetime(1970,1,1)).total_seconds() * 1000)
 
 
-    def buildArrayTimeReading(self, DataFrame_in, periods=1000):
+    def buildArrayTimeReading(self, DataFrame_in, periods=200):
         """
         This will take a Pandas DateFrame this dataFrame should be resampled using a calculated frequency
         The periods is the number of periods you want to resample the data to have the number of points
