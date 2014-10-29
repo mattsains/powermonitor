@@ -116,7 +116,7 @@ class ReportDetailsForm(forms.ModelForm):
         model = UserReports
         fields = (
             'occurrence_type',
-            'datetime',
+            'time_and_date',
             'report_daily',
             'report_weekly',
             'report_monthly')
