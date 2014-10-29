@@ -17,7 +17,7 @@ class PowerAlertScraper:
     sql_select = "SELECT * FROM powermonitor.powermonitorweb_eskomstats where field=%s;"
     sql_insert = "INSERT INTO powermonitor.powermonitorweb_eskomstats(field, value) values(%s, %s);"
     sql_update = "UPDATE powermonitor.powermonitorweb_eskomstats SET value=%s where field=%s;"
-    page       = 'http://www.poweralert.co.za/poweralert5/index.php'
+    page       = "http://poweralert.co.za/poweralert5/index.php"
 
     def __init__(self):
         self.__alert = None
@@ -112,6 +112,7 @@ class PowerAlertScraper:
             poweralert['status'] = True
             self.__current_readings['status'] = self.get_usage_status()
         # yield the status of each of the values (True for change, False for no change)
+        print poweralert
         return poweralert
 
     @staticmethod
@@ -170,14 +171,17 @@ class PowerAlertScraper:
         :return: 'critical', 'warning', or 'stable'
         """
         # TODO: This possibly needs a bit more thought. Are there other criteria we should use?
+        print 'checking alert status'
         stats = self.check_for_change()
         builder = ReportBuilder()
         if stats['colour'] and stats['status']:  # if both of these are True
             if self.get_alert_colour() == 'red' and self.get_usage_status() == 'up':
-                builder.build_power_alert_report(power_alert_status='warning') #TODO: Uncomment
+                print 'warning!'
+                builder.build_power_alert_report(power_alert_status='warning')
                 return 'warning'
             elif self.get_alert_colour() == 'black' and self.get_usage_status() == 'up':
-                builder.build_power_alert_report(power_alert_status='critical') #TODO: Uncomment
+                print 'critical!'
+                builder.build_power_alert_report(power_alert_status='critical')
                 return 'critical'
             else:   # TODO: Should the user be notified if the colour is red but usage is down?
                 return 'stable'
@@ -208,5 +212,8 @@ class PowerAlertScraper:
             stats['eskom_level'] = list(result)[0][0]
         else:
             stats['eskom_level'] = '0'
-
+        print stats
+        print 'stats: colour=%s usage=%s' % (stats['eskom_colour'],
+                stats['eskom_usage'])
         return stats
+
