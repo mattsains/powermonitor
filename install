@@ -1,24 +1,23 @@
 #!/bin/bash
-python2 manage.py syncdb
+#python2 manage.py syncdb
 echo "The next part of the installation requires root permission. Please enter root password to continue."
 
-su
 echo "Creating symlinks to powermonitorweb.server, startupjobs, and logservice..."
 curpath=`pwd`
 logservice=$curpath'/logservice.py'
 startupjobs=$curpath'/startupjobs.py'
 powermonitorweb=$curpath'/powermonitorweb.server'
-ln -s $logservice /usr/bin/logservice.py
-ln -s $startupjosb /usr/bin/startupjobs.py
-ln -s $powermonitorweb /usr/bin/powermonitorweb.server
+sudo ln -s $logservice /usr/bin/logservice.py
+sudo ln -s $startupjosb /usr/bin/startupjobs.py
+sudo ln -s $powermonitorweb /usr/bin/powermonitorweb.server
 echo "Linking Complete"
 # Create and start systemd services for logservice and startupjobs
 echo "Enabling and starting systemd startup services..."
-cp *.service /etc/systemd/system/
+sudo cp *.service /etc/systemd/system/
 systemctl enable logservice.service
-systemctl enable startupjobs.service
-systemctl enable powermonitorweb.service
-systemctl start logservice.service
-systemctl start startupjobs.service
-systemctl start powermonitorweb.service
+sudo systemctl enable startupjobs.service
+sudo systemctl enable powermonitorweb.service
+sudo systemctl start logservice.service
+sudo systemctl start startupjobs.service
+sudo systemctl start powermonitorweb.service
 echo "DONE"
