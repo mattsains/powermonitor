@@ -13,9 +13,8 @@
     <strong>Report settings saved!</strong>
     {% else %}
     <div class="panel panel-default">
-        <div class="panel-heading"><h3>Manage Reports</h3>
-             <div id="error-container"></div>
-        </div>
+        <div class="panel-heading"><h3>Manage Reports</h3></div>
+	<div id="error-container" class="panel-body panel-nobottom"></div>
         <form id="manage_reports_form" class="panel-body fillparenttarget" method="post" action="/powermonitorweb/manage_reports/" enctype="multipart/form-data">
             {% csrf_token %}
 

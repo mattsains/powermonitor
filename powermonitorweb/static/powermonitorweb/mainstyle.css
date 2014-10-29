@@ -146,6 +146,13 @@ body
     margin: auto;
 }
 
+.panel-nobottom {
+    margin-botom: 0;
+}
+.panel-nobottom > * {
+    margin-bottom: 0;
+}
+
 .panel-success-success {
   border-color: #2A8322;
 }
