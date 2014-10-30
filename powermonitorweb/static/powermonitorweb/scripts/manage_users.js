@@ -12,9 +12,10 @@ $(document).ready(function() {
     */
 
     /* Where the magic happens - Now known as the Mnet method */
-    $("#id_users").change(
+    $("#id_users").change(function(){
+	$('#display').show();
 	createPOSTFunction("/powermonitorweb/manage_users/","#id_users", "id_users_change",
-			   createFieldFiller("username","first_name", "last_name", "email")));
+			   createFieldFiller("username","first_name", "last_name", "email"))();});
 
     /* Update the user, then update the list with the new username */
     $("#update_user").click(
@@ -49,10 +50,10 @@ $(document).ready(function() {
 		var json = $.parseJSON(response);
 		
 		if(json.deleted) {
-		     messageAsBootStrapAlert('{"heading":"User Removed","success":true,"message":"User '+json.fields.username+' was removed."}', $("#error-container"));
+		     messageAsBootStrapAlert('{"heading":"User Removed","success":true,"message":"The user was removed."}', $("#error-container"));
 		    $("#id_users option:selected").remove(); // Delete the user from the list
 		    $("#id_users").val($("#id_users option:first").val()).change(); //Select the first user
-		} else {  messageAsBootStrapAlert('{"heading":"User Not Removed","success":false,"message":"An error prevented user '+json.fields.username+' from being removed."}', $("#error-container")); }
+		} else {  messageAsBootStrapAlert('{"heading":"User Not Removed","success":false,"message":"An error prevented the user from being removed."}', $("#error-container")); }
 	    }});});
     
     form_submit_modal=function(){

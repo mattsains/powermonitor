@@ -17,6 +17,7 @@ $(document).ready(function() {
         var enabled = $selected.attr("data-enabled");
 	var $display = $("#display"); 
         hideButtons();
+	$display.show();
 	$display.find("h2").text("Selected Alert: " + $selected.text());
 	
         if (enabled)

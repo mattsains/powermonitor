@@ -120,6 +120,7 @@ class ReportDetailsForm(forms.ModelForm):
             'report_daily',
             'report_weekly',
             'report_monthly')
+        
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')   # Not sure what you wanted to do with this. I added this to fix the errors I was getting
@@ -128,6 +129,7 @@ class ReportDetailsForm(forms.ModelForm):
         # generated fields work for everything else but this needs to be custom
         self.fields['occurrence_type'] = forms.ChoiceField(widget=forms.Select,
                                                            choices=[('1', 'recurring'), ('0', 'once-off')])
+        self.fields['datetime'].label = "Time and date"
 
 
 #The following 2 forms are displayed together on the manage reports page

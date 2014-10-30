@@ -310,6 +310,11 @@ div#imageholder
     height: 120px;
 }
 
+#display
+{
+    display:none;
+}
+
 h2
 {
     font-size: 20px;

@@ -11,7 +11,6 @@ $(document).ready(function(){
     $reports.change(
 	createPOSTFunction("/powermonitorweb/manage_reports/", "#id_report_type", "id_report_type_change",
 			   createFieldFiller("occurrence_type", "datetime", "report_daily", "report_weekly", "report_monthly")));
-
     /* save changes to an enabled entry */
     $("#enable_report").click(
 	createPOSTFunction("/powermonitorweb/manage_reports/", "#manage_reports_form", "enable_report_click",
@@ -62,8 +61,9 @@ $(document).ready(function(){
         var enabled = $selected.attr("data-enabled");
 	var $display = $("#display"); 
         hideButtons();
+
 	$display.find("h2").text("Selected Report: " + $selected.text());
-	
+
         if (enabled)
         {
 	    $display.addClass("panel-success-success");
@@ -78,7 +78,7 @@ $(document).ready(function(){
 	    $("input#enable_report").show();
 	}
     }).change();
-
+    $reports.change(function(){$('#display').show();});
     function hideButtons()
     {
        $("input[type=button]").hide();

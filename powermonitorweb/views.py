@@ -135,50 +135,57 @@ def manage_social_media(request):
 
     user = request.user
     user_accounts = SocialMediaAccount.objects.all().filter(user_id=user.id)
-
-    failed = False
-    posted = False
-
-    if request.method == 'POST':
+    
+    if request.is_ajax():
+        datadict = request.POST
+        if datadict.get('identifier') == 'delete_account_click':
+            account = SocialMediaAccount.objects.get(id=datadict.get('id_account_type'))
+            if account:
+                account.delete()
+                JSONdata = '{"deleted": true}'
+            else:
+                JSONdata = '{"deleted": false}'
+        return HttpResponse(JSONdata)
+    elif request.method == 'POST':
         if request.POST.get('network'):
             network=request.POST.get('network')
+            #this is an add
             # redirect to the social network for approval
             if network == 'Facebook':
-                raise NotImplementedError()
+                raise NotImplementedError("Facebook login has not been implemented yet")
             elif network == 'Twitter':
                 from Externals import Twitter
                 twitter = pending_social_accounts[(user.id, network)] = Twitter.Twitter()
                 print request.get_host()+"/auth_social_media"
                 return HttpResponseRedirect(twitter.authorize("http://%s/powermonitorweb/auth_social_media"%request.get_host()))
 
-        account = request.POST.get('account_select')
-        posts = request.POST.getlist('posts')
-        period = request.POST.get('period_select')
+    else:
+       account = request.POST.get('account_select')
+       posts = request.POST.getlist('posts')
+       period = request.POST.get('period_select')
+       
+       if any(posts):
+           '''If any of the checkboxes are checked, then we can do something.'''
+           if 'current_usage' in posts:
+               # TODO: Post current usage to selected social media
+               pass
+           if 'average_usage' in posts:
+               # TODO: Post average usage to selected social media
+               pass
+           if 'savings' in posts:
+               # TODO: Post savings to selected social media
+               pass
+           if 'graph' in posts:
+               # TODO: Post graph of usage to selected social media
+               pass
+       else:
+           pass
 
-        if any(posts):
-            '''If any of the checkboxes are checked, then we can do something.'''
-            if 'current_usage' in posts:
-                # TODO: Post current usage to selected social media
-                pass
-            if 'average_usage' in posts:
-                # TODO: Post average usage to selected social media
-                pass
-            if 'savings' in posts:
-                # TODO: Post savings to selected social media
-                pass
-            if 'graph' in posts:
-                # TODO: Post graph of usage to selected social media
-                pass
-            posted = True
-        else:
-            '''Nothing was posted, so we must tell the user to select a checkbox'''
-            failed = True
-
-    return render_to_response(
-        'powermonitorweb/manage_social_media.html',
-        {'failed': failed, 'user_accounts': user_accounts, 'posted': posted},
-        context
-    )
+       return render_to_response(
+           'powermonitorweb/manage_social_media.html',
+           {'user_accounts': user_accounts},
+           context
+       )
 
 def auth_social_media(request):
     #try to detect the network we're getting a redirect from
