@@ -72,7 +72,7 @@ class DataFrameCollector():
             data_frame.set_index(pd.DatetimeIndex(data_frame['time']), inplace=True)
             return data_frame
         else:
-            return None
+            return pd.DataFrame(columns=['time', 'reading'])
     
     def __to_utc(self, time):
         pass

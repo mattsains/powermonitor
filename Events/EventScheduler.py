@@ -16,6 +16,7 @@ from Decorators import Singleton
 
 @Singleton  # only one scheduler should be instantiated at any given time
 class EventScheduler():
+    logging.basicConfig()
     """Class to scheduler regular events in a similar manner to cron."""
     __mysql_url = 'mysql+pymysql://powermonitor:%s@localhost/powermonitor' \
                   % str(base64.b64decode(bytes('cDB3M3JtMG4xdDBy')))

@@ -18,7 +18,8 @@ startup_list = [
      'method': jt.power_alert_scraper__renew_tags,
      'type': 'cron',
      'schedule': {
-         'year': None, 'month': None, 'week': None, 'day': None, 'day_of_week': None, 'hour': None, 'minute': '*/30',
+         'year': None, 'month': None, 'week': None, 'day': None, 'day_of_week': None, 
+         'hour': None, 'minute': '*/5',
          'second': None}}
 ]
 

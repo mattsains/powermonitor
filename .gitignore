@@ -14,3 +14,6 @@
 
 #Windows junk
 Thumbs.db
+
+#project-specific:
+graphs/

@@ -67,8 +67,7 @@ class UsageStats:
             logging.warning('Unable to load data frame')
         return None
 
-    @staticmethod
-    def get_frame_stats(data_frame):
+    def get_frame_stats(self, data_frame):
         """
         Get a nice dictionary of stats from an existing data frame
         :param data_frame:

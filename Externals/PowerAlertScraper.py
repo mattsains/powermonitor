@@ -34,7 +34,7 @@ class PowerAlertScraper:
         """
         Renew the alert tag and usage tags at the same time to reduce network usage
         """
-        print 'Renewing tags'
+        #print 'Renewing tags'
         bs = self.__scraper.get_beautifulsoup(self.page)
         for td in bs.find_all('td', {'bgcolor': '#FEC5D5', 'align': 'center'}):
             for img in td.find_all('img'):
@@ -48,6 +48,7 @@ class PowerAlertScraper:
             self.__usage_string = self.__remove_angle_brackets(self.__usage)
         self.write_stats_to_database()
         self.check_for_change()
+        self.check_alert_status();
 
     def write_stats_to_database(self):
         """
@@ -112,7 +113,7 @@ class PowerAlertScraper:
             poweralert['status'] = True
             self.__current_readings['status'] = self.get_usage_status()
         # yield the status of each of the values (True for change, False for no change)
-        print poweralert
+        #print poweralert
         return poweralert
 
     @staticmethod
@@ -171,16 +172,21 @@ class PowerAlertScraper:
         :return: 'critical', 'warning', or 'stable'
         """
         # TODO: This possibly needs a bit more thought. Are there other criteria we should use?
-        print 'checking alert status'
+        #print 'checking alert status'
         stats = self.check_for_change()
         builder = ReportBuilder()
+        
+        #print self.get_alert_colour();
+        #print self.get_usage_status();
+
+        builder.build_power_alert_report(power_alert_status='warning')
         if stats['colour'] and stats['status']:  # if both of these are True
             if self.get_alert_colour() == 'red' and self.get_usage_status() == 'up':
-                print 'warning!'
+                #print 'warning!'
                 builder.build_power_alert_report(power_alert_status='warning')
                 return 'warning'
             elif self.get_alert_colour() == 'black' and self.get_usage_status() == 'up':
-                print 'critical!'
+                #print 'critical!'
                 builder.build_power_alert_report(power_alert_status='critical')
                 return 'critical'
             else:   # TODO: Should the user be notified if the colour is red but usage is down?
@@ -212,8 +218,8 @@ class PowerAlertScraper:
             stats['eskom_level'] = list(result)[0][0]
         else:
             stats['eskom_level'] = '0'
-        print stats
-        print 'stats: colour=%s usage=%s' % (stats['eskom_colour'],
-                stats['eskom_usage'])
+        #print stats
+        #print 'stats: colour=%s usage=%s' % (stats['eskom_colour'],
+                #stats['eskom_usage'])
         return stats
 

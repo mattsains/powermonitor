@@ -73,7 +73,7 @@ class Mailer:
         text_part = None
         try:
             text_part = loader.get_template(join('email', '%s.txt' % template_name)).render(context)
-            print('email text: %s' % text_part)
+            #print('email text: %s' % text_part)
         except Exception as e:
             logging.warning('%s - %s' % e)
 
@@ -134,7 +134,7 @@ class Mailer:
                 self.__mail_list = tuple(self.__mail_list)
             server = smtp.EmailBackend(host=self.__smtp_server, port=self.__smtp_port, username=self.__email,
                                        password=self.__smtp_pass, use_tls=True)  # Set up a secure connection.
-            print server
+            #print server
             server.send_messages(self.__mail_list)  # Send all emails in one session.
             server.close()  #Close the session
         self.__mail_list = []

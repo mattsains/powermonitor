@@ -1,6 +1,8 @@
 __author__ = 'Vincent'
 import pandas as pd
 #import numpy as np
+import matplotlib as mpl
+mpl.use('Agg') # we can't display plots because we aren't running xserver
 import matplotlib.pyplot as plt
 import io
 import Resampling as rs
@@ -89,7 +91,7 @@ class Plotter:
         # # check length of typeWeight
         if weight_type == 'ewma':
             weighted_data_frame = self.ewma_resampling(data_frame, weight, freq)
-            #print weighted_data_frame
+            ##print weighted_data_frame
             legend = "Weighted Average plot"
         else:
             weighted_data_frame = self.equal_weight_moving_average(data_frame, freq, min_periods)
@@ -165,7 +167,7 @@ class Plotter:
             # possibly should use save fig
             return im
         else:
-            print 'saving'
+            #print 'saving'
             file_name_split = file_name.split(".")
             if (file_name_split[-1] == "svg") or (file_name_split[-1] == "png") or (file_name_split[-1] == "jpg"):
                 return plt.savefig(file_name)
@@ -250,7 +252,7 @@ class Plotter:
         plt.ylabel("Usage(kwh)")
         plt.xlabel("Time")
         plt.title("unusual plot")
-        #print(data_frame["reading"])
+        ##print(data_frame["reading"])
         #plt.scatter(data_frame.index,data_frame["reading"],marker="o")
         #data_frame["reading",0].plot(style='.')
         if not file_name:   # if file_name is None

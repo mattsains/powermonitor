@@ -42,14 +42,22 @@ class ReportBuilder():
         # needs: title name power_alert_status power_peak reporting_url image_url tips[]
         stats = None
         try:
-            frame = self._collector.collect_period(period_type='hour',
-                                                   period_start=datetime.utcnow().replace(microsecond=0) - relativedelta(hours=1), #TODO: Change this back to datetime.utcnow().replace(microseconds=0) - relativedelta(hours=1)
-                                                   period_length=1)
+            frame = DataFrameCollector().collect_period(period_type='hour',
+                    period_start=datetime.now().replace(microsecond=0) -
+                    relativedelta(hours=1), period_length=1)
+            #print "frame type: %s" % type(frame)
+            #print "frame: \n"
+            #print frame
+            #print 'collected'
             stats = self._usage_stats.get_frame_stats(frame)
+            #print 'statted'
             self._plotter.plot_single_frame(data_frame=frame, title='Usage for last hour', y_label='Watts',
                                             file_name=self.file_path + 'last_hour.png')
+            #print 'plotted'
             del frame
-        except:
+            #print 'deleted'
+        except Exception as e:
+            #print "%s" % e
             raise StandardError('Could not collect data')
         email_context = {}
         images = []
