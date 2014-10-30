@@ -116,7 +116,7 @@ class ReportDetailsForm(forms.ModelForm):
         model = UserReports
         fields = (
             'occurrence_type',
-            'time_and_date',
+            'datetime',
             'report_daily',
             'report_weekly',
             'report_monthly')
@@ -128,6 +128,7 @@ class ReportDetailsForm(forms.ModelForm):
         # generated fields work for everything else but this needs to be custom
         self.fields['occurrence_type'] = forms.ChoiceField(widget=forms.Select,
                                                            choices=[('1', 'recurring'), ('0', 'once-off')])
+        self.fields['datetime'].label = "Date and time"
 
 
 #The following 2 forms are displayed together on the manage reports page

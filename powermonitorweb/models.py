@@ -57,7 +57,7 @@ class UserReports(models.Model):
     user_id = models.ForeignKey(User)
     report_id = models.ForeignKey(Report)
     occurrence_type = models.CharField(max_length=128)
-    time_and_date = models.DateTimeField()
+    datetime = models.DateTimeField()
     report_daily = models.BooleanField()
     report_weekly = models.BooleanField()
     report_monthly = models.BooleanField()
