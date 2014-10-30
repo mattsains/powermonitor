@@ -120,7 +120,6 @@ class ReportDetailsForm(forms.ModelForm):
             'report_daily',
             'report_weekly',
             'report_monthly')
-        
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')   # Not sure what you wanted to do with this. I added this to fix the errors I was getting
